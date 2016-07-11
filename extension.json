@@ -1,0 +1,49 @@
+{
+    "name":"CourseEditor",
+    "version":"0.1.0",
+    "author":[
+        "Alessandro Tundo"
+    ],
+    "url":"https://github.com/WikiToLearn/CourseEditor",
+    "descriptionmsg":"",
+    "license-name":"GPLv3",
+    "type":"parserhook",
+    "AutoloadClasses":{
+        "CourseEditor":"CourseEditor.php",
+        "CourseEditorHooks":"CourseEditorHooks.php",
+        "SpecialCourseEditor":"SpecialCourseEditor.php"
+    },
+    "MessagesDirs":{
+        "CourseEditor":[
+            "i18n"
+        ]
+    },
+    "ExtensionMessagesFiles": {
+        "CourseEditorAlias": "CourseEditor.alias.php"
+    },
+    "ResourceFileModulePaths": {
+        "localBasePath": ""
+    },
+    "ResourceModules": {
+        "ext.courseEditor": {
+           "scripts":[],
+            "dependencies": [
+                "oojs-ui"
+            ],
+            "styles": [
+            ],
+            "messages": [
+            ]
+        }
+    },
+    "config":{
+
+    },
+    "Hooks":{
+        
+    },
+    "SpecialPages": {
+        "CourseEditor": "SpecialCourseEditor"
+    },
+    "manifest_version":1
+}
