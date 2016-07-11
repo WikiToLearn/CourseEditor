@@ -1,2 +1,3 @@
-# EasyLink
-An extension that use BabelNet and BabelFy APIs
+# CourseEditor
+
+a simple editor for sections and chapters.
