@@ -2,12 +2,13 @@
     "name":"CourseEditor",
     "version":"0.1.0",
     "author":[
-        "Alessandro Tundo"
+        "Alessandro Tundo",
+        "Riccardo Iaconelli"
     ],
     "url":"https://github.com/WikiToLearn/CourseEditor",
     "descriptionmsg":"",
     "license-name":"GPLv3",
-    "type":"parserhook",
+    "type":"special",
     "AutoloadClasses":{
         "CourseEditor":"CourseEditor.php",
         "CourseEditorHooks":"CourseEditorHooks.php",
