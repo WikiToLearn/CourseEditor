@@ -9,7 +9,7 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 }
 
 /**
-* HTML template for Special:Book
+* HTML template for Special:CourseEditor
 * @ingroup Templates
 */
 class SectionEditorTemplate extends QuickTemplate {

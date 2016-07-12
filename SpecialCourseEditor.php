@@ -23,13 +23,8 @@ class SpecialCourseEditor extends SpecialPage {
         $sectionName = $request->getVal('pagename');
         $this->editSection($sectionName);
         return;
-      case 'createcourse':
-        $this->renderPageContent();
-        return;
       default:
-        $out = $this->getOutput();
-        $out->enableOOUI();
-        $out->addHtml('default');
+        $this->renderPageContent();
     }
   }
 
@@ -60,8 +55,7 @@ class SpecialCourseEditor extends SpecialPage {
     $formDescriptor = array(
       'topic' => array(
         'class' => 'HTMLTextField',
-        'label' => 'Select a topic',
-        'validation-callback' => array('SpecialCourseEditor', 'validateTopic')
+        'label' => 'Select a topic'
       ),
       'name' => array(
         'class' => 'HTMLTextField',
