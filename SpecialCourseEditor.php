@@ -1,4 +1,8 @@
 <?php
+if ( !defined( 'MEDIAWIKI' ) ){
+  die( );
+}
+
 class SpecialCourseEditor extends SpecialPage {
     public function __construct( $name = 'CourseEditor', $restriction = 'move' ) {
         parent::__construct( $name );
@@ -41,7 +45,7 @@ class SpecialCourseEditor extends SpecialPage {
     public static function validateForm($formData){
         if($formData['topic'] != null || $formData['name'] != null){
             $context = new RequestContext();
-            try{
+            try {
                 $user = $context->getUser();
                 $token = $user->getEditToken();
                 $pageTitle = MWNamespace::getCanonicalName( NS_USER ) . ':' . $user->getName() . '/' . $formData['name']; 
@@ -52,7 +56,7 @@ class SpecialCourseEditor extends SpecialPage {
                             array(
                                 'action'     => 'edit',
                                 'title'      => $pageTitle,
-                                'appendtext' => "Prova testo",
+                                'appendtext' => "{{Course|}}\n\n[[Category:".$formData['topic']."]]",
                                 'token'      => $token,
                                 'notminor'   => true
                             ),
