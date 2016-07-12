@@ -12,6 +12,7 @@
     "AutoloadClasses":{
         "CourseEditor":"CourseEditor.php",
         "CourseEditorHooks":"CourseEditorHooks.php",
+        "SectionEditorTemplate":"CourseEditorTemplates.php",
         "SpecialCourseEditor":"SpecialCourseEditor.php"
     },
     "MessagesDirs":{
@@ -27,7 +28,9 @@
     },
     "ResourceModules": {
         "ext.courseEditor": {
-           "scripts":[],
+           "scripts":[
+             "modules/sectionEditor.js"
+           ],
             "dependencies": [
                 "oojs-ui"
             ],
@@ -42,7 +45,7 @@
 
     },
     "Hooks":{
-        
+
     },
     "SpecialPages": {
         "CourseEditor": "SpecialCourseEditor"
