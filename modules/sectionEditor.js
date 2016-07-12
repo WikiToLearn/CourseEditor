@@ -40,15 +40,6 @@ OO.mixinClass( DraggableItemWidget, OO.ui.mixin.DraggableElement );
 
 $(function () {
   var dragChapters = [];
-  var fieldDrag = new OO.ui.FieldLayout(
-    new DraggableGroupWidget( {
-      items: dragChapters
-    } ),
-    {
-      label: 'DraggableGroupWidget (vertical)\u200E',
-      align: 'top'
-    }
-  );
   var chapters = $("li[class='chapterItem']");
   $.each(chapters, function(key, value){
     // Create an icon.
@@ -73,5 +64,15 @@ $(function () {
       label: 'Item ' + key
     } ));
   });
+
+  var fieldDrag = new OO.ui.FieldLayout(
+    new DraggableGroupWidget( {
+      items: dragChapters
+    } ),
+    {
+      label: 'DraggableGroupWidget (vertical)\u200E',
+      align: 'top'
+    }
+  );
   $('div[id=chaptersList]').append(fieldDrag.$element);
 })
