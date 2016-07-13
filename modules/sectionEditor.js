@@ -155,16 +155,12 @@ $(function () {
   });
 
   $('#addChapter').blur(function(){
-    if ($.trim(textInputWidget.getValue()).length !== 0) {
-      addChapter(draggableWidget, textInputWidget.getValue());
-    }
+    addChapter(draggableWidget, textInputWidget.getValue());
     textInputWidget.setValue('');
   });
   $('#addChapter').keypress(function(keypressed) {
     if(keypressed.which == 13) {
-      if ($.trim(textInputWidget.getValue()).length !== 0) {
-        addChapter(draggableWidget, textInputWidget.getValue());
-      }
+      addChapter(draggableWidget, textInputWidget.getValue());
       textInputWidget.setValue('');
     }
   });
