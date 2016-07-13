@@ -100,8 +100,8 @@ var addChapter = function(draggableWidget, chapterName){
       icon: 'menu',
       label: chapterName
     } );
-    var iconDelete = $("<i class='fa fa-trash deleteChapterIcon pull-right'></i>");
-    var iconEdit = $("<i class='fa fa-pencil editChapterIcon pull-right'></i>");
+    var iconDelete = $("<i class='fa fa-trash fa-lg deleteChapterIcon pull-right'></i>");
+    var iconEdit = $("<i class='fa fa-pencil fa-lg editChapterIcon pull-right'></i>");
     dragItem.$label.append(iconDelete, iconEdit);
     draggableWidget.addItems([dragItem]);
     $(iconDelete).click(function(){
