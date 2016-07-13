@@ -1,5 +1,6 @@
 .oo-ui-draggableElement .deleteChapterIcon{
   display: none;
+  color: red;
   margin-top: 4px;
 }
 .oo-ui-draggableElement:hover .deleteChapterIcon{
