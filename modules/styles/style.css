@@ -1,12 +1,24 @@
 .oo-ui-draggableElement .deleteChapterIcon{
   display: none;
-  color: red;
+  color: #db3e14;
   margin-top: 4px;
 }
 .oo-ui-draggableElement:hover .deleteChapterIcon{
   display: inline-block;
 }
 
+.oo-ui-draggableElement .editChapterIcon{
+  display: none;
+  color: #337ab7;
+  margin-top: 4px;
+}
+.oo-ui-draggableElement:hover .editChapterIcon{
+  display: inline-block;
+}
+
 .oo-ui-draggableElement:hover{
   background-color: #eee;
+}
+body > .oo-ui-windowManager-modal{
+  font-size: 1em; !important
 }
