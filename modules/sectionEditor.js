@@ -88,12 +88,17 @@ $(function () {
   });
 
   $('#addChapter').blur(function(){
-    addChapter(draggableWidget, textInputWidget.getValue());
+    if ($.trim(textInputWidget.getValue()).length !== 0) {
+      addChapter(draggableWidget, textInputWidget.getValue());
+    }
     textInputWidget.setValue('');
   });
   $('#addChapter').keypress(function(keypressed) {
     if(keypressed.which == 13) {
-      addChapter(draggableWidget, textInputWidget.getValue());
+      if ($.trim(textInputWidget.getValue()).length !== 0) {
+        addChapter(draggableWidget, textInputWidget.getValue());
+      }
       textInputWidget.setValue('');
-    }});
-  })
+    }
+  });
+})
