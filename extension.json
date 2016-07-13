@@ -38,7 +38,12 @@
               "modules/styles/style.css"
             ],
             "messages": [
-                "courseeditor"
+                "courseeditor",
+                "courseeditor-add-new-chapter",
+                "courseeditor-save-section",
+                "courseeditor-cancel",
+                "courseeditor-rename-chapter",
+                "courseeditor-edit-dialog"
             ]
         }
     },

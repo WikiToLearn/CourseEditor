@@ -1,3 +1,12 @@
 {
-    "courseeditor" : "Course Editor"
-} 
+  "courseeditor" : "Editor di corsi",
+  "courseeditor-add-new-chapter" : "Add New Chapter",
+  "courseeditor-save-section" : "Save Section",
+  "courseeditor-cancel" : "Cancel",
+  "courseeditor-edit-dialog" : "Modifiy Chapter",
+  "courseeditor-rename-chapter" : "Rename",
+  "courseeditor-organize-chapters" : "You can organize, add and delete chapters",
+  "courseeditor-set-topic" : "Insert the topic",
+  "courseeditor-set-course" : "Insert the name of the course",
+  "courseeditor-validate-form" : "Please, insert a topic and a name"
+}

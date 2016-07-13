@@ -56,11 +56,11 @@ class SpecialCourseEditor extends SpecialPage {
     $formDescriptor = array(
       'topic' => array(
         'class' => 'HTMLTextField',
-        'label' => 'Select a topic'
+        'label' => wfMessage( 'courseeditor-set-topic' )
       ),
       'name' => array(
         'class' => 'HTMLTextField',
-        'label' => 'Select a name'
+        'label' => wfMessage( 'courseeditor-set-course' )
       )
     );
     $form = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() );
@@ -97,6 +97,6 @@ class SpecialCourseEditor extends SpecialPage {
   }
   return true;
 }
-return "Please, insert a topic and a name";
+return wfMessage( 'courseeditor-validate-form' );
 }
 }

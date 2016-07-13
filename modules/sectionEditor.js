@@ -47,10 +47,10 @@ function EditDialog(draggableWidget, chapterName, config ) {
 }
 OO.inheritClass( EditDialog, OO.ui.ProcessDialog );
 
-EditDialog.static.title = 'Edit Dialog';
+EditDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog' );
 EditDialog.static.actions = [
-    { action: 'save', label: 'Rename', flags: 'primary' },
-    { label: 'Cancel', flags: 'safe' }
+    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename-chapter' ), flags: 'primary' },
+    { label: OO.ui.deferMsg( 'courseeditor-cancel' ), flags: 'safe' }
 ];
 
 EditDialog.prototype.initialize = function () {
@@ -137,10 +137,10 @@ $(function () {
     items: dragChapters
   } );
   var fieldDrag = new OO.ui.FieldLayout(draggableWidget);
-  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: "Add a new chapter"} );
+  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-chapter' ) } );
   var fieldInput = 	new OO.ui.FieldLayout( textInputWidget);
   var buttonSave = new OO.ui.ButtonWidget( {
-    label: 'Save section',
+    label: OO.ui.deferMsg( 'courseeditor-save-section' ),
     flags: ['constructive'],
   } );
   buttonSave.$label.append("<i class='fa fa-floppy-o pull-left' aria-hidden='true'></i>");
