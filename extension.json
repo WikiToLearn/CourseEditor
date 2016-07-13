@@ -35,6 +35,7 @@
                 "oojs-ui"
             ],
             "styles": [
+              "modules/styles/style.css"
             ],
             "messages": [
                 "courseeditor"

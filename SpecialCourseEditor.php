@@ -40,6 +40,7 @@ class SpecialCourseEditor extends SpecialPage {
     $this->chaptersList = $matches[2];
     $this->setHeaders();
     $out->setPageTitle("Section Editor");
+    $out->addInlineScript(" var chapters = " . json_encode($this->chaptersList) . ";");
     $out->addModules( 'ext.courseEditor' );
     $template = new SectionEditorTemplate();
     $template->setRef('courseEditor', $this);
