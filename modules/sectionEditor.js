@@ -94,7 +94,7 @@ var deleteChapter = function(draggableWidget, chapterName){
 };
 
 var addChapter = function(draggableWidget, chapterName){
-  if(chapterName !== ''){
+  if($.trim(chapterName).length !== 0){
     var dragItem = new DraggableHandledItemWidget( {
       data: chapterName,
       icon: 'menu',
