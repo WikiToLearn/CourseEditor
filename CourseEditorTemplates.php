@@ -18,10 +18,22 @@ class SectionEditorTemplate extends QuickTemplate {
     $section = $this->data['section'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
-    <h2><?php echo htmlspecialchars($section) ?></h2>
-    <div id="chaptersList">
+    <h2 id="sectionName"><?php echo htmlspecialchars($section) ?></h2>
+    <div class="col-md-8">
+      <div id="chaptersList"></div>
+      <div id="saveDiv"></div>
     </div>
-    <div id="saveDiv"></div>
+    <div class="col-md-4">
+      <div id="undoStack">
+        <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;Recycle bin</div>
+  <!-- List group -->
+  <div class="list-group">
+  </div>
+</div>
+      </div>
+    </div>
     <?php
   }
 }

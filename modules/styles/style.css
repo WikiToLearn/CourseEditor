@@ -16,6 +16,14 @@
   display: inline-block;
 }
 
+.list-group-item .undoDeleteIcon{
+  display: none;
+}
+
+.list-group-item:hover .undoDeleteIcon{
+  display: inline-block;
+}
+
 .oo-ui-draggableElement:hover{
   background-color: #eee;
 }

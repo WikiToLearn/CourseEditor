@@ -23,9 +23,21 @@ class SpecialCourseEditor extends SpecialPage {
         $sectionName = $request->getVal('pagename');
         $this->editSection($sectionName);
         return;
+      case 'savesection':
+        $sectionName = $request->getVal('pageName');
+        $originalChapters = $request->getVal('originalChapters');
+        $editStack = $request->getVal('editStack');
+        $newChapters = $request->getVal('newChapters');
+        $this->saveSection($sectionName, $originalChapters, $editStack, $newChapters);
+        return;
       default:
         $this->renderPageContent();
     }
+  }
+
+  private function savesection($sectionName, $originalChapters, $editStack, $newChapters){
+    $out = $this->getOutput();
+    
   }
 
   private function editSection($sectionName){
@@ -40,7 +52,7 @@ class SpecialCourseEditor extends SpecialPage {
     $this->chaptersList = $matches[2];
     $this->setHeaders();
     $out->setPageTitle("Section Editor");
-    $out->addInlineScript(" var chapters = " . json_encode($this->chaptersList) . ";");
+    $out->addInlineScript(" var chapters = " . json_encode($this->chaptersList) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor' );
     $template = new SectionEditorTemplate();
     $template->setRef('courseEditor', $this);
