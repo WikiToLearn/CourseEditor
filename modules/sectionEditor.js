@@ -16,7 +16,7 @@ var deleteChapter = function(draggableWidget, chapterName, editStack){
   draggableWidget.removeItems([chapterToRemove]);
   editStack.push({
     action: 'delete',
-    chapter: chapterName
+    chapterName: chapterName
   });
   createRecycleBinItem(draggableWidget, chapterName, editStack);
 };

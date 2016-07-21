@@ -24,7 +24,7 @@ class SpecialCourseEditor extends SpecialPage {
         $this->editSection($sectionName);
         return;
       case 'savesection':
-        $sectionName = $request->getVal('pageName');
+        $sectionName = $request->getVal('sectionName');
         $originalChapters = $request->getVal('originalChapters');
         $editStack = $request->getVal('editStack');
         $newChapters = $request->getVal('newChapters');
@@ -37,8 +37,108 @@ class SpecialCourseEditor extends SpecialPage {
 
   private function savesection($sectionName, $originalChapters, $editStack, $newChapters){
     $out = $this->getOutput();
-    
+    $stack = json_decode($editStack);
+    foreach ($stack as $value) {
+      switch ($value->action) {
+        case 'rename':
+        try {
+          $user = $this->getContext()->getUser();
+          $token = $user->getEditToken();
+          $api = new ApiMain(
+          new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action'     => 'move',
+            'from'      => $sectionName . '/' . $value->chapterName,
+            'to' => $sectionName . '/' . $value->newChapterName,
+            'token'      => $token,
+            'noredirect' => true,
+            'movetalk' => true,
+            'movesubpages'=> true
+          ),
+          true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
+    break;
+    case 'delete':
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+      new DerivativeRequest(
+      $this->getContext()->getRequest(),
+      array(
+        'action'     => 'delete',
+        'title'      => $sectionName . '/' . $value->chapterName,
+        'token'      => $token
+      ),
+      true // treat this as a POST
+      ),
+      true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      print_r($api);
+      return $e;
+    }
+    break;
+    case 'add':
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+      new DerivativeRequest(
+      $this->getContext()->getRequest(),
+      array(
+        'action'     => 'edit',
+        'title'      => MWNamespace::getCanonicalName( NS_MAIN ) . $sectionName . '/' . $value->chapterName,
+        'text' => "",
+        'token'      => $token,
+        'notminor'   => true
+      ),
+      true // treat this as a POST
+    ),
+    true // Enable write.
+  );
+  $api->execute();
+  } catch(UsageException $e){
+  return $e;
   }
+  break;
+  }
+}
+  $newSectionText = "";
+  $newChaptersArray = json_decode($newChapters);
+  foreach ($newChaptersArray as $value) {
+    $newSectionText .= "* [[" . $sectionName . "/" . $value ."|". $value ."]]\r\n";
+  }
+  try {
+    $user = $this->getContext()->getUser();
+    $token = $user->getEditToken();
+    $api = new ApiMain(
+    new DerivativeRequest(
+    $this->getContext()->getRequest(),
+    array(
+      'action'     => 'edit',
+      'title'      => $sectionName,
+      'text' => $newSectionText,
+      'token'      => $token,
+      'notminor'   => true
+    ),
+    true // treat this as a POST
+  ),
+  true // Enable write.
+);
+$api->execute();
+} catch(UsageException $e){
+return $e;
+}
+}
 
   private function editSection($sectionName){
     $out = $this->getOutput();
