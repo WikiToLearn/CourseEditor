@@ -13,6 +13,7 @@
         "CourseEditor":"CourseEditor.php",
         "CourseEditorHooks":"CourseEditorHooks.php",
         "SectionEditorTemplate":"CourseEditorTemplates.php",
+        "CourseEditorTemplate" : "CourseEditorTemplates.php",
         "SpecialCourseEditor":"SpecialCourseEditor.php"
     },
     "MessagesDirs":{
@@ -27,7 +28,7 @@
         "localBasePath": ""
     },
     "ResourceModules": {
-        "ext.courseEditor": {
+        "ext.courseEditor.section": {
            "scripts":[
              "modules/sectionEditor.js"
            ],
@@ -42,8 +43,27 @@
                 "courseeditor-add-new-chapter",
                 "courseeditor-save-section",
                 "courseeditor-cancel",
-                "courseeditor-rename-chapter",
-                "courseeditor-edit-dialog"
+                "courseeditor-rename",
+                "courseeditor-edit-dialog-section"
+            ]
+        },
+        "ext.courseEditor.course": {
+           "scripts":[
+             "modules/courseEditor.js"
+           ],
+            "dependencies": [
+                "oojs-ui"
+            ],
+            "styles": [
+              "modules/styles/style.css"
+            ],
+            "messages": [
+                "courseeditor",
+                "courseeditor-add-new-section",
+                "courseeditor-save-course",
+                "courseeditor-cancel",
+                "courseeditor-rename",
+                "courseeditor-edit-dialog-course"
             ]
         }
     },

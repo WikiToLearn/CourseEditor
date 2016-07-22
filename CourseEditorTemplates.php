@@ -37,3 +37,32 @@ class SectionEditorTemplate extends QuickTemplate {
     <?php
   }
 }
+
+/**
+* HTML template for Special:CourseEditor
+* @ingroup Templates
+*/
+class CourseEditorTemplate extends QuickTemplate {
+  public function execute() {
+    $courseName = $this->data['course'];
+    ?>
+    <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
+    <h2 id="courseName"><?php echo htmlspecialchars($courseName) ?></h2>
+    <div class="col-md-8">
+      <div id="sectionsList"></div>
+      <div id="saveDiv"></div>
+    </div>
+    <div class="col-md-4">
+      <div id="undoStack">
+        <div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;Recycle bin</div>
+  <!-- List group -->
+  <div class="list-group">
+  </div>
+</div>
+      </div>
+    </div>
+    <?php
+  }
+}

@@ -16,6 +16,24 @@
   display: inline-block;
 }
 
+.oo-ui-draggableElement .deleteSectionIcon{
+  display: none;
+  color: #db3e14;
+  margin-top: 4px;
+}
+.oo-ui-draggableElement:hover .deleteSectionIcon{
+  display: inline-block;
+}
+
+.oo-ui-draggableElement .editSectionIcon{
+  display: none;
+  color: #337ab7;
+  margin-top: 4px;
+}
+.oo-ui-draggableElement:hover .editSectionIcon{
+  display: inline-block;
+}
+
 .list-group-item .undoDeleteIcon{
   display: none;
 }

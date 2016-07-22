@@ -5,56 +5,56 @@ $('body').append( windowManager.$element );
 /******** HELPER METHODS ********/
 
 /**
- * Delete a chapter from the draggableWidget and add a item to the
+ * Delete a section from the draggableWidget and add a item to the
  * RecycleBin list.
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var deleteChapter = function(draggableWidget, chapterName, editStack){
-  var chapterToRemove = draggableWidget.getItemFromData(chapterName);
-  draggableWidget.removeItems([chapterToRemove]);
+var deleteSection = function(draggableWidget, sectionName, editStack){
+  var sectionToRemove = draggableWidget.getItemFromData(sectionName);
+  draggableWidget.removeItems([sectionToRemove]);
   editStack.push({
     action: 'delete',
-    chapterName: chapterName
+    sectionName: sectionName
   });
-  createRecycleBinItem(draggableWidget, chapterName, editStack);
+  createRecycleBinItem(draggableWidget, sectionName, editStack);
 };
 
 /**
- * Restore a chapter from the RecycleBin and remove its deletion
+ * Restore a section from the RecycleBin and remove its deletion
  * from the editStack
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var restoreChapter = function(draggableWidget, chapterName, editStack){
-  createDragItem(draggableWidget, chapterName, editStack);
-  editStack.splice(editStack.indexOf({action: 'delete', chapter: chapterName}));
+var restoreSection = function(draggableWidget, sectionName, editStack){
+  createDragItem(draggableWidget, sectionName, editStack);
+  editStack.splice(editStack.indexOf({action: 'delete', section: sectionName}));
 };
 
 /**
- * Add a chapter to the draggableWidget automatically if its name isn't
+ * Add a section to the draggableWidget automatically if its name isn't
  * in the RecycleBin list, otherwise open a MessageDialog and ask to the user
- * if he/she prefer to restore the chapter or create a new one.
+ * if he/she prefer to restore the section or create a new one.
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var addChapter = function(draggableWidget, chapterName, editStack){
-  if($.trim(chapterName).length !== 0){
-    if(findIndexOfDeletedChapter(editStack, chapterName) === null){
-      createDragItem(draggableWidget, chapterName, editStack);
+var addSection = function(draggableWidget, sectionName, editStack){
+  if($.trim(sectionName).length !== 0){
+    if(findIndexOfDeletedSection(editStack, sectionName) === null){
+      createDragItem(draggableWidget, sectionName, editStack);
       editStack.push({
         action: 'add',
-        chapterName: chapterName
+        sectionName: sectionName
       });
     }else {
       var messageDialog = new OO.ui.MessageDialog();
       windowManager.addWindows( [ messageDialog ] );
       windowManager.openWindow( messageDialog, {
         title: 'Ops...',
-        message: 'There\'s a deleted chapter with the same name, what do you want to do?',
+        message: 'There\'s a deleted section with the same name, what do you want to do?',
         actions: [
           { action: 'reject', label: 'Cancel', flags: 'safe' },
           { action: 'restore', label: 'Restore' },
@@ -67,13 +67,13 @@ var addChapter = function(draggableWidget, chapterName, editStack){
       } ).then( function ( opened ) {
         opened.then( function ( closing, data ) {
           if ( data && data.action === 'restore' ) {
-            restoreChapter(draggableWidget, chapterName, editStack);
-            $('button[id="' +  chapterName + '"]').remove();
+            restoreSection(draggableWidget, sectionName, editStack);
+            $('button[id="' +  sectionName + '"]').remove();
           } else if(data && data.action === 'confirm') {
-            createDragItem(draggableWidget, chapterName, editStack);
+            createDragItem(draggableWidget, sectionName, editStack);
             editStack.push({
               action: 'add',
-              chapterName: chapterName
+              sectionName: sectionName
             });
           }
         } );
@@ -83,13 +83,13 @@ var addChapter = function(draggableWidget, chapterName, editStack){
 };
 
 /**
- * Rename a chapter
+ * Rename a section
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var editChapter = function(draggableWidget, chapterName, editStack){
-  var dialog = new EditDialog(draggableWidget, chapterName, editStack);
+var editSection = function(draggableWidget, sectionName, editStack){
+  var dialog = new EditDialog(draggableWidget, sectionName, editStack);
   windowManager.addWindows( [ dialog ] );
   windowManager.openWindow( dialog );
 };
@@ -97,13 +97,13 @@ var editChapter = function(draggableWidget, chapterName, editStack){
 /******** UTIL METHODS ********/
 
 /**
- * Find the index of a deleted chapter in the editStack
- * @param {String} [chapterName]
+ * Find the index of a deleted section in the editStack
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var findIndexOfDeletedChapter = function(editStack, chapterName) {
+var findIndexOfDeletedSection = function(editStack, sectionName) {
   for (var i = 0; i < editStack.length; i++) {
-    if (editStack[i]['action'] === 'delete' && editStack[i]['chapterName'] === chapterName) {
+    if (editStack[i]['action'] === 'delete' && editStack[i]['sectionName'] === sectionName) {
       return i;
     }
   }
@@ -113,18 +113,18 @@ var findIndexOfDeletedChapter = function(editStack, chapterName) {
  * Create a drag item, its handlers on edit and remove icons and append it to
  * to the draggableWidget.
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var createDragItem = function(draggableWidget, chapterName, editStack){
+var createDragItem = function(draggableWidget, sectionName, editStack){
   //Create item and icons
   var dragItem = new DraggableHandledItemWidget( {
-    data: chapterName,
+    data: sectionName,
     icon: 'menu',
-    label: chapterName
+    label: sectionName
   } );
-  var iconDelete = $("<i class='fa fa-trash fa-lg deleteChapterIcon pull-right'></i>");
-  var iconEdit = $("<i class='fa fa-pencil fa-lg editChapterIcon pull-right'></i>");
+  var iconDelete = $("<i class='fa fa-trash fa-lg deleteSectionIcon pull-right'></i>");
+  var iconEdit = $("<i class='fa fa-pencil fa-lg editSectionIcon pull-right'></i>");
 
   //Append icons and add the item to draggableWidget
   dragItem.$label.append(iconDelete, iconEdit);
@@ -132,10 +132,10 @@ var createDragItem = function(draggableWidget, chapterName, editStack){
 
   //Create handlers
   $(iconDelete).click(function(){
-    deleteChapter(draggableWidget, $(this).parent().text(), editStack);
+    deleteSection(draggableWidget, $(this).parent().text(), editStack);
   });
   $(iconEdit).click(function(){
-    editChapter(draggableWidget, $(this).parent().text(), editStack);
+    editSection(draggableWidget, $(this).parent().text(), editStack);
   });
 };
 
@@ -143,12 +143,12 @@ var createDragItem = function(draggableWidget, chapterName, editStack){
  * Create a button list group item, its handler on undo and append it to
  * to the RecycleBin list group.
  * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [chapterName]
+ * @param {String} [sectionName]
  * @param {Array} [editStack]
  */
-var createRecycleBinItem = function(draggableWidget, chapterName, editStack){
+var createRecycleBinItem = function(draggableWidget, sectionName, editStack){
   //Create item and icon
-  var liButton = $('<button type="button" class="list-group-item" id="' + chapterName +'" >&nbsp;&nbsp;' + chapterName +'</button>');
+  var liButton = $('<button type="button" class="list-group-item" id="' + sectionName +'" >&nbsp;&nbsp;' + sectionName +'</button>');
   var undoDeleteIcon = $('<i class="fa fa-undo undoDeleteIcon"></i>');
 
   //Append icon and add the item to the list
@@ -157,9 +157,9 @@ var createRecycleBinItem = function(draggableWidget, chapterName, editStack){
 
   //Create handler
   $(undoDeleteIcon).click(function(){
-    var chapterToRestore = $(this).parent().attr('id');
+    var sectionToRestore = $(this).parent().attr('id');
     $(this).parent().remove();
-    restoreChapter(draggableWidget, chapterToRestore, editStack);
+    restoreSection(draggableWidget, sectionToRestore, editStack);
   });
 }
 
@@ -211,22 +211,22 @@ OO.mixinClass( DraggableHandledItemWidget, OO.ui.mixin.DraggableElement );
 /****** Edit Dialog ******/
 
 /* Create a dialog */
-function EditDialog(draggableWidget, chapterName, editStack, config ) {
+function EditDialog(draggableWidget, sectionName, editStack, config ) {
     EditDialog.parent.call( this, config );
     this.draggableWidget = draggableWidget;
-    this.chapterName = chapterName;
+    this.sectionName = sectionName;
     this.editStack = editStack;
     this.textInputWidget = new OO.ui.TextInputWidget($.extend( { validate: 'non-empty' }, config ) );
-    this.textInputWidget.setValue(chapterName);
+    this.textInputWidget.setValue(sectionName);
 }
 
 /* Inheritance */
 OO.inheritClass( EditDialog, OO.ui.ProcessDialog );
 
 /* Static Properties */
-EditDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog-section' );
+EditDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog-course' );
 EditDialog.static.actions = [
-    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename-chapter' ), flags: 'primary' },
+    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename' ), flags: 'primary' },
     { label: OO.ui.deferMsg( 'courseeditor-cancel' ), flags: 'safe' }
 ];
 
@@ -243,25 +243,25 @@ EditDialog.prototype.getActionProcess = function ( action ) {
     var dialog = this;
     if ( action === 'save' ) {
         return new OO.ui.Process( function () {
-            var newChapterName = dialog.textInputWidget.getValue();
+            var newSectionName = dialog.textInputWidget.getValue();
             var items = dialog.draggableWidget.getItems();
-            items.filter(function(chapter) {
-              if(chapter.data === dialog.chapterName){
-                chapter.setData(newChapterName);
-                chapter.setLabel(newChapterName);
-                var iconDelete = $("<i class='fa fa-trash fa-lg deleteChapterIcon pull-right'></i>");
-                var iconEdit = $("<i class='fa fa-pencil fa-lg editChapterIcon pull-right'></i>");
-                chapter.$label.append(iconDelete, iconEdit);
+            items.filter(function(section) {
+              if(section.data === dialog.sectionName){
+                section.setData(newSectionName);
+                section.setLabel(newSectionName);
+                var iconDelete = $("<i class='fa fa-trash fa-lg deleteSectionIcon pull-right'></i>");
+                var iconEdit = $("<i class='fa fa-pencil fa-lg editSectionIcon pull-right'></i>");
+                section.$label.append(iconDelete, iconEdit);
                 $(iconDelete).click(function(){
-                  deleteChapter(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                  deleteSection(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
                 });
                 $(iconEdit).click(function(){
-                  editChapter(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                  editSection(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
                 });
                 dialog.editStack.push({
                   action: 'rename',
-                  chapterName: dialog.chapterName,
-                  newChapterName: newChapterName
+                  sectionName: dialog.sectionName,
+                  newSectionName: newSectionName
                 })
               }
             });
@@ -272,74 +272,69 @@ EditDialog.prototype.getActionProcess = function ( action ) {
 };
 
 $(function () {
-  var dragChapters = [];
-  //Add all existing chapters to the dragChapters array
-  $.each(chapters, function(key, value){
+  var dragSections = [];
+  //Add all existing sections to the dragSections array
+  $.each(sections, function(key, value){
     var dragItem = new DraggableHandledItemWidget( {
       data: value,
       icon: 'menu',
       label: value
     } );
-    dragItem.$label.append("<i class='fa fa-trash fa-lg deleteChapterIcon pull-right'></i>",
-    "<i class='fa fa-pencil editChapterIcon fa-lg pull-right'></i>");
-    dragChapters.push(dragItem);
+    dragItem.$label.append("<i class='fa fa-trash fa-lg deleteSectionIcon pull-right'></i>",
+    "<i class='fa fa-pencil editSectionIcon fa-lg pull-right'></i>");
+    dragSections.push(dragItem);
   });
 
-  //Create a draggableWidget with the items in the dragChapters array
+  //Create a draggableWidget with the items in the dragSections array
   var draggableWidget = new DraggableGroupWidget( {
-    items: dragChapters
+    items: dragSections
   } );
   var fieldDrag = new OO.ui.FieldLayout(draggableWidget);
 
-  //Create a textInputWidget for new chapters
-  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-chapter' ) } );
+  //Create a textInputWidget for new sections
+  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-section' ) } );
   var fieldInput = 	new OO.ui.FieldLayout( textInputWidget);
 
   //Create save button
   var buttonSave = new OO.ui.ButtonWidget( {
-    id: 'saveSection',
-    label: OO.ui.deferMsg( 'courseeditor-save-section' ),
+    id: 'saveCourse',
+    label: OO.ui.deferMsg( 'courseeditor-save-course' ),
     flags: ['constructive'],
   } );
   buttonSave.$label.append("<i class='fa fa-floppy-o pull-left' aria-hidden='true'></i>");
 
   //Append all created elements to DOM
-  $('#chaptersList').append(fieldDrag.$element, fieldInput.$element);
+  $('#sectionsList').append(fieldDrag.$element, fieldInput.$element);
   $('#saveDiv').append('<br><br>', buttonSave.$element);
 
   //Create handlers
-  $('.deleteChapterIcon').click(function(){
-    deleteChapter(draggableWidget, $(this).parent().text(), editStack);
+  $('.deleteSectionIcon').click(function(){
+    deleteSection(draggableWidget, $(this).parent().text(), editStack);
   });
-  $('.editChapterIcon').click(function(){
-    editChapter(draggableWidget, $(this).parent().text(), editStack);
+  $('.editSectionIcon').click(function(){
+    editSection(draggableWidget, $(this).parent().text(), editStack);
   });
-  $('.oo-ui-inputWidget-input').attr('id', 'addChapter');
-  $('#addChapter').blur(function(){
-    addChapter(draggableWidget, textInputWidget.getValue(), editStack);
+  $('.oo-ui-inputWidget-input').attr('id', 'addSection');
+  $('#addSection').blur(function(){
+    addSection(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
   });
-  $('#addChapter').keypress(function(keypressed) {
+  $('#addSection').keypress(function(keypressed) {
     if(keypressed.which == 13) {
-      addChapter(draggableWidget, textInputWidget.getValue(), editStack);
+      addSection(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');
     }
   });
-  $('#saveSection').click(function(){
-    /*$('<form action="/Special:CourseEditor?actiontype=savesection" method="POST">' +
-    '<input type="hidden" name="pageName" value="' + $('#sectionName').text() + '">' +
-    '<input type="hidden" name="originalChapters" value="' + JSON.stringify(chapters) + '">' +
-    '<input type="hidden" name="editStack" value="' + JSON.stringify(editStack) + '">' +
-    '</form>').submit();*/
-    var newChapters = [];
+  $('#saveCourse').click(function(){
+    var newSections = [];
     $.each(draggableWidget.getItems(), function(key, value){
-      newChapters.push(value.data);
+      newSections.push(value.data);
     });
-    $.post("/Special:CourseEditor?actiontype=savesection", {
-      sectionName: $('#sectionName').text(),
-      originalChapters: JSON.stringify(chapters),
+    $.post("/Special:CourseEditor?actiontype=savecourse", {
+      courseName: $('#courseName').text(),
+      originalSections: JSON.stringify(sections),
       editStack: JSON.stringify(editStack),
-      newChapters: JSON.stringify(newChapters)
+      newSections: JSON.stringify(newSections)
     }, function(response, status) {
       console.warn(response, status);
     });
