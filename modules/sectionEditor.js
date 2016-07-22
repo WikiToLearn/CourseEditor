@@ -43,7 +43,7 @@ var restoreChapter = function(draggableWidget, chapterName, editStack){
  */
 var addChapter = function(draggableWidget, chapterName, editStack){
   if($.trim(chapterName).length !== 0){
-    if(!findIndexOfDeletedChapter(editStack, chapterName)){
+    if(findIndexOfDeletedChapter(editStack, chapterName) === null){
       createDragItem(draggableWidget, chapterName, editStack);
       editStack.push({
         action: 'add',
@@ -103,7 +103,7 @@ var editChapter = function(draggableWidget, chapterName, editStack){
  */
 var findIndexOfDeletedChapter = function(editStack, chapterName) {
   for (var i = 0; i < editStack.length; i++) {
-    if (editStack[i]['action'] === 'delete' && editStack[i]['chapter'] === chapterName) {
+    if (editStack[i]['action'] === 'delete' && editStack[i]['chapterName'] === chapterName) {
       return i;
     }
   }
