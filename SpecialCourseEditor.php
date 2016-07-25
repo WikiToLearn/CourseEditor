@@ -43,7 +43,7 @@ class SpecialCourseEditor extends SpecialPage {
         $this->saveCourse($courseName, $originalSections, $editStack, $newSections);
         return;
       default:
-        $this->renderPageContent();
+        $this->createNewCourse();
         return;
     }
   }
@@ -67,41 +67,6 @@ class SpecialCourseEditor extends SpecialPage {
     $template->set('context', $this->getContext());
     $template->set('course', $courseName);
     $out->addTemplate( $template );
-  }
-
-  private function rewriteSectionText($courseName, $sectionName, $newSectionName){
-    $title = Title::newFromText( $courseName . "/" . $sectionName, $defaultNamespace=NS_MAIN );
-    $page = WikiPage::factory( $title );
-    $content = $page->getContent( Revision::RAW );
-    $text = ContentHandler::getContentText( $content );
-    $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-    $chapters = $matches[2];
-    $newSectionText = "";
-    foreach ($chapters as $value) {
-      $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $value ."|". $value ."]]\r\n";
-    }
-    try {
-      $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
-      $api = new ApiMain(
-      new DerivativeRequest(
-      $this->getContext()->getRequest(),
-      array(
-        'action'     => 'edit',
-        'title'      => $courseName . "/" . $newSectionName,
-        'text' => $newSectionText,
-        'token'      => $token,
-        'notminor'   => true
-      ),
-      true // treat this as a POST
-    ),
-    true // Enable write.
-  );
-  $api->execute();
-  } catch(UsageException $e){
-    return $e;
-  }
   }
 
   private function saveCourse($courseName, $originalSections, $editStack, $newSections){
@@ -367,7 +332,7 @@ return $e;
     $out->addTemplate( $template );
   }
 
-  private function renderPageContent() {
+  private function createNewCourse() {
     $out = $this->getOutput();
     $out->enableOOUI();
     $formDescriptor = array(
