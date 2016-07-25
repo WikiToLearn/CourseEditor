@@ -330,6 +330,7 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
+    console.warn(sections, editStack, newSections);
     $.post("/Special:CourseEditor?actiontype=savecourse", {
       courseName: $('#courseName').text(),
       originalSections: JSON.stringify(sections),
