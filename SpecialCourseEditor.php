@@ -119,7 +119,7 @@ class SpecialCourseEditor extends SpecialPage {
               'from'      => $courseName . '/' . $sectionName,
               'to' => $courseName . '/' . $newSectionName,
               'token'      => $token,
-              'noredirect' => true,
+              'noredirect' => false,
               'movetalk' => true,
               'movesubpages'=> true
             ),
@@ -223,7 +223,7 @@ class SpecialCourseEditor extends SpecialPage {
             'from'      => $sectionName . '/' . $value->chapterName,
             'to' => $sectionName . '/' . $value->newChapterName,
             'token'      => $token,
-            'noredirect' => true,
+            'noredirect' => false,
             'movetalk' => true,
             'movesubpages'=> true
           ),
@@ -237,6 +237,30 @@ class SpecialCourseEditor extends SpecialPage {
     }
     break;
     case 'delete':
+    $user = $this->getContext()->getUser();
+    if(!$user->isAllowed('delete')){
+      try {
+        //$user = $this->getContext()->getUser();
+        $token = $user->getEditToken();
+        $api = new ApiMain(
+        new DerivativeRequest(
+        $this->getContext()->getRequest(),
+        array(
+          'action'     => 'edit',
+          'title'      => $sectionName . '/' . $value->chapterName,
+          'prependtext' => 'DELETED',
+          'token'      => $token,
+          'notminor'   => true
+        ),
+        true // treat this as a POST
+      ),
+      true // Enable write.
+    );
+    $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
+  }else {
     try {
       $user = $this->getContext()->getUser();
       $token = $user->getEditToken();
@@ -256,6 +280,8 @@ class SpecialCourseEditor extends SpecialPage {
     } catch(UsageException $e){
       return $e;
     }
+  }
+
     break;
     case 'add':
     try {
