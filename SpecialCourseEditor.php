@@ -133,24 +133,49 @@ class SpecialCourseEditor extends SpecialPage {
         }
         break;
         case 'delete':
-        try {
-          $user = $this->getContext()->getUser();
-          $token = $user->getEditToken();
-          $api = new ApiMain(
-          new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action'     => 'delete',
-            'title'      => $courseName . '/' . $value->sectionName,
-            'token'      => $token
-          ),
-          true // treat this as a POST
+        $user = $this->getContext()->getUser();
+        $title = Title::newFromText($courseName . '/' . $value->sectionName, $defaultNamespace=NS_MAIN);
+        if(!$title->userCan('delete', $user, 'secure')){
+          try {
+            $token = $user->getEditToken();
+            $api = new ApiMain(
+            new DerivativeRequest(
+            $this->getContext()->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $courseName . '/' . $value->sectionName,
+              'prependtext' => '{{deleteme}}',
+              'token'      => $token,
+              'notminor'   => true
+            ),
+            true // treat this as a POST
           ),
           true // Enable write.
-          );
-          $api->execute();
+        );
+        $api->execute();
         } catch(UsageException $e){
           return $e;
+        }
+        }else {
+          try {
+            $user = $this->getContext()->getUser();
+            $token = $user->getEditToken();
+            $api = new ApiMain(
+            new DerivativeRequest(
+            $this->getContext()->getRequest(),
+            array(
+              'action'     => 'delete',
+              'title'      => $courseName . '/' . $value->sectionName,
+              'token'      => $token
+            ),
+            true // treat this as a POST
+            ),
+            true // Enable write.
+            );
+            $api->execute();
+          } catch(UsageException $e){
+            return $e;
+          }
         }
         break;
         case 'add':
@@ -238,9 +263,9 @@ class SpecialCourseEditor extends SpecialPage {
     break;
     case 'delete':
     $user = $this->getContext()->getUser();
-    if(!$user->isAllowed('delete')){
+    $title = Title::newFromText($sectionName . '/' . $value->chapterName, $defaultNamespace=NS_MAIN);
+    if(!$title->userCan('delete', $user, 'secure')){
       try {
-        //$user = $this->getContext()->getUser();
         $token = $user->getEditToken();
         $api = new ApiMain(
         new DerivativeRequest(
@@ -248,7 +273,7 @@ class SpecialCourseEditor extends SpecialPage {
         array(
           'action'     => 'edit',
           'title'      => $sectionName . '/' . $value->chapterName,
-          'prependtext' => 'DELETED',
+          'prependtext' => '{{deleteme}}',
           'token'      => $token,
           'notminor'   => true
         ),
@@ -292,7 +317,7 @@ class SpecialCourseEditor extends SpecialPage {
       $this->getContext()->getRequest(),
       array(
         'action'     => 'edit',
-        'title'      => MWNamespace::getCanonicalName( NS_MAIN ) . $sectionName . '/' . $value->chapterName,
+        'title'      => $sectionName . '/' . $value->chapterName,
         'text' => "",
         'token'      => $token,
         'notminor'   => true
