@@ -320,7 +320,7 @@ $(function () {
     textInputWidget.setValue('');
   });
   $('#addChapter').keypress(function(keypressed) {
-    if(keypressed.which == 13) {
+    if(keypressed.which === 13) {
       addChapter(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');
     }

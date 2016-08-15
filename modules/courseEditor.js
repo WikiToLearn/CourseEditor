@@ -320,7 +320,7 @@ $(function () {
     textInputWidget.setValue('');
   });
   $('#addSection').keypress(function(keypressed) {
-    if(keypressed.which == 13) {
+    if(keypressed.which === 13) {
       addSection(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');
     }
