@@ -74,8 +74,8 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($stack as $value) {
       switch ($value->action) {
         case 'rename':
-        $sectionName = $value->sectionName;
-        $newSectionName = $value->newSectionName;
+        $sectionName = $value->elementName;
+        $newSectionName = $value->newElementName;
         $title = Title::newFromText( $courseName . "/" . $sectionName, $defaultNamespace=NS_MAIN );
         $page = WikiPage::factory( $title );
         $content = $page->getContent( Revision::RAW );
@@ -108,7 +108,7 @@ class SpecialCourseEditor extends SpecialPage {
       } catch(UsageException $e){
         return $e;
       }
-        try {
+       try {
           $user = $this->getContext()->getUser();
           $token = $user->getEditToken();
           $api = new ApiMain(
@@ -127,14 +127,21 @@ class SpecialCourseEditor extends SpecialPage {
           ),
           true // Enable write.
           );
-          $api->execute();
+        $api->execute();
         } catch(UsageException $e){
           return $e;
         }
         break;
         case 'delete':
         $user = $this->getContext()->getUser();
-        $title = Title::newFromText($courseName . '/' . $value->sectionName, $defaultNamespace=NS_MAIN);
+        $sectionName = $value->elementName;
+        $title = Title::newFromText($courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN);
+        $page = WikiPage::factory( $title );
+        $content = $page->getContent( Revision::RAW );
+        $text = ContentHandler::getContentText( $content );
+        $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
+        preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+        $chapters = $matches[2];
         if(!$title->userCan('delete', $user, 'secure')){
           try {
             $token = $user->getEditToken();
@@ -143,7 +150,7 @@ class SpecialCourseEditor extends SpecialPage {
             $this->getContext()->getRequest(),
             array(
               'action'     => 'edit',
-              'title'      => $courseName . '/' . $value->sectionName,
+              'title'      => $courseName . '/' . $sectionName,
               'prependtext' => '{{deleteme}}',
               'token'      => $token,
               'notminor'   => true
@@ -156,7 +163,49 @@ class SpecialCourseEditor extends SpecialPage {
         } catch(UsageException $e){
           return $e;
         }
+        foreach ($chapters as $value) {
+          try {
+            $token = $user->getEditToken();
+            $api = new ApiMain(
+            new DerivativeRequest(
+            $this->getContext()->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $courseName . '/' . $sectionName . '/' . $value,
+              'prependtext' => '{{deleteme}}',
+              'token'      => $token,
+              'notminor'   => true
+            ),
+            true // treat this as a POST
+          ),
+          true // Enable write.
+        );
+        $api->execute();
+        } catch(UsageException $e){
+          return $e;
+        }
+        }
         }else {
+          foreach ($chapters as $value) {
+            try {
+              $token = $user->getEditToken();
+              $api = new ApiMain(
+              new DerivativeRequest(
+              $this->getContext()->getRequest(),
+              array(
+                'action'     => 'delete',
+                'title'      => $courseName . '/' . $sectionName . '/' . $value,
+                'token'      => $token
+              ),
+              true // treat this as a POST
+            ),
+            true // Enable write.
+          );
+          $api->execute();
+          } catch(UsageException $e){
+            return $e;
+          }
+          }
           try {
             $user = $this->getContext()->getUser();
             $token = $user->getEditToken();
@@ -165,7 +214,7 @@ class SpecialCourseEditor extends SpecialPage {
             $this->getContext()->getRequest(),
             array(
               'action'     => 'delete',
-              'title'      => $courseName . '/' . $value->sectionName,
+              'title'      => $courseName . '/' . $sectionName,
               'token'      => $token
             ),
             true // treat this as a POST
@@ -179,6 +228,7 @@ class SpecialCourseEditor extends SpecialPage {
         }
         break;
         case 'add':
+        $sectionName = $value->elementName;
         try {
           $user = $this->getContext()->getUser();
           $token = $user->getEditToken();
@@ -187,7 +237,7 @@ class SpecialCourseEditor extends SpecialPage {
           $this->getContext()->getRequest(),
           array(
             'action'     => 'edit',
-            'title'      => $courseName . '/' . $value->sectionName,
+            'title'      => $courseName . '/' . $sectionName,
             'text' => "",
             'token'      => $token,
             'notminor'   => true
@@ -237,6 +287,8 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($stack as $value) {
       switch ($value->action) {
         case 'rename':
+        $chapterName = $value->elementName;
+        $newChapterName = $value->newElementName;
         try {
           $user = $this->getContext()->getUser();
           $token = $user->getEditToken();
@@ -245,8 +297,8 @@ class SpecialCourseEditor extends SpecialPage {
           $this->getContext()->getRequest(),
           array(
             'action'     => 'move',
-            'from'      => $sectionName . '/' . $value->chapterName,
-            'to' => $sectionName . '/' . $value->newChapterName,
+            'from'      => $sectionName . '/' . $chapterName,
+            'to' => $sectionName . '/' . $newChapterName,
             'token'      => $token,
             'noredirect' => false,
             'movetalk' => true,
@@ -263,7 +315,8 @@ class SpecialCourseEditor extends SpecialPage {
     break;
     case 'delete':
     $user = $this->getContext()->getUser();
-    $title = Title::newFromText($sectionName . '/' . $value->chapterName, $defaultNamespace=NS_MAIN);
+    $chapterName = $value->elementName;
+    $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
     if(!$title->userCan('delete', $user, 'secure')){
       try {
         $token = $user->getEditToken();
@@ -272,7 +325,7 @@ class SpecialCourseEditor extends SpecialPage {
         $this->getContext()->getRequest(),
         array(
           'action'     => 'edit',
-          'title'      => $sectionName . '/' . $value->chapterName,
+          'title'      => $sectionName . '/' . $chapterName,
           'prependtext' => '{{deleteme}}',
           'token'      => $token,
           'notminor'   => true
@@ -294,7 +347,7 @@ class SpecialCourseEditor extends SpecialPage {
       $this->getContext()->getRequest(),
       array(
         'action'     => 'delete',
-        'title'      => $sectionName . '/' . $value->chapterName,
+        'title'      => $sectionName . '/' . $chapterName,
         'token'      => $token
       ),
       true // treat this as a POST
@@ -309,6 +362,7 @@ class SpecialCourseEditor extends SpecialPage {
 
     break;
     case 'add':
+    $chapterName = $value->elementName;
     try {
       $user = $this->getContext()->getUser();
       $token = $user->getEditToken();
@@ -317,7 +371,7 @@ class SpecialCourseEditor extends SpecialPage {
       $this->getContext()->getRequest(),
       array(
         'action'     => 'edit',
-        'title'      => $sectionName . '/' . $value->chapterName,
+        'title'      => $sectionName . '/' . $chapterName,
         'text' => "",
         'token'      => $token,
         'notminor'   => true
@@ -354,6 +408,27 @@ class SpecialCourseEditor extends SpecialPage {
     true // treat this as a POST
   ),
   true // Enable write.
+);
+$api->execute();
+} catch(UsageException $e){
+return $e;
+}
+
+try {
+  $user = $this->getContext()->getUser();
+  $token = $user->getEditToken();
+  list($course, $section) = explode("/", $sectionName);
+  $api = new ApiMain(
+  new DerivativeRequest(
+  $this->getContext()->getRequest(),
+  array(
+    'action'     => 'purge',
+    'titles'      => $course,
+    'forcerecursivelinkupdate' => true
+  ),
+  true // treat this as a POST
+),
+true // Enable write.
 );
 $api->execute();
 } catch(UsageException $e){

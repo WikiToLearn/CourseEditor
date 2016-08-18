@@ -30,6 +30,7 @@
     "ResourceModules": {
         "ext.courseEditor.section": {
            "scripts":[
+             "modules/commonFunctions.js",
              "modules/sectionEditor.js"
            ],
             "dependencies": [
@@ -44,11 +45,12 @@
                 "courseeditor-save-section",
                 "courseeditor-cancel",
                 "courseeditor-rename",
-                "courseeditor-edit-dialog-section"
+                "courseeditor-edit-dialog"
             ]
         },
         "ext.courseEditor.course": {
            "scripts":[
+             "modules/commonFunctions.js",
              "modules/courseEditor.js"
            ],
             "dependencies": [
@@ -63,7 +65,7 @@
                 "courseeditor-save-course",
                 "courseeditor-cancel",
                 "courseeditor-rename",
-                "courseeditor-edit-dialog-course"
+                "courseeditor-edit-dialog"
             ]
         }
     },

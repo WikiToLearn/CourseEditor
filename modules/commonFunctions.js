@@ -1,0 +1,272 @@
+/* Create a gloabal windowManager to open dialogs and append it to the body*/
+var windowManager = new OO.ui.WindowManager();
+$('body').append( windowManager.$element );
+
+/******** HELPER METHODS ********/
+
+/**
+ * Delete a element from the draggableWidget and add a item to the
+ * RecycleBin list.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var deleteElement = function(draggableWidget, elementName, editStack){
+  var elementToRemove = draggableWidget.getItemFromData(elementName);
+  draggableWidget.removeItems([elementToRemove]);
+  editStack.push({
+    action: 'delete',
+    elementName: elementName
+  });
+  createRecycleBinItem(draggableWidget, elementName, editStack);
+};
+
+/**
+ * Restore a element from the RecycleBin and remove its deletion
+ * from the editStack
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var restoreElement = function(draggableWidget, elementName, editStack){
+  createDragItem(draggableWidget, elementName, editStack);
+  editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
+};
+
+/**
+ * Add a element to the draggableWidget automatically if its name isn't
+ * in the RecycleBin list, otherwise open a MessageDialog and ask to the user
+ * if he/she prefer to restore the element or create a new one.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var addElement = function(draggableWidget, elementName, editStack){
+  if($.trim(elementName).length !== 0){
+    if(findIndexOfDeletedElement(editStack, elementName) === null){
+      createDragItem(draggableWidget, elementName, editStack);
+      editStack.push({
+        action: 'add',
+        elementName: elementName
+      });
+    }else {
+      var messageDialog = new OO.ui.MessageDialog();
+      windowManager.addWindows( [ messageDialog ] );
+      windowManager.openWindow( messageDialog, {
+        title: 'Ops...',
+        message: 'There\'s a deleted element with the same name, what do you want to do?',
+        actions: [
+          { action: 'reject', label: 'Cancel', flags: 'safe' },
+          { action: 'restore', label: 'Restore' },
+          {
+            action: 'confirm',
+            label: 'Create new',
+            flags: [ 'primary', 'constructive' ]
+          }
+        ]
+      } ).then( function ( opened ) {
+        opened.then( function ( closing, data ) {
+          if ( data && data.action === 'restore' ) {
+            restoreElement(draggableWidget, elementName, editStack);
+            $('button[id="' +  elementName + '"]').remove();
+          } else if(data && data.action === 'confirm') {
+            createDragItem(draggableWidget, elementName, editStack);
+            editStack.push({
+              action: 'add',
+              elementName: elementName
+            });
+          }
+        } );
+      } );
+    }
+  }
+};
+
+/**
+ * Rename a element
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var editElement = function(draggableWidget, elementName, editStack){
+  var dialog = new EditDialog(draggableWidget, elementName, editStack);
+  windowManager.addWindows( [ dialog ] );
+  windowManager.openWindow( dialog );
+};
+
+/******** UTIL METHODS ********/
+
+/**
+ * Find the index of a deleted element in the editStack
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var findIndexOfDeletedElement = function(editStack, elementName) {
+  for (var i = 0; i < editStack.length; i++) {
+    if (editStack[i]['action'] === 'delete' && editStack[i]['elementName'] === elementName) {
+      return i;
+    }
+  }
+  return null;
+};
+/**
+ * Create a drag item, its handlers on edit and remove icons and append it to
+ * to the draggableWidget.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var createDragItem = function(draggableWidget, elementName, editStack){
+  //Create item and icons
+  var dragItem = new DraggableHandledItemWidget( {
+    data: elementName,
+    icon: 'menu',
+    label: elementName
+  } );
+  var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+  var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+
+  //Append icons and add the item to draggableWidget
+  dragItem.$label.append(iconDelete, iconEdit);
+  draggableWidget.addItems([dragItem]);
+
+  //Create handlers
+  $(iconDelete).click(function(){
+    deleteElement(draggableWidget, $(this).parent().text(), editStack);
+  });
+  $(iconEdit).click(function(){
+    editElement(draggableWidget, $(this).parent().text(), editStack);
+  });
+};
+
+/**
+ * Create a button list group item, its handler on undo and append it to
+ * to the RecycleBin list group.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var createRecycleBinItem = function(draggableWidget, elementName, editStack){
+  //Create item and icon
+  var liButton = $('<button type="button" class="list-group-item" id="' + elementName +'" >&nbsp;&nbsp;' + elementName +'</button>');
+  var undoDeleteIcon = $('<i class="fa fa-undo undoDeleteIcon"></i>');
+
+  //Append icon and add the item to the list
+  liButton.prepend(undoDeleteIcon);
+  $('.list-group').append(liButton);
+
+  //Create handler
+  $(undoDeleteIcon).click(function(){
+    var elementToRestore = $(this).parent().attr('id');
+    $(this).parent().remove();
+    restoreElement(draggableWidget, elementToRestore, editStack);
+  });
+}
+
+/******** OO.UI OBJECTS ********/
+
+/****** Draggable Widget ******/
+
+/**
+* Draggable group widget containing drag/drop items
+*
+* @param {Object} [config] Configuration options
+*/
+function DraggableGroupWidget( config ) {
+  // Configuration initialization
+  config = config || {};
+
+  // Parent constructor
+  DraggableGroupWidget.parent.call( this, config );
+
+  // Mixin constructors
+  OO.ui.mixin.DraggableGroupElement.call( this, $.extend( {}, config, { $group: this.$element } ) );
+
+}
+
+/* Setup */
+OO.inheritClass( DraggableGroupWidget, OO.ui.Widget );
+OO.mixinClass( DraggableGroupWidget, OO.ui.mixin.DraggableGroupElement );
+
+/**
+* Drag/drop items with custom handle
+*
+* @param {Object} [config] Configuration options
+*/
+function DraggableHandledItemWidget( config ) {
+  // Configuration initialization
+  config = config || {};
+
+  // Parent constructor
+  DraggableHandledItemWidget.parent.call( this, config );
+
+  // Mixin constructors
+  OO.ui.mixin.DraggableElement.call( this, $.extend( { $handle: this.$icon }, config ) );
+}
+
+/* Setup */
+OO.inheritClass( DraggableHandledItemWidget, OO.ui.DecoratedOptionWidget );
+OO.mixinClass( DraggableHandledItemWidget, OO.ui.mixin.DraggableElement );
+
+/****** Edit Dialog ******/
+
+/* Create a dialog */
+function EditDialog(draggableWidget, elementName, editStack, config ) {
+    EditDialog.parent.call( this, config );
+    this.draggableWidget = draggableWidget;
+    this.elementName = elementName;
+    this.editStack = editStack;
+    this.textInputWidget = new OO.ui.TextInputWidget($.extend( { validate: 'non-empty' }, config ) );
+    this.textInputWidget.setValue(elementName);
+}
+
+/* Inheritance */
+OO.inheritClass( EditDialog, OO.ui.ProcessDialog );
+
+/* Static Properties */
+EditDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog' );
+EditDialog.static.actions = [
+    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename' ), flags: 'primary' },
+    { label: OO.ui.deferMsg( 'courseeditor-cancel' ), flags: 'safe' }
+];
+
+/* Initialize the dialog elements */
+EditDialog.prototype.initialize = function () {
+    EditDialog.parent.prototype.initialize.apply( this, arguments );
+    this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+    this.content.$element.append(this.textInputWidget.$element );
+    this.$body.append( this.content.$element );
+};
+
+/* Define actions */
+EditDialog.prototype.getActionProcess = function ( action ) {
+    var dialog = this;
+    if ( action === 'save' ) {
+        return new OO.ui.Process( function () {
+            var newElementName = dialog.textInputWidget.getValue();
+            var items = dialog.draggableWidget.getItems();
+            items.filter(function(element) {
+              if(element.data === dialog.elementName){
+                element.setData(newElementName);
+                element.setLabel(newElementName);
+                var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+                var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+                element.$label.append(iconDelete, iconEdit);
+                $(iconDelete).click(function(){
+                  deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                });
+                $(iconEdit).click(function(){
+                  editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                });
+                dialog.editStack.push({
+                  action: 'rename',
+                  elementName: dialog.elementName,
+                  newElementName: newElementName
+                })
+              }
+            });
+            dialog.close( { action: action } );
+        } );
+    }
+    return EditDialog.parent.prototype.getActionProcess.call( this, action );
+};
