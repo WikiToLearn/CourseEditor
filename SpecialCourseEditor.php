@@ -42,6 +42,10 @@ class SpecialCourseEditor extends SpecialPage {
         $newSections = $request->getVal('newSections');
         $this->saveCourse($courseName, $originalSections, $editStack, $newSections);
         return;
+      case 'movecourse':
+        $courseName = $request->getVal('pagename');
+        $this->moveCourse($courseName);
+        return;
       default:
         $this->createNewCourse();
         return;
@@ -253,7 +257,7 @@ class SpecialCourseEditor extends SpecialPage {
       break;
       }
     }
-    $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAME}}}} Modifica]\r\n";
+    $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\r\n";
     $newSectionsArray = json_decode($newSections);
     foreach ($newSectionsArray as $value) {
       $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
@@ -456,6 +460,35 @@ return $e;
     $template->set('section', $sectionName);
     $template->set('chapters', $this->chaptersList);
     $out->addTemplate( $template );
+  }
+
+  private function moveCourse($courseName){
+    $regex = "/\/(.*)/";
+    preg_match($regex, $courseName, $matches);
+    $courseNameWithoutNamespace = $matches[1];
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action'     => 'move',
+            'from'      => $courseName,
+            'to' => MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace,
+            'token'      => $token,
+            'noredirect' => true,
+            'movetalk' => true,
+            'movesubpages'=> true
+          ),
+          true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
   }
 
   private function createNewCourse() {
