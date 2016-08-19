@@ -492,11 +492,12 @@ return $e;
         $user = $context->getUser();
         $token = $user->getEditToken();
         $selectedNamespace = $formData['namespace'];
+        $randomCourseId = SpecialCourseEditor::generateRandomCourseId();
         $pageTitle = MWNamespace::getCanonicalName($selectedNamespace) . ':';
         if($selectedNamespace == NS_USER){
-          $pageTitle .=  $user->getName() . '/' . $formData['name'];
+          $pageTitle .=  $user->getName() . '/' . $formData['name'] . '_' . $randomCourseId;
         }else{
-          $pageTitle .= $formData['name'];
+          $pageTitle .= $formData['name'] . '_' . $randomCourseId;
         }
 
         $api = new ApiMain(
@@ -521,5 +522,23 @@ return $e;
   return true;
 }
 return wfMessage( 'courseeditor-validate-form' );
+}
+
+public static function generateRandomCourseId(){
+  $randomCourseId = '';
+  $switchToChar = true;
+  $random = 0;
+  for ($i=0; $i < 6; $i++) {
+    $random = mt_rand(48, 57);
+    if($switchToChar){
+      $random += 49;
+      $randomCourseId .= chr($random);
+      $switchToChar = false;
+    }else {
+      $randomCourseId .=  chr($random);
+      $switchToChar = true;
+    }
+  }
+  return $randomCourseId;
 }
 }
