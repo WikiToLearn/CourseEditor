@@ -469,7 +469,16 @@ return $e;
       'name' => array(
         'class' => 'HTMLTextField',
         'label' => wfMessage( 'courseeditor-set-course' )
-      )
+      ),
+      'namespace' => array(
+				'class' => 'HTMLRadioField',
+				'label' => wfMessage('courseeditor-radiobutton-namespace'),
+				'options' => array(
+					wfMessage('courseeditor-radiobutton-namespace-private')->text() => 'User:',
+					wfMessage('courseeditor-radiobutton-namespace-public')->text() => 'Course:'
+				),
+				'default' => 'User:',
+			)
     );
     $form = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() );
     $form->setSubmitCallback( array( 'SpecialCourseEditor', 'validateForm' ) );

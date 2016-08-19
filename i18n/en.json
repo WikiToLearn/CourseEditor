@@ -11,5 +11,8 @@
   "courseeditor-organize-sections" : "You can organize, add and delete sections",
   "courseeditor-set-topic" : "Insert the topic",
   "courseeditor-set-course" : "Insert the name of the course",
-  "courseeditor-validate-form" : "Please, insert a topic and a name"
+  "courseeditor-validate-form" : "Please, insert a topic and a name",
+  "courseeditor-radiobutton-namespace" : "Do you want to creatre a private course in your personal page or a public one?",
+  "courseeditor-radiobutton-namespace-private" :  "Private",
+  "courseeditor-radiobutton-namespace-public" : "Public"
 }
