@@ -148,7 +148,7 @@ var createDragItem = function(draggableWidget, elementName, editStack){
  */
 var createRecycleBinItem = function(draggableWidget, elementName, editStack){
   //Create item and icon
-  var liButton = $('<button type="button" class="list-group-item" id="' + elementName +'" >&nbsp;&nbsp;' + elementName +'</button>');
+  var liButton = $('<li type="button" class="list-group-item" id="' + elementName +'" >&nbsp;&nbsp;' + elementName +'</li>');
   var undoDeleteIcon = $('<i class="fa fa-undo undoDeleteIcon"></i>');
 
   //Append icon and add the item to the list

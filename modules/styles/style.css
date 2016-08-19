@@ -18,7 +18,7 @@
 
 .list-group-item .undoDeleteIcon{
   display: none;
-  pointer-events: auto;
+  cursor: pointer;
 }
 
 .list-group-item:hover .undoDeleteIcon{
