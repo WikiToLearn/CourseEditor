@@ -31,6 +31,7 @@ var deleteElement = function(draggableWidget, elementName, editStack){
 var restoreElement = function(draggableWidget, elementName, editStack){
   createDragItem(draggableWidget, elementName, editStack);
   editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
+  $('li[id="' +  elementName + '"]').remove();
 };
 
 /**
@@ -68,7 +69,6 @@ var addElement = function(draggableWidget, elementName, editStack){
         opened.then( function ( closing, data ) {
           if ( data && data.action === 'restore' ) {
             restoreElement(draggableWidget, elementName, editStack);
-            $('button[id="' +  elementName + '"]').remove();
           } else if(data && data.action === 'confirm') {
             createDragItem(draggableWidget, elementName, editStack);
             editStack.push({
@@ -158,7 +158,6 @@ var createRecycleBinItem = function(draggableWidget, elementName, editStack){
   //Create handler
   $(undoDeleteIcon).click(function(){
     var elementToRestore = $(this).parent().attr('id');
-    $(this).parent().remove();
     restoreElement(draggableWidget, elementToRestore, editStack);
   });
 }
