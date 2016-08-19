@@ -474,10 +474,10 @@ return $e;
 				'class' => 'HTMLRadioField',
 				'label' => wfMessage('courseeditor-radiobutton-namespace'),
 				'options' => array(
-					wfMessage('courseeditor-radiobutton-namespace-private')->text() => 'User:',
-					wfMessage('courseeditor-radiobutton-namespace-public')->text() => 'Course:'
+					wfMessage('courseeditor-radiobutton-namespace-private')->text() => NS_USER,
+					wfMessage('courseeditor-radiobutton-namespace-public')->text() => NS_COURSE
 				),
-				'default' => 'User:',
+				'default' => NS_USER,
 			)
     );
     $form = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() );
@@ -486,12 +486,19 @@ return $e;
   }
 
   public static function validateForm($formData){
+    print_r($formData);
     if($formData['topic'] != null || $formData['name'] != null){
       $context = new RequestContext();
       try {
         $user = $context->getUser();
         $token = $user->getEditToken();
-        $pageTitle = MWNamespace::getCanonicalName( NS_USER ) . ':' . $user->getName() . '/' . $formData['name'];
+        $selectedNamespace = $formData['namespace'];
+        $pageTitle = MWNamespace::getCanonicalName($selectedNamespace) . ':';
+        if($selectedNamespace == NS_USER){
+          $pageTitle .=  $user->getName() . '/' . $formData['name'];
+        }else{
+          $pageTitle .= $formData['name'];
+        }
 
         $api = new ApiMain(
         new DerivativeRequest(
