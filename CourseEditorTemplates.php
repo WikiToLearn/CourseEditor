@@ -27,7 +27,7 @@ class SectionEditorTemplate extends QuickTemplate {
       <div id="undoStack">
         <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;Recycle bin</div>
+  <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo wfMessage( 'courseeditor-recycle-bin' ); ?></div>
   <!-- List group -->
   <div class="list-group">
   </div>
