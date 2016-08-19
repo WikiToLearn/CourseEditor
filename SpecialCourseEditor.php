@@ -486,7 +486,6 @@ return $e;
   }
 
   public static function validateForm($formData){
-    print_r($formData);
     if($formData['topic'] != null || $formData['name'] != null){
       $context = new RequestContext();
       try {
