@@ -14,5 +14,11 @@
   "courseeditor-validate-form" : "Please, insert a topic and a name",
   "courseeditor-radiobutton-namespace" : "Do you want to creatre a private course in your personal page or a public one?",
   "courseeditor-radiobutton-namespace-private" :  "Private",
-  "courseeditor-radiobutton-namespace-public" : "Public"
+  "courseeditor-radiobutton-namespace-public" : "Public",
+  "courseeditor-message-dialog-title" : "Oops...",
+  "courseeditor-message-dialog-message" : "There's an element in the recycle bin with the same name, what do you want to do?",
+  "courseeditor-message-dialog-cancel" : "Cancel",
+  "courseeditor-message-dialog-restore" : "Restore",
+  "courseeditor-message-dialog-create-new" : "Create new",
+  "courseeditor-recycle-bin" : "Recycle bin"
 }

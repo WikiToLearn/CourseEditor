@@ -53,14 +53,14 @@ var addElement = function(draggableWidget, elementName, editStack){
       var messageDialog = new OO.ui.MessageDialog();
       windowManager.addWindows( [ messageDialog ] );
       windowManager.openWindow( messageDialog, {
-        title: 'Ops...',
-        message: 'There\'s a deleted element with the same name, what do you want to do?',
+        title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
+        message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
         actions: [
-          { action: 'reject', label: 'Cancel', flags: 'safe' },
-          { action: 'restore', label: 'Restore' },
+          { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
+          { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
           {
             action: 'confirm',
-            label: 'Create new',
+            label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
             flags: [ 'primary', 'constructive' ]
           }
         ]
