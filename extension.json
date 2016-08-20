@@ -46,7 +46,12 @@
                 "courseeditor-save-section",
                 "courseeditor-cancel",
                 "courseeditor-rename",
-                "courseeditor-edit-dialog"
+                "courseeditor-edit-dialog",
+                "courseeditor-message-dialog-title",
+                "courseeditor-message-dialog-message",
+                "courseeditor-message-dialog-cancel",
+                "courseeditor-message-dialog-restore",
+                "courseeditor-message-dialog-create-new"
             ]
         },
         "ext.courseEditor.course": {
@@ -66,7 +71,12 @@
                 "courseeditor-save-course",
                 "courseeditor-cancel",
                 "courseeditor-rename",
-                "courseeditor-edit-dialog"
+                "courseeditor-edit-dialog",
+                "courseeditor-message-dialog-title",
+                "courseeditor-message-dialog-message",
+                "courseeditor-message-dialog-cancel",
+                "courseeditor-message-dialog-restore",
+                "courseeditor-message-dialog-create-new"
             ]
         }
     },

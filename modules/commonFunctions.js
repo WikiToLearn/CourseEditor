@@ -31,6 +31,7 @@ var deleteElement = function(draggableWidget, elementName, editStack){
 var restoreElement = function(draggableWidget, elementName, editStack){
   createDragItem(draggableWidget, elementName, editStack);
   editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
+  $('li[id="' +  elementName + '"]').remove();
 };
 
 /**
@@ -53,14 +54,14 @@ var addElement = function(draggableWidget, elementName, editStack){
       var messageDialog = new OO.ui.MessageDialog();
       windowManager.addWindows( [ messageDialog ] );
       windowManager.openWindow( messageDialog, {
-        title: 'Ops...',
-        message: 'There\'s a deleted element with the same name, what do you want to do?',
+        title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
+        message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
         actions: [
-          { action: 'reject', label: 'Cancel', flags: 'safe' },
-          { action: 'restore', label: 'Restore' },
+          { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
+          { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
           {
             action: 'confirm',
-            label: 'Create new',
+            label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
             flags: [ 'primary', 'constructive' ]
           }
         ]
@@ -68,7 +69,6 @@ var addElement = function(draggableWidget, elementName, editStack){
         opened.then( function ( closing, data ) {
           if ( data && data.action === 'restore' ) {
             restoreElement(draggableWidget, elementName, editStack);
-            $('button[id="' +  elementName + '"]').remove();
           } else if(data && data.action === 'confirm') {
             createDragItem(draggableWidget, elementName, editStack);
             editStack.push({
@@ -158,7 +158,6 @@ var createRecycleBinItem = function(draggableWidget, elementName, editStack){
   //Create handler
   $(undoDeleteIcon).click(function(){
     var elementToRestore = $(this).parent().attr('id');
-    $(this).parent().remove();
     restoreElement(draggableWidget, elementToRestore, editStack);
   });
 }

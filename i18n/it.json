@@ -14,5 +14,11 @@
   "courseeditor-validate-form" : "Inserisci l'argomento e il corso!",
   "courseeditor-radiobutton-namespace" : "Vuoi creare un corso privato nella tua pagina personale o uno pubblico?",
   "courseeditor-radiobutton-namespace-private" :  "Privato",
-  "courseeditor-radiobutton-namespace-public" : "Pubblico"
+  "courseeditor-radiobutton-namespace-public" : "Pubblico",
+  "courseeditor-message-dialog-title" : "Ops...",
+  "courseeditor-message-dialog-message" : "C'è un elemento nel cestino con lo stesso nome, cosa vuoi fare?",
+  "courseeditor-message-dialog-cancel" : "Indietro",
+  "courseeditor-message-dialog-restore" : "Ripristina",
+  "courseeditor-message-dialog-create-new" : "Crea nuovo",
+  "courseeditor-recycle-bin" : "Cestino"
 }
