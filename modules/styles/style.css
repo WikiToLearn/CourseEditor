@@ -31,3 +31,7 @@
 body > .oo-ui-windowManager-modal{
   font-size: 1em; !important
 }
+
+#saveSection > .oo-ui-buttonElement-button, .oo-ui-widget.oo-ui-widget-enabled.oo-ui-labelElement.oo-ui-optionWidget.oo-ui-iconElement.oo-ui-decoratedOptionWidget.oo-ui-draggableElement > .oo-ui-labelElement-label {
+  white-space: pre-wrap;
+}
