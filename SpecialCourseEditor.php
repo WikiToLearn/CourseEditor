@@ -78,212 +78,67 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($stack as $value) {
       switch ($value->action) {
         case 'rename':
-        $sectionName = $value->elementName;
-        $newSectionName = $value->newElementName;
-        $title = Title::newFromText( $courseName . "/" . $sectionName, $defaultNamespace=NS_MAIN );
-        $page = WikiPage::factory( $title );
-        $content = $page->getContent( Revision::RAW );
-        $text = ContentHandler::getContentText( $content );
-        $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-        preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-        $chapters = $matches[2];
-        $newSectionText = "";
-        foreach ($chapters as $value) {
-          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $value ."|". $value ."]]\r\n";
-        }
-        try {
-          $user = $this->getContext()->getUser();
-          $token = $user->getEditToken();
-          $api = new ApiMain(
-          new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action'     => 'edit',
-            'title'      => $courseName . "/" . $sectionName,
-            'text' => $newSectionText,
-            'token'      => $token,
-            'notminor'   => true
-          ),
-          true // treat this as a POST
-        ),
-        true // Enable write.
-      );
-      $api->execute();
-      } catch(UsageException $e){
-        return $e;
-      }
-       try {
-          $user = $this->getContext()->getUser();
-          $token = $user->getEditToken();
-          $api = new ApiMain(
-          new DerivativeRequest(
-            $this->getContext()->getRequest(),
-            array(
-              'action'     => 'move',
-              'from'      => $courseName . '/' . $sectionName,
-              'to' => $courseName . '/' . $newSectionName,
-              'token'      => $token,
-              'noredirect' => false,
-              'movetalk' => true,
-              'movesubpages'=> true
-            ),
-            true // treat this as a POST
-          ),
-          true // Enable write.
-          );
-        $api->execute();
-        } catch(UsageException $e){
-          return $e;
-        }
+          $sectionName = $value->elementName;
+          $newSectionName = $value->newElementName;
+          $title = Title::newFromText( $courseName . "/" . $sectionName, $defaultNamespace=NS_MAIN );
+          $page = WikiPage::factory( $title );
+          $content = $page->getContent( Revision::RAW );
+          $text = ContentHandler::getContentText( $content );
+          $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
+          preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+          $chapters = $matches[2];
+          $newSectionText = "";
+          foreach ($chapters as $value) {
+            $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $value ."|". $value ."]]\r\n";
+          }
+          $pageTitle = $courseName . "/" . $sectionName;
+          $newPageTitle = $courseName . '/' . $newSectionName;
+          $this->editWrapper($pageTitle, $newSectionText, null, null);
+          $this->moveWrapper($pageTitle, $newPageTitle, false, true);
         break;
         case 'delete':
-        $user = $this->getContext()->getUser();
-        $sectionName = $value->elementName;
-        $title = Title::newFromText($courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN);
-        $page = WikiPage::factory( $title );
-        $content = $page->getContent( Revision::RAW );
-        $text = ContentHandler::getContentText( $content );
-        $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-        preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-        $chapters = $matches[2];
-        if(!$title->userCan('delete', $user, 'secure')){
-          try {
-            $token = $user->getEditToken();
-            $api = new ApiMain(
-            new DerivativeRequest(
-            $this->getContext()->getRequest(),
-            array(
-              'action'     => 'edit',
-              'title'      => $courseName . '/' . $sectionName,
-              'prependtext' => '{{deleteme}}',
-              'token'      => $token,
-              'notminor'   => true
-            ),
-            true // treat this as a POST
-          ),
-          true // Enable write.
-        );
-        $api->execute();
-        } catch(UsageException $e){
-          return $e;
-        }
-        foreach ($chapters as $value) {
-          try {
-            $token = $user->getEditToken();
-            $api = new ApiMain(
-            new DerivativeRequest(
-            $this->getContext()->getRequest(),
-            array(
-              'action'     => 'edit',
-              'title'      => $courseName . '/' . $sectionName . '/' . $value,
-              'prependtext' => '{{deleteme}}',
-              'token'      => $token,
-              'notminor'   => true
-            ),
-            true // treat this as a POST
-          ),
-          true // Enable write.
-        );
-        $api->execute();
-        } catch(UsageException $e){
-          return $e;
-        }
-        }
-        }else {
-          foreach ($chapters as $value) {
-            try {
-              $token = $user->getEditToken();
-              $api = new ApiMain(
-              new DerivativeRequest(
-              $this->getContext()->getRequest(),
-              array(
-                'action'     => 'delete',
-                'title'      => $courseName . '/' . $sectionName . '/' . $value,
-                'token'      => $token
-              ),
-              true // treat this as a POST
-            ),
-            true // Enable write.
-          );
-          $api->execute();
-          } catch(UsageException $e){
-            return $e;
+          $user = $this->getContext()->getUser();
+          $sectionName = $value->elementName;
+          $title = Title::newFromText($courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN);
+          $page = WikiPage::factory( $title );
+          $content = $page->getContent( Revision::RAW );
+          $text = ContentHandler::getContentText( $content );
+          $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
+          preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+          $chapters = $matches[2];
+          if(!$title->userCan('delete', $user, 'secure')){
+            $pageTitle = $courseName . '/' . $sectionName;
+            $prependText = '{{deleteme}}';
+            $this->editWrapper($pageTitle, null, $prependText, null);
+            foreach ($chapters as $value) {
+              $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
+              $prependText = '{{deleteme}}';
+              $this->editWrapper($pageTitle, null, $prependText, null);
+            }
+          }else {
+            foreach ($chapters as $value) {
+              $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
+              $this->deleteWrapper($pageTitle);
+            }
+            $pageTitle = $courseName . '/' . $sectionName;
+            $this->deleteWrapper($pageTitle);
           }
-          }
-          try {
-            $user = $this->getContext()->getUser();
-            $token = $user->getEditToken();
-            $api = new ApiMain(
-            new DerivativeRequest(
-            $this->getContext()->getRequest(),
-            array(
-              'action'     => 'delete',
-              'title'      => $courseName . '/' . $sectionName,
-              'token'      => $token
-            ),
-            true // treat this as a POST
-            ),
-            true // Enable write.
-            );
-            $api->execute();
-          } catch(UsageException $e){
-            return $e;
-          }
-        }
         break;
         case 'add':
-        $sectionName = $value->elementName;
-        try {
-          $user = $this->getContext()->getUser();
-          $token = $user->getEditToken();
-          $api = new ApiMain(
-          new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action'     => 'edit',
-            'title'      => $courseName . '/' . $sectionName,
-            'text' => "",
-            'token'      => $token,
-            'notminor'   => true
-          ),
-          true // treat this as a POST
-        ),
-        true // Enable write.
-      );
-      $api->execute();
-      } catch(UsageException $e){
-      return $e;
-      }
-      break;
+          $sectionName = $value->elementName;
+          $pageTitle = $courseName . '/' . $sectionName;
+          $text =  "";
+          $this->editWrapper($pageTitle, $text, null, null);
+        break;
       }
     }
+    //FIXME: Category with topic's course
     $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\r\n";
     $newSectionsArray = json_decode($newSections);
     foreach ($newSectionsArray as $value) {
       $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
     }
-    //FIXME: Category with the topic must be added again!!!
-    try {
-      $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
-      $api = new ApiMain(
-      new DerivativeRequest(
-      $this->getContext()->getRequest(),
-      array(
-        'action'     => 'edit',
-        'title'      => $courseName,
-        'text' => $newCourseText,
-        'token'      => $token,
-        'notminor'   => true
-      ),
-      true // treat this as a POST
-    ),
-    true // Enable write.
-    );
-    $api->execute();
-    } catch(UsageException $e){
-    return $e;
-    }
+    $this->editWrapper($courseName, $newCourseText, null, null);
   }
 
   private function saveSection($sectionName, $originalChapters, $editStack, $newChapters){
@@ -292,154 +147,42 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($stack as $value) {
       switch ($value->action) {
         case 'rename':
-        $chapterName = $value->elementName;
-        $newChapterName = $value->newElementName;
-        try {
+          $chapterName = $value->elementName;
+          $newChapterName = $value->newElementName;
+          $from = $sectionName . '/' . $chapterName;
+          $to = $sectionName . '/' . $newChapterName;
+          $this->moveWrapper($from, $to, false, true);
+        break;
+        case 'delete':
           $user = $this->getContext()->getUser();
-          $token = $user->getEditToken();
-          $api = new ApiMain(
-          new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action'     => 'move',
-            'from'      => $sectionName . '/' . $chapterName,
-            'to' => $sectionName . '/' . $newChapterName,
-            'token'      => $token,
-            'noredirect' => false,
-            'movetalk' => true,
-            'movesubpages'=> true
-          ),
-          true // treat this as a POST
-        ),
-        true // Enable write.
-      );
-      $api->execute();
-    } catch(UsageException $e){
-      return $e;
+          $chapterName = $value->elementName;
+          $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
+          if(!$title->userCan('delete', $user, 'secure')){
+            $pageTitle = $sectionName . '/' . $chapterName;
+            $prependText = '{{deleteme}}';
+            $this->editWrapper($pageTitle, null, $prependText, null);
+          }else {
+            $pageTitle = $sectionName . '/' . $chapterName;
+            $this->deleteWrapper($pageTitle);
+          }
+        break;
+        case 'add':
+          $chapterName = $value->elementName;
+          $pageTitle = $sectionName . '/' . $chapterName;
+          $text =  "";
+          $this->editWrapper($pageTitle, $text, null, null);
+        break;
+      }
     }
-    break;
-    case 'delete':
-    $user = $this->getContext()->getUser();
-    $chapterName = $value->elementName;
-    $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
-    if(!$title->userCan('delete', $user, 'secure')){
-      try {
-        $token = $user->getEditToken();
-        $api = new ApiMain(
-        new DerivativeRequest(
-        $this->getContext()->getRequest(),
-        array(
-          'action'     => 'edit',
-          'title'      => $sectionName . '/' . $chapterName,
-          'prependtext' => '{{deleteme}}',
-          'token'      => $token,
-          'notminor'   => true
-        ),
-        true // treat this as a POST
-      ),
-      true // Enable write.
-    );
-    $api->execute();
-    } catch(UsageException $e){
-      return $e;
+    $newSectionText = "";
+    $newChaptersArray = json_decode($newChapters);
+    foreach ($newChaptersArray as $value) {
+      $newSectionText .= "* [[" . $sectionName . "/" . $value ."|". $value ."]]\r\n";
     }
-  }else {
-    try {
-      $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
-      $api = new ApiMain(
-      new DerivativeRequest(
-      $this->getContext()->getRequest(),
-      array(
-        'action'     => 'delete',
-        'title'      => $sectionName . '/' . $chapterName,
-        'token'      => $token
-      ),
-      true // treat this as a POST
-      ),
-      true // Enable write.
-      );
-      $api->execute();
-    } catch(UsageException $e){
-      return $e;
-    }
+    $this->editWrapper($sectionName, $newSectionText);
+    list($course, $section) = explode("/", $sectionName);
+    $this->purgeWrapper($course);
   }
-
-    break;
-    case 'add':
-    $chapterName = $value->elementName;
-    try {
-      $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
-      $api = new ApiMain(
-      new DerivativeRequest(
-      $this->getContext()->getRequest(),
-      array(
-        'action'     => 'edit',
-        'title'      => $sectionName . '/' . $chapterName,
-        'text' => "",
-        'token'      => $token,
-        'notminor'   => true
-      ),
-      true // treat this as a POST
-    ),
-    true // Enable write.
-  );
-  $api->execute();
-  } catch(UsageException $e){
-  return $e;
-  }
-  break;
-  }
-}
-  $newSectionText = "";
-  $newChaptersArray = json_decode($newChapters);
-  foreach ($newChaptersArray as $value) {
-    $newSectionText .= "* [[" . $sectionName . "/" . $value ."|". $value ."]]\r\n";
-  }
-  try {
-    $user = $this->getContext()->getUser();
-    $token = $user->getEditToken();
-    $api = new ApiMain(
-    new DerivativeRequest(
-    $this->getContext()->getRequest(),
-    array(
-      'action'     => 'edit',
-      'title'      => $sectionName,
-      'text' => $newSectionText,
-      'token'      => $token,
-      'notminor'   => true
-    ),
-    true // treat this as a POST
-  ),
-  true // Enable write.
-);
-$api->execute();
-} catch(UsageException $e){
-return $e;
-}
-
-try {
-  $user = $this->getContext()->getUser();
-  $token = $user->getEditToken();
-  list($course, $section) = explode("/", $sectionName);
-  $api = new ApiMain(
-  new DerivativeRequest(
-  $this->getContext()->getRequest(),
-  array(
-    'action'     => 'purge',
-    'titles'      => $course,
-    'forcerecursivelinkupdate' => true
-  ),
-  true // treat this as a POST
-),
-true // Enable write.
-);
-$api->execute();
-} catch(UsageException $e){
-return $e;
-}
-}
 
   private function editSection($sectionName){
     $out = $this->getOutput();
@@ -467,30 +210,8 @@ return $e;
     $regex = "/\/(.*)/";
     preg_match($regex, $courseName, $matches);
     $courseNameWithoutNamespace = $matches[1];
-    print_r($courseNameWithoutNamespace);
-    try {
-      $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
-      $api = new ApiMain(
-        new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action'     => 'move',
-            'from'      => $courseName,
-            'to' => MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace,
-            'token'      => $token,
-            'noredirect' => true,
-            'movetalk' => true,
-            'movesubpages'=> true
-          ),
-          true // treat this as a POST
-        ),
-        true // Enable write.
-      );
-      $api->execute();
-    } catch(UsageException $e){
-      return $e;
-    }
+    $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
+    $this->moveWrapper($courseName, $to, true, true);
   }
 
   private function createNewCourse() {
@@ -543,46 +264,139 @@ return $e;
         }else{
           $pageTitle .= $formData['name'] . '_' . $randomCourseId;
         }
-
         $api = new ApiMain(
-        new DerivativeRequest(
-        $context->getRequest(),
-        array(
-          'action'     => 'edit',
-          'title'      => $pageTitle,
-          'appendtext' => "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\n\n[[Category:".$formData['topic']."]]",
-          'token'      => $token,
-          'notminor'   => true
-        ),
-        true // treat this as a POST
-      ),
-      true // Enable write.
-    );
-    $api->execute();
-
-  } catch(UsageException $e){
-    return $e;
+          new DerivativeRequest(
+          $context->getRequest(),
+          array(
+            'action'     => 'edit',
+            'title'      => $pageTitle,
+            'appendtext' => "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\n\n[[Category:".$formData['topic']."]]",
+            'token'      => $token,
+            'notminor'   => true
+          ),
+          true // treat this as a POST
+          ),
+          true // Enable write.
+        );
+        $api->execute();
+      } catch(UsageException $e){
+        return $e;
+      }
+      return true;
+    }
+    return wfMessage( 'courseeditor-validate-form' );
   }
-  return true;
-}
-return wfMessage( 'courseeditor-validate-form' );
-}
 
-public static function generateRandomCourseId(){
-  $randomCourseId = '';
-  $switchToChar = true;
-  $random = 0;
-  for ($i=0; $i < 6; $i++) {
-    $random = mt_rand(48, 57);
-    if($switchToChar){
-      $random += 49;
-      $randomCourseId .= chr($random);
-      $switchToChar = false;
-    }else {
-      $randomCourseId .=  chr($random);
-      $switchToChar = true;
+/** HELPERS AND UTILITIES METHODS **/
+  private function deleteWrapper($title){
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action'     => 'delete',
+            'title'      => $title,
+            'token'      => $token
+          ),
+          true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
     }
   }
-  return $randomCourseId;
-}
+  private function purgeWrapper($titles){
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+            array(
+              'action'     => 'purge',
+              'titles'      => $titles,
+              'forcerecursivelinkupdate' => true
+            ),
+            true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
+  }
+  private function editWrapper($title, $text, $textToPrepend, $textToAppend){
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action'     => 'edit',
+            'title'      => $title,
+            'text' => $text,
+            'prependtext' => $textToPrepend, //automatically override text
+            'appendtext' => $textToAppend, //automatically override text
+            'token'      => $token,
+            'notminor'   => true
+          ),
+          true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
+  }
+
+  private function moveWrapper($from, $to, $redirect, $subpages){
+    try {
+      $user = $this->getContext()->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action'     => 'move',
+            'from'      => $from,
+            'to' => $to,
+            'token'      => $token,
+            'noredirect' => $redirect,
+            'movetalk' => true,
+            'movesubpages'=> $subpages
+          ),
+          true // treat this as a POST
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+    } catch(UsageException $e){
+      return $e;
+    }
+  }
+
+  public static function generateRandomCourseId(){
+    $randomCourseId = '';
+    $switchToChar = true;
+    $random = 0;
+    for ($i=0; $i < 6; $i++) {
+      $random = mt_rand(48, 57);
+      if($switchToChar){
+        $random += 49;
+        $randomCourseId .= chr($random);
+        $switchToChar = false;
+      }else {
+        $randomCourseId .=  chr($random);
+        $switchToChar = true;
+      }
+    }
+    return $randomCourseId;
+  }
 }
