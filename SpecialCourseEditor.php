@@ -262,6 +262,7 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($newSectionsArray as $value) {
       $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
     }
+    //FIXME: Category with the topic must be added again!!!
     try {
       $user = $this->getContext()->getUser();
       $token = $user->getEditToken();
@@ -466,6 +467,7 @@ return $e;
     $regex = "/\/(.*)/";
     preg_match($regex, $courseName, $matches);
     $courseNameWithoutNamespace = $matches[1];
+    print_r($courseNameWithoutNamespace);
     try {
       $user = $this->getContext()->getUser();
       $token = $user->getEditToken();
@@ -494,6 +496,7 @@ return $e;
   private function createNewCourse() {
     $out = $this->getOutput();
     $out->enableOOUI();
+    $out->addModules('ext.courseEditor.create');
     $formDescriptor = array(
       'topic' => array(
         'class' => 'HTMLTextField',
@@ -502,6 +505,10 @@ return $e;
       'name' => array(
         'class' => 'HTMLTextField',
         'label' => wfMessage( 'courseeditor-set-course' )
+      ),
+      'keyword' => array(
+        'class' => 'HTMLTextField',
+        'label' => 'Keyword'
       ),
       'namespace' => array(
 				'class' => 'HTMLRadioField',
@@ -525,7 +532,11 @@ return $e;
         $user = $context->getUser();
         $token = $user->getEditToken();
         $selectedNamespace = $formData['namespace'];
-        $randomCourseId = SpecialCourseEditor::generateRandomCourseId();
+        if($formData['keyword'] == null){
+          $randomCourseId = SpecialCourseEditor::generateRandomCourseId();
+        }else {
+          $randomCourseId = $formData['keyword'];
+        }
         $pageTitle = MWNamespace::getCanonicalName($selectedNamespace) . ':';
         if($selectedNamespace == NS_USER){
           $pageTitle .=  $user->getName() . '/' . $formData['name'] . '_' . $randomCourseId;
@@ -539,7 +550,7 @@ return $e;
         array(
           'action'     => 'edit',
           'title'      => $pageTitle,
-          'appendtext' => "{{Course|}}\n\n[[Category:".$formData['topic']."]]",
+          'appendtext' => "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\n\n[[Category:".$formData['topic']."]]",
           'token'      => $token,
           'notminor'   => true
         ),
