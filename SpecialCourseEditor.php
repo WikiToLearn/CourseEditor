@@ -81,13 +81,14 @@ class SpecialCourseEditor extends SpecialPage {
           }
           $pageTitle = $courseName . "/" . $sectionName;
           $newPageTitle = $courseName . '/' . $newSectionName;
-          $this->editWrapper($pageTitle, $newSectionText, null, null);
           $this->moveWrapper($pageTitle, $newPageTitle, false, true);
+          $this->editWrapper($newPageTitle, $newSectionText, null, null);
         break;
         case 'delete':
           $user = $this->getContext()->getUser();
           $sectionName = $value->elementName;
           $chapters = $this->getChapters($courseName . '/' . $sectionName);
+          $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
           if(!$title->userCan('delete', $user, 'secure')){
             $pageTitle = $courseName . '/' . $sectionName;
             $prependText = '{{deleteme}}';
@@ -114,7 +115,7 @@ class SpecialCourseEditor extends SpecialPage {
         break;
       }
     }
-    //FIXME: Category with topic's course
+    //FIXME: Category with topic's course must me added again
     $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\r\n";
     $newSectionsArray = json_decode($newSections);
     foreach ($newSectionsArray as $value) {
