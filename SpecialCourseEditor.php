@@ -55,13 +55,7 @@ class SpecialCourseEditor extends SpecialPage {
   private function editCourse($courseName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
-    $page = WikiPage::factory( $title );
-    $content = $page->getContent( Revision::RAW );
-    $text = ContentHandler::getContentText( $content );
-    $regex = "/\{{2}\w+\|(.*)\}{2}/";
-    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-    $this->sectionsList = $matches[1];
+    $this->sectionsList = $this->getSections($courseName);
     $this->setHeaders();
     $out->setPageTitle("Course Editor");
     $out->addInlineScript(" var sections = " . json_encode($this->sectionsList) . ", editStack = [];");
@@ -80,13 +74,7 @@ class SpecialCourseEditor extends SpecialPage {
         case 'rename':
           $sectionName = $value->elementName;
           $newSectionName = $value->newElementName;
-          $title = Title::newFromText( $courseName . "/" . $sectionName, $defaultNamespace=NS_MAIN );
-          $page = WikiPage::factory( $title );
-          $content = $page->getContent( Revision::RAW );
-          $text = ContentHandler::getContentText( $content );
-          $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-          preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-          $chapters = $matches[2];
+          $chapters = $this->getChapters($courseName . '/' .$sectionName);
           $newSectionText = "";
           foreach ($chapters as $value) {
             $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $value ."|". $value ."]]\r\n";
@@ -99,13 +87,7 @@ class SpecialCourseEditor extends SpecialPage {
         case 'delete':
           $user = $this->getContext()->getUser();
           $sectionName = $value->elementName;
-          $title = Title::newFromText($courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN);
-          $page = WikiPage::factory( $title );
-          $content = $page->getContent( Revision::RAW );
-          $text = ContentHandler::getContentText( $content );
-          $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-          preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-          $chapters = $matches[2];
+          $chapters = $this->getChapters($courseName . '/' . $sectionName);
           if(!$title->userCan('delete', $user, 'secure')){
             $pageTitle = $courseName . '/' . $sectionName;
             $prependText = '{{deleteme}}';
@@ -187,13 +169,7 @@ class SpecialCourseEditor extends SpecialPage {
   private function editSection($sectionName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $title = Title::newFromText( $sectionName, $defaultNamespace=NS_MAIN );
-    $page = WikiPage::factory( $title );
-    $content = $page->getContent( Revision::RAW );
-    $text = ContentHandler::getContentText( $content );
-    $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
-    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
-    $this->chaptersList = $matches[2];
+    $this->chaptersList = $this->getChapters($sectionName);
     $this->setHeaders();
     $out->setPageTitle("Section Editor");
     $out->addInlineScript(" var chapters = " . json_encode($this->chaptersList) . ", editStack = [];");
@@ -212,6 +188,17 @@ class SpecialCourseEditor extends SpecialPage {
     $courseNameWithoutNamespace = $matches[1];
     $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
     $this->moveWrapper($courseName, $to, true, true);
+    $sections = $this->getSections($to);
+    foreach ($sections as $sectionName) {
+      $chapters = $this->getChapters($to . '/' . $sectionName);
+      $newSectionText = "";
+      foreach ($chapters as $chapterName) {
+        $newSectionText .= "* [[" . $to . "/" . $sectionName . "/" . $chapterName ."|". $chapterName ."]]\r\n";
+      }
+      $pageTitle = $to . "/" . $sectionName;
+      $this->editWrapper($pageTitle, $newSectionText, null, null);
+    }
+    $this->purgeWrapper($to);
   }
 
   private function createNewCourse() {
@@ -288,6 +275,27 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
 /** HELPERS AND UTILITIES METHODS **/
+
+  private function getChapters($sectionName){
+    $title = Title::newFromText($sectionName, $defaultNamespace=NS_MAIN );
+    $page = WikiPage::factory( $title );
+    $content = $page->getContent( Revision::RAW );
+    $text = ContentHandler::getContentText( $content );
+    $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
+    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+    return $matches[2];
+  }
+
+  private function getSections($courseName){
+    $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
+    $page = WikiPage::factory( $title );
+    $content = $page->getContent( Revision::RAW );
+    $text = ContentHandler::getContentText( $content );
+    $regex = "/\{{2}\w+\|(.*)\}{2}/";
+    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+    return $matches[1];
+  }
+
   private function deleteWrapper($title){
     try {
       $user = $this->getContext()->getUser();
