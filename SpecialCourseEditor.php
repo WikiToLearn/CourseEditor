@@ -65,7 +65,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out->addTemplate( $template );
   }
 
-  private function saveCourse($courseName, $originalSections, $editStack, $newSections){
+  private function saveCourse($courseName, $editStack, $newSections){
     $stack = json_decode($editStack);
     foreach ($stack as $value) {
       switch ($value->action) {
@@ -113,16 +113,36 @@ class SpecialCourseEditor extends SpecialPage {
         break;
       }
     }
-    //FIXME: Category with topic's course must me added again
     $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\r\n";
     $newSectionsArray = json_decode($newSections);
     foreach ($newSectionsArray as $value) {
       $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
     }
+    try {
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action' => 'query',
+            'titles' => $courseName,
+            "prop" => "categories"
+          ),
+          true
+        ),
+        true // Enable write.
+      );
+      $api->execute();
+      $results = $api->getResult()->getResultData();
+    } catch(UsageException $e){
+      return $e;
+    }
+    $objWithCategories = reset($results['query']['pages']);
+    $categories= $objWithCategories['categories'];
+    $newCourseText .= "\r\n[[" . $categories['0']['title'] . "]]";
     $this->editWrapper($courseName, $newCourseText, null, null);
   }
 
-  private function saveSection($sectionName, $originalChapters, $editStack, $newChapters){
+  private function saveSection($sectionName, $editStack, $newChapters){
     $stack = json_decode($editStack);
     foreach ($stack as $value) {
       switch ($value->action) {
@@ -176,7 +196,6 @@ class SpecialCourseEditor extends SpecialPage {
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
     $template->set('section', $sectionName);
-    $template->set('chapters', $this->chaptersList);
     $out->addTemplate( $template );
   }
 
@@ -315,6 +334,7 @@ class SpecialCourseEditor extends SpecialPage {
       return $e;
     }
   }
+
   private function purgeWrapper($titles){
     try {
       $user = $this->getContext()->getUser();
@@ -335,6 +355,7 @@ class SpecialCourseEditor extends SpecialPage {
       return $e;
     }
   }
+
   private function editWrapper($title, $text, $textToPrepend, $textToAppend){
     try {
       $user = $this->getContext()->getUser();
