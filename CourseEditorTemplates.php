@@ -14,7 +14,6 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 */
 class SectionEditorTemplate extends QuickTemplate {
   public function execute() {
-    $chaptersList = $this->data['chapters'];
     $section = $this->data['section'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>

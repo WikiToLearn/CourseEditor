@@ -26,10 +26,9 @@ class SpecialCourseEditor extends SpecialPage {
         return;
       case 'savesection':
         $sectionName = $request->getVal('sectionName');
-        $originalChapters = $request->getVal('originalChapters');
         $editStack = $request->getVal('editStack');
         $newChapters = $request->getVal('newChapters');
-        $this->saveSection($sectionName, $originalChapters, $editStack, $newChapters);
+        $this->saveSection($sectionName, $editStack, $newChapters);
         return;
       case 'editcourse':
         $courseName = $request->getVal('pagename');
@@ -37,10 +36,9 @@ class SpecialCourseEditor extends SpecialPage {
         return;
       case 'savecourse':
         $courseName = $request->getVal('courseName');
-        $originalSections = $request->getVal('originalSections');
         $editStack = $request->getVal('editStack');
         $newSections = $request->getVal('newSections');
-        $this->saveCourse($courseName, $originalSections, $editStack, $newSections);
+        $this->saveCourse($courseName, $editStack, $newSections);
         return;
       case 'movecourse':
         $courseName = $request->getVal('pagename');
@@ -125,7 +123,6 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
   private function saveSection($sectionName, $originalChapters, $editStack, $newChapters){
-    $out = $this->getOutput();
     $stack = json_decode($editStack);
     foreach ($stack as $value) {
       switch ($value->action) {
@@ -321,7 +318,6 @@ class SpecialCourseEditor extends SpecialPage {
   private function purgeWrapper($titles){
     try {
       $user = $this->getContext()->getUser();
-      $token = $user->getEditToken();
       $api = new ApiMain(
         new DerivativeRequest(
           $this->getContext()->getRequest(),

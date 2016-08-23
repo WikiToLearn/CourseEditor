@@ -59,7 +59,6 @@ $(function () {
     });
     $.post("/Special:CourseEditor?actiontype=savesection", {
       sectionName: $('#sectionName').text(),
-      originalElements: JSON.stringify(chapters),
       editStack: JSON.stringify(editStack),
       newChapters: JSON.stringify(newChapters)
     }, function(response, status) {

@@ -60,7 +60,6 @@ $(function () {
     console.warn(sections, editStack, newSections);
     $.post("/Special:CourseEditor?actiontype=savecourse", {
       courseName: $('#courseName').text(),
-      originalSections: JSON.stringify(sections),
       editStack: JSON.stringify(editStack),
       newSections: JSON.stringify(newSections)
     }, function(response, status) {
