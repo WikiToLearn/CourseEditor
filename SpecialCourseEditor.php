@@ -8,9 +8,6 @@ class SpecialCourseEditor extends SpecialPage {
     parent::__construct( $name );
   }
 
-  public $chaptersList = array();
-  public $sectionsList = array();
-
   public function execute() {
     $request = $this->getRequest();
     $user = $this->getUser();
@@ -53,10 +50,10 @@ class SpecialCourseEditor extends SpecialPage {
   private function editCourse($courseName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $this->sectionsList = $this->getSections($courseName);
+    $sections = $this->getSections($courseName);
     $this->setHeaders();
     $out->setPageTitle("Course Editor");
-    $out->addInlineScript(" var sections = " . json_encode($this->sectionsList) . ", editStack = [];");
+    $out->addInlineScript(" var sections = " . json_encode($sections) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor.course' );
     $template = new CourseEditorTemplate();
     $template->setRef('courseEditor', $this);
@@ -89,11 +86,11 @@ class SpecialCourseEditor extends SpecialPage {
           $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
           if(!$title->userCan('delete', $user, 'secure')){
             $pageTitle = $courseName . '/' . $sectionName;
-            $prependText = '{{deleteme}}';
+            $prependText = "\r\n{{deleteme}}";
             $this->editWrapper($pageTitle, null, $prependText, null);
             foreach ($chapters as $value) {
               $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
-              $prependText = '{{deleteme}}';
+              $prependText = "\r\n{{deleteme}}";
               $this->editWrapper($pageTitle, null, $prependText, null);
             }
           }else {
@@ -118,27 +115,11 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($newSectionsArray as $value) {
       $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
     }
-    try {
-      $api = new ApiMain(
-        new DerivativeRequest(
-          $this->getContext()->getRequest(),
-          array(
-            'action' => 'query',
-            'titles' => $courseName,
-            "prop" => "categories"
-          ),
-          true
-        ),
-        true // Enable write.
-      );
-      $api->execute();
-      $results = $api->getResult()->getResultData();
-    } catch(UsageException $e){
-      return $e;
+    $categories = $this->getCategories($courseName);
+    foreach ($categories as $category) {
+      $newCourseText .= "\r\n[[" . $category['title'] . "]]";
     }
-    $objWithCategories = reset($results['query']['pages']);
-    $categories= $objWithCategories['categories'];
-    $newCourseText .= "\r\n[[" . $categories['0']['title'] . "]]";
+
     $this->editWrapper($courseName, $newCourseText, null, null);
   }
 
@@ -159,7 +140,7 @@ class SpecialCourseEditor extends SpecialPage {
           $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
           if(!$title->userCan('delete', $user, 'secure')){
             $pageTitle = $sectionName . '/' . $chapterName;
-            $prependText = '{{deleteme}}';
+            $prependText = "\r\n{{deleteme}}";
             $this->editWrapper($pageTitle, null, $prependText, null);
           }else {
             $pageTitle = $sectionName . '/' . $chapterName;
@@ -187,10 +168,10 @@ class SpecialCourseEditor extends SpecialPage {
   private function editSection($sectionName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $this->chaptersList = $this->getChapters($sectionName);
+    $chapters = $this->getChapters($sectionName);
     $this->setHeaders();
     $out->setPageTitle("Section Editor");
-    $out->addInlineScript(" var chapters = " . json_encode($this->chaptersList) . ", editStack = [];");
+    $out->addInlineScript(" var chapters = " . json_encode($chapters) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor.section' );
     $template = new SectionEditorTemplate();
     $template->setRef('courseEditor', $this);
@@ -278,9 +259,9 @@ class SpecialCourseEditor extends SpecialPage {
             'token'      => $token,
             'notminor'   => true
           ),
-          true // treat this as a POST
+          true
           ),
-          true // Enable write.
+          true
         );
         $api->execute();
       } catch(UsageException $e){
@@ -292,6 +273,28 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
 /** HELPERS AND UTILITIES METHODS **/
+
+  private function getCategories($courseName){
+    try {
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action' => 'query',
+            'titles' => $courseName,
+            'prop' => 'categories'
+          )
+        ),
+        true
+      );
+      $api->execute();
+      $results = $api->getResult()->getResultData(null, array('Strip' => 'all'));
+      $page = reset($results['query']['pages']);
+      return $page['categories'];
+    } catch(UsageException $e){
+      return $e;
+    }
+  }
 
   private function getChapters($sectionName){
     $title = Title::newFromText($sectionName, $defaultNamespace=NS_MAIN );
@@ -325,9 +328,9 @@ class SpecialCourseEditor extends SpecialPage {
             'title'      => $title,
             'token'      => $token
           ),
-          true // treat this as a POST
+          true
         ),
-        true // Enable write.
+        true
       );
       $api->execute();
     } catch(UsageException $e){
@@ -337,18 +340,17 @@ class SpecialCourseEditor extends SpecialPage {
 
   private function purgeWrapper($titles){
     try {
-      $user = $this->getContext()->getUser();
       $api = new ApiMain(
         new DerivativeRequest(
           $this->getContext()->getRequest(),
-            array(
-              'action'     => 'purge',
-              'titles'      => $titles,
-              'forcerecursivelinkupdate' => true
-            ),
-            true // treat this as a POST
+          array(
+            'action'     => 'purge',
+            'titles'      => $titles,
+            'forcerecursivelinkupdate' => true
+          ),
+          true
         ),
-        true // Enable write.
+        true
       );
       $api->execute();
     } catch(UsageException $e){
@@ -367,14 +369,16 @@ class SpecialCourseEditor extends SpecialPage {
             'action'     => 'edit',
             'title'      => $title,
             'text' => $text,
-            'prependtext' => $textToPrepend, //automatically override text
-            'appendtext' => $textToAppend, //automatically override text
+            // automatically override text
+            'prependtext' => $textToPrepend,
+            // automatically override text
+            'appendtext' => $textToAppend,
             'token'      => $token,
             'notminor'   => true
           ),
-          true // treat this as a POST
+          true
         ),
-        true // Enable write.
+        true
       );
       $api->execute();
     } catch(UsageException $e){
@@ -398,9 +402,9 @@ class SpecialCourseEditor extends SpecialPage {
             'movetalk' => true,
             'movesubpages'=> $subpages
           ),
-          true // treat this as a POST
+          true
         ),
-        true // Enable write.
+        true
       );
       $api->execute();
     } catch(UsageException $e){
