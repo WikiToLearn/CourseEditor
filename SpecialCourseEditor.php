@@ -256,8 +256,8 @@ class SpecialCourseEditor extends SpecialPage {
             'action'     => 'edit',
             'title'      => $pageTitle,
             'appendtext' => "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\n\n[[Category:".$formData['topic']."]]",
-            'token'      => $token,
-            'notminor'   => true
+            'notminor'   => true,
+            'token'      => $token
           ),
           true
           ),
@@ -273,6 +273,27 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
 /** HELPERS AND UTILITIES METHODS **/
+
+  private function getCsrfToken(){
+    try {
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $this->getContext()->getRequest(),
+          array(
+            'action' => 'query',
+            'meta' => 'tokens'
+          )
+        ),
+        true
+      );
+      $api->execute();
+      $results = $api->getResult()->getResultData(null, array('Strip' => 'all'));
+      print_r($results['query']['tokens']['csrftoken']);
+      return $results['query']['tokens']['csrftoken'];
+    } catch(UsageException $e){
+      return $e;
+    }
+  }
 
   private function getCategories($courseName){
     try {
@@ -362,6 +383,7 @@ class SpecialCourseEditor extends SpecialPage {
     try {
       $user = $this->getContext()->getUser();
       $token = $user->getEditToken();
+      //$token = $this->getCsrfToken();
       $api = new ApiMain(
         new DerivativeRequest(
           $this->getContext()->getRequest(),
@@ -373,8 +395,8 @@ class SpecialCourseEditor extends SpecialPage {
             'prependtext' => $textToPrepend,
             // automatically override text
             'appendtext' => $textToAppend,
-            'token'      => $token,
-            'notminor'   => true
+            'notminor'   => true,
+            'token'      => $token
           ),
           true
         ),
@@ -397,10 +419,10 @@ class SpecialCourseEditor extends SpecialPage {
             'action'     => 'move',
             'from'      => $from,
             'to' => $to,
-            'token'      => $token,
             'noredirect' => $redirect,
             'movetalk' => true,
-            'movesubpages'=> $subpages
+            'movesubpages'=> $subpages,
+            'token'      => $token
           ),
           true
         ),
