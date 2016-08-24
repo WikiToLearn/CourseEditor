@@ -2,98 +2,6 @@
 var windowManager = new OO.ui.WindowManager();
 $('body').append( windowManager.$element );
 
-/******** HELPER METHODS ********/
-
-/**
- * Delete a element from the draggableWidget and add a item to the
- * RecycleBin list.
- * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [elementName]
- * @param {Array} [editStack]
- */
-var deleteElement = function(draggableWidget, elementName, editStack){
-  var elementToRemove = draggableWidget.getItemFromData(elementName);
-  draggableWidget.removeItems([elementToRemove]);
-  editStack.push({
-    action: 'delete',
-    elementName: elementName
-  });
-  createRecycleBinItem(draggableWidget, elementName, editStack);
-};
-
-/**
- * Restore a element from the RecycleBin and remove its deletion
- * from the editStack
- * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [elementName]
- * @param {Array} [editStack]
- */
-var restoreElement = function(draggableWidget, elementName, editStack){
-  createDragItem(draggableWidget, elementName, editStack);
-  editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
-  $('li[id="' +  elementName + '"]').remove();
-};
-
-/**
- * Add a element to the draggableWidget automatically if its name isn't
- * in the RecycleBin list, otherwise open a MessageDialog and ask to the user
- * if he/she prefer to restore the element or create a new one.
- * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [elementName]
- * @param {Array} [editStack]
- */
-var addElement = function(draggableWidget, elementName, editStack){
-  if($.trim(elementName).length !== 0){
-    if(findIndexOfDeletedElement(editStack, elementName) === null){
-      createDragItem(draggableWidget, elementName, editStack);
-      editStack.push({
-        action: 'add',
-        elementName: elementName
-      });
-    }else {
-      var messageDialog = new OO.ui.MessageDialog();
-      windowManager.addWindows( [ messageDialog ] );
-      windowManager.openWindow( messageDialog, {
-        title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
-        message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
-        actions: [
-          { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
-          { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
-          {
-            action: 'confirm',
-            label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
-            flags: [ 'primary', 'constructive' ]
-          }
-        ]
-      } ).then( function ( opened ) {
-        opened.then( function ( closing, data ) {
-          if ( data && data.action === 'restore' ) {
-            restoreElement(draggableWidget, elementName, editStack);
-          } else if(data && data.action === 'confirm') {
-            createDragItem(draggableWidget, elementName, editStack);
-            editStack.push({
-              action: 'add',
-              elementName: elementName
-            });
-          }
-        } );
-      } );
-    }
-  }
-};
-
-/**
- * Rename a element
- * @param {DraggableGroupWidget} [draggableWidget]
- * @param {String} [elementName]
- * @param {Array} [editStack]
- */
-var editElement = function(draggableWidget, elementName, editStack){
-  var dialog = new EditDialog(draggableWidget, elementName, editStack);
-  windowManager.addWindows( [ dialog ] );
-  windowManager.openWindow( dialog );
-};
-
 /******** UTIL METHODS ********/
 
 /**
@@ -188,6 +96,98 @@ var createRecycleBinItem = function(draggableWidget, elementName, editStack){
     restoreElement(draggableWidget, elementToRestore, editStack);
   });
 }
+
+/******** HELPER METHODS ********/
+
+/**
+ * Delete a element from the draggableWidget and add a item to the
+ * RecycleBin list.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var deleteElement = function(draggableWidget, elementName, editStack){
+  var elementToRemove = draggableWidget.getItemFromData(elementName);
+  draggableWidget.removeItems([elementToRemove]);
+  editStack.push({
+    action: 'delete',
+    elementName: elementName
+  });
+  createRecycleBinItem(draggableWidget, elementName, editStack);
+};
+
+/**
+ * Restore a element from the RecycleBin and remove its deletion
+ * from the editStack
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var restoreElement = function(draggableWidget, elementName, editStack){
+  createDragItem(draggableWidget, elementName, editStack);
+  editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
+  $('li[id="' +  elementName + '"]').remove();
+};
+
+/**
+ * Add a element to the draggableWidget automatically if its name isn't
+ * in the RecycleBin list, otherwise open a MessageDialog and ask to the user
+ * if he/she prefer to restore the element or create a new one.
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var addElement = function(draggableWidget, elementName, editStack){
+  if($.trim(elementName).length !== 0){
+    if(findIndexOfDeletedElement(editStack, elementName) === null){
+      createDragItem(draggableWidget, elementName, editStack);
+      editStack.push({
+        action: 'add',
+        elementName: elementName
+      });
+    }else {
+      var messageDialog = new OO.ui.MessageDialog();
+      windowManager.addWindows( [ messageDialog ] );
+      windowManager.openWindow( messageDialog, {
+        title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
+        message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
+        actions: [
+          { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
+          { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
+          {
+            action: 'confirm',
+            label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
+            flags: [ 'primary', 'constructive' ]
+          }
+        ]
+      } ).then( function ( opened ) {
+        opened.then( function ( closing, data ) {
+          if ( data && data.action === 'restore' ) {
+            restoreElement(draggableWidget, elementName, editStack);
+          } else if(data && data.action === 'confirm') {
+            createDragItem(draggableWidget, elementName, editStack);
+            editStack.push({
+              action: 'add',
+              elementName: elementName
+            });
+          }
+        } );
+      } );
+    }
+  }
+};
+
+/**
+ * Rename a element
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var editElement = function(draggableWidget, elementName, editStack){
+  var dialog = new EditDialog(draggableWidget, elementName, editStack);
+  windowManager.addWindows( [ dialog ] );
+  windowManager.openWindow( dialog );
+};
 
 /******** OO.UI OBJECTS ********/
 
