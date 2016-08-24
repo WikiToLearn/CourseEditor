@@ -49,11 +49,6 @@ class SpecialCourseEditor extends SpecialPage {
     }
   }
 
-  public static function saveC($courseName, $editStack, $newSections){
-    $prova = array('nomecorso' => $courseName, "editStack" => $editStack, "newSections" => $newSections);
-    return json_encode($prova);
-  }
-
   private function editCourse($courseName){
     $out = $this->getOutput();
     $out->enableOOUI();
