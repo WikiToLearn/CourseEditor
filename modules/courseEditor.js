@@ -41,13 +41,26 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
-    console.warn(sections, editStack, newSections);
-    $.post("/Special:CourseEditor?actiontype=savecourse", {
+    $.get( mw.util.wikiScript(), {
+      action: 'ajax',
+      rs: 'SpecialCourseEditor::saveCourse',
+      rsargs: [$('#courseName').text(), JSON.stringify(editStack), JSON.stringify(newSections)]
+    }, function ( data ) {
+      console.warn(data);
+    });
+    /*
+    $.post('/Special:CourseEditor?actiontype=savecourse', {
       courseName: $('#courseName').text(),
       editStack: JSON.stringify(editStack),
       newSections: JSON.stringify(newSections)
     }, function(response, status) {
-      console.warn(response, status);
-    });
+      if(status === 'success'){
+        window.location.assign('/' +  $('#courseName').text());
+      }else{
+        var alert = '<br><div class="alert alert-warning alert-dismissible" id="alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+        $('#saveDiv').after(alert);
+        $('#alert').html("Sorry :( Something went wrong! " + status);
+      }
+    });*/
   });
 })

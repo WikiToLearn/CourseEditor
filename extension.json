@@ -38,7 +38,8 @@
              "modules/sectionEditor.js"
            ],
             "dependencies": [
-                "oojs-ui"
+                "oojs-ui",
+                "mediawiki.util"
             ],
             "styles": [
               "modules/styles/style.css"
@@ -63,7 +64,8 @@
              "modules/courseEditor.js"
            ],
             "dependencies": [
-                "oojs-ui"
+                "oojs-ui",
+                "mediawiki.util"
             ],
             "styles": [
               "modules/styles/style.css"
@@ -97,6 +99,12 @@
         "subpages" : true
   		}
     ],
+    "config": {
+  		"AjaxExportList": [
+  			"SpecialCourseEditor::saveSection",
+        "SpecialCourseEditor::saveCourse"
+  		]
+},
     "SpecialPages": {
         "CourseEditor": "SpecialCourseEditor"
     },

@@ -42,12 +42,22 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newChapters.push(value.data);
     });
+    $.get( mw.util.wikiScript(), {
+      action: 'ajax',
+      rs: 'SpecialCourseEditor::saveSection',
+      rsargs: [$('#sectionName').text(), JSON.stringify(editStack), JSON.stringify(newChapters)]
+    }, function ( data ) {
+      console.warn(data);
+    });
+    /*
     $.post("/Special:CourseEditor?actiontype=savesection", {
       sectionName: $('#sectionName').text(),
       editStack: JSON.stringify(editStack),
       newChapters: JSON.stringify(newChapters)
     }, function(response, status) {
-      console.warn(response, status);
-    });
+      if(status === 'success'){
+        window.location.assign('/' +  $('#sectionName').text());
+      }
+    });*/
   });
 })
