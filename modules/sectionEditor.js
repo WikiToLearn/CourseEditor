@@ -34,24 +34,9 @@ $(function () {
   $('#chaptersList').append(fieldDrag.$element, fieldInput.$element);
   $('#saveDiv').append('<br><br>', buttonSave.$element);
 
-  //Create handlers
-  $('.deleteElementIcon').click(function(){
-    deleteElement(draggableWidget, $(this).parent().text(), editStack);
-  });
-  $('.editElementIcon').click(function(){
-    editElement(draggableWidget, $(this).parent().text(), editStack);
-  });
-  $('.oo-ui-inputWidget-input').attr('id', 'addElement');
-  $('#addElement').blur(function(){
-    addElement(draggableWidget, textInputWidget.getValue(), editStack);
-    textInputWidget.setValue('');
-  });
-  $('#addElement').keypress(function(keypressed) {
-    if(keypressed.which === 13) {
-      addElement(draggableWidget, textInputWidget.getValue(), editStack);
-      textInputWidget.setValue('');
-    }
-  });
+  //Init Handlers
+  initHandlers(draggableWidget, textInputWidget, editStack);
+
   $('#saveSection').click(function(){
     var newChapters = [];
     $.each(draggableWidget.getItems(), function(key, value){

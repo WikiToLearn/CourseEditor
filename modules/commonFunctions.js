@@ -97,6 +97,33 @@ var editElement = function(draggableWidget, elementName, editStack){
 /******** UTIL METHODS ********/
 
 /**
+ * Init handlers
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {TextInputWidget} [textInputWidget]
+ * @param {Array} [editStack]
+ */
+var initHandlers = function(draggableWidget, textInputWidget, editStack){
+
+  $('.deleteElementIcon').click(function(){
+    deleteElement(draggableWidget, $(this).parent().text(), editStack);
+  });
+  $('.editElementIcon').click(function(){
+    editElement(draggableWidget, $(this).parent().text(), editStack);
+  });
+  $('.oo-ui-inputWidget-input').attr('id', 'addElement');
+  $('#addElement').blur(function(){
+    addElement(draggableWidget, textInputWidget.getValue(), editStack);
+    textInputWidget.setValue('');
+  });
+  $('#addElement').keypress(function(keypressed) {
+    if(keypressed.which === 13) {
+      addElement(draggableWidget, textInputWidget.getValue(), editStack);
+      textInputWidget.setValue('');
+    }
+  });
+};
+
+/**
  * Find the index of a deleted element in the editStack
  * @param {String} [elementName]
  * @param {Array} [editStack]
