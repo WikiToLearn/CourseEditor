@@ -23,21 +23,9 @@ class SpecialCourseEditor extends SpecialPage {
         $sectionName = $request->getVal('pagename');
         $this->editSection($sectionName);
         return;
-      case 'savesection':
-        $sectionName = $request->getVal('sectionName');
-        $editStack = $request->getVal('editStack');
-        $newChapters = $request->getVal('newChapters');
-        $this->saveSection($sectionName, $editStack, $newChapters);
-        return;
       case 'editcourse':
         $courseName = $request->getVal('pagename');
         $this->editCourse($courseName);
-        return;
-      case 'savecourse':
-        $courseName = $request->getVal('courseName');
-        $editStack = $request->getVal('editStack');
-        $newSections = $request->getVal('newSections');
-        $this->saveCourse($courseName, $editStack, $newSections);
         return;
       case 'movecourse':
         $courseName = $request->getVal('pagename');
@@ -66,6 +54,7 @@ class SpecialCourseEditor extends SpecialPage {
 
   public static function saveCourse($courseName, $editStack, $newSections){
     $stack = json_decode($editStack);
+    $isSuccess = true;
     foreach ($stack as $value) {
       switch ($value->action) {
         case 'rename':
@@ -78,8 +67,9 @@ class SpecialCourseEditor extends SpecialPage {
           }
           $pageTitle = $courseName . "/" . $sectionName;
           $newPageTitle = $courseName . '/' . $newSectionName;
-          self::moveWrapper($pageTitle, $newPageTitle, false, true);
-          self::editWrapper($newPageTitle, $newSectionText, null, null);
+          $resultMove = self::moveWrapper($pageTitle, $newPageTitle, false, true);
+          $resultEdit = self::editWrapper($newPageTitle, $newSectionText, null, null);
+          self::setElementSuccess($resultMove && $resultEdit, $value, $isSuccess);
         break;
         case 'delete':
           $user = self::getRequestContext()->getUser();
@@ -87,28 +77,32 @@ class SpecialCourseEditor extends SpecialPage {
           $chapters = self::getChapters($courseName . '/' . $sectionName);
           $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
           if(!$title->userCan('delete', $user, 'secure')){
+            $resultChapters = true;
             $pageTitle = $courseName . '/' . $sectionName;
             $prependText = "\r\n{{deleteme}}";
-            self::editWrapper($pageTitle, null, $prependText, null);
+            $resultSection = self::editWrapper($pageTitle, null, $prependText, null);
             foreach ($chapters as $value) {
               $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
               $prependText = "\r\n{{deleteme}}";
-              self::editWrapper($pageTitle, null, $prependText, null);
+              $resultChapters = self::editWrapper($pageTitle, null, $prependText, null);
             }
           }else {
+            $resultChapters = true;
             foreach ($chapters as $value) {
               $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
-              self::deleteWrapper($pageTitle);
+              $resultChapters = self::deleteWrapper($pageTitle);
             }
             $pageTitle = $courseName . '/' . $sectionName;
-            self::deleteWrapper($pageTitle);
+            $resultSection = self::deleteWrapper($pageTitle);
           }
+          self::setElementSuccess($resultSection && $resultChapters, $value, $isSuccess);
         break;
         case 'add':
           $sectionName = $value->elementName;
           $pageTitle = $courseName . '/' . $sectionName;
           $text =  "";
-          self::editWrapper($pageTitle, $text, null, null);
+          $result = self::editWrapper($pageTitle, $text, null, null);
+          self::setElementSuccess($result, $value, $isSuccess);
         break;
       }
     }
@@ -121,21 +115,24 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($categories as $category) {
       $newCourseText .= "\r\n[[" . $category['title'] . "]]";
     }
-    self::editWrapper($courseName, $newCourseText, null, null);
-    return "success";
+    $result = self::editWrapper($courseName, $newCourseText, null, null);
+    self::setOperationSuccess($result, "write coruse text", $isSuccess, $stack);
+    return json_encode(array('isSuccess' => $isSuccess, 'editStack' => $stack));
   }
 
   public static function saveSection($sectionName, $editStack, $newChapters){
     $context = self::getRequestContext();
     $stack = json_decode($editStack);
-    foreach ($stack as $value) {
+    $isSuccess = true;
+    foreach ($stack as $key => $value) {
       switch ($value->action) {
         case 'rename':
           $chapterName = $value->elementName;
           $newChapterName = $value->newElementName;
           $from = $sectionName . '/' . $chapterName;
           $to = $sectionName . '/' . $newChapterName;
-          self::moveWrapper($from, $to, false, true);
+          $result = self::moveWrapper($from, $to, false, true);
+          self::setElementSuccess($result, $value, $isSuccess);
         break;
         case 'delete':
           $user = $context->getUser();
@@ -144,17 +141,19 @@ class SpecialCourseEditor extends SpecialPage {
           if(!$title->userCan('delete', $user, 'secure')){
             $pageTitle = $sectionName . '/' . $chapterName;
             $prependText = "\r\n{{deleteme}}";
-            self::editWrapper($pageTitle, null, $prependText, null);
+            $result = self::editWrapper($pageTitle, null, $prependText, null);
           }else {
             $pageTitle = $sectionName . '/' . $chapterName;
-            self::deleteWrapper($pageTitle);
+            $result = self::deleteWrapper($pageTitle);
           }
+          self::setElementSuccess($result, $value, $isSuccess);
         break;
         case 'add':
           $chapterName = $value->elementName;
           $pageTitle = $sectionName . '/' . $chapterName;
           $text =  "";
-          self::editWrapper($pageTitle, $text, null, null);
+          $result = self::editWrapper($pageTitle, $text, null, null);
+          self::setElementSuccess($result, $value, $isSuccess);
         break;
       }
     }
@@ -163,10 +162,12 @@ class SpecialCourseEditor extends SpecialPage {
     foreach ($newChaptersArray as $value) {
       $newSectionText .= "* [[" . $sectionName . "/" . $value ."|". $value ."]]\r\n";
     }
-    self::editWrapper($sectionName, $newSectionText);
+    $result = self::editWrapper($sectionName, $newSectionText);
+    self::setOperationSuccess($result, "write section text", $isSuccess, $stack);
     list($course, $section) = explode("/", $sectionName);
-    self::purgeWrapper($course);
-    return "success";
+    $result = self::purgeWrapper($course);
+    self::setOperationSuccess($result, "purge course", $isSuccess, $stack);
+    return json_encode(array('isSuccess' => $isSuccess, 'editStack' => $stack));
   }
 
   private function editSection($sectionName){
@@ -278,36 +279,32 @@ class SpecialCourseEditor extends SpecialPage {
 
 /** HELPERS AND UTILITIES METHODS **/
 
-  public static function getRequestContext()
-   {
+  private function setElementSuccess($result, &$value, &$isSuccess){
+    if($result){
+      $value->success = true;
+    }else {
+      $value->success = false;
+      $isSuccess = false;
+    }
+  }
+
+  private function setOperationSuccess($result, $action, &$isSuccess, &$stack){
+    if(!$result){
+      $isSuccess = false;
+      $obj = new stdClass();
+      $obj->action = $action;
+      $obj->success = false;
+      array_push($stack, $obj);
+    }
+  }
+
+  public static function getRequestContext(){
       if(self::$requestContext == null)
       {
          $context = new RequestContext();
          self::$requestContext = $context;
       }
-
       return self::$requestContext;
-   }
-
-  private function getCsrfToken(){
-    try {
-      $api = new ApiMain(
-        new DerivativeRequest(
-          self::getRequestContext()->getRequest(),
-          array(
-            'action' => 'query',
-            'meta' => 'tokens'
-          )
-        ),
-        true
-      );
-      $api->execute();
-      $results = $api->getResult()->getResultData(null, array('Strip' => 'all'));
-      print_r($results['query']['tokens']['csrftoken']);
-      return $results['query']['tokens']['csrftoken'];
-    } catch(UsageException $e){
-      return $e->getMessage();
-    }
   }
 
   private function getCategories($courseName){
@@ -370,6 +367,7 @@ class SpecialCourseEditor extends SpecialPage {
         true
       );
       $api->execute();
+      return true;
     } catch(UsageException $e){
       return $e->getMessage();
     }
@@ -391,6 +389,7 @@ class SpecialCourseEditor extends SpecialPage {
         true
       );
       $api->execute();
+      return true;
     } catch(UsageException $e){
       return $e->getMessage();
     }
@@ -421,12 +420,18 @@ class SpecialCourseEditor extends SpecialPage {
         true
       );
       $api->execute();
+      return true;
     } catch(UsageException $e){
       return $e->getMessage();
     }
   }
 
   private function moveWrapper($from, $to, $redirect, $subpages){
+    /*$pageTitle = Title::newFromText( $from, $defaultNamespace=NS_MAIN );
+    $exists =  $pageTitle->exists();
+    if(!$exists){
+      return true;
+    }*/
     $context = self::getRequestContext();
     try {
       $user = $context->getUser();
@@ -448,6 +453,7 @@ class SpecialCourseEditor extends SpecialPage {
         true
       );
       $api->execute();
+      return true;
     } catch(UsageException $e){
       return $e->getMessage();
     }

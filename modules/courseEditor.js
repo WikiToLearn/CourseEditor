@@ -41,26 +41,28 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
-    $.get( mw.util.wikiScript(), {
+    $.getJSON( mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'SpecialCourseEditor::saveCourse',
       rsargs: [$('#courseName').text(), JSON.stringify(editStack), JSON.stringify(newSections)]
     }, function ( data ) {
-      console.warn(data);
-    });
-    /*
-    $.post('/Special:CourseEditor?actiontype=savecourse', {
-      courseName: $('#courseName').text(),
-      editStack: JSON.stringify(editStack),
-      newSections: JSON.stringify(newSections)
-    }, function(response, status) {
-      if(status === 'success'){
+      if(data.isSuccess){
         window.location.assign('/' +  $('#courseName').text());
-      }else{
-        var alert = '<br><div class="alert alert-warning alert-dismissible" id="alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>';
+      }else {
+        var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
         $('#saveDiv').after(alert);
-        $('#alert').html("Sorry :( Something went wrong! " + status);
+        $('#alert').html("Sorry :( Something went wrong!<br>");
+        data.editStack.forEach(function(obj){
+          if(obj.success === false){
+            $('#alert').append(obj.action);
+            if(obj.elementName){
+              $('#alert').append(" " + obj.elementName + " fails!<br>");
+            }else {
+              $('#alert').append(" fails!<br>");
+            }
+          }
+        });
       }
-    });*/
+    });
   });
 })

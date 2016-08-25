@@ -42,22 +42,28 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newChapters.push(value.data);
     });
-    $.get( mw.util.wikiScript(), {
+    $.getJSON( mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'SpecialCourseEditor::saveSection',
       rsargs: [$('#sectionName').text(), JSON.stringify(editStack), JSON.stringify(newChapters)]
     }, function ( data ) {
-      console.warn(data);
-    });
-    /*
-    $.post("/Special:CourseEditor?actiontype=savesection", {
-      sectionName: $('#sectionName').text(),
-      editStack: JSON.stringify(editStack),
-      newChapters: JSON.stringify(newChapters)
-    }, function(response, status) {
-      if(status === 'success'){
+      if(data.isSuccess){
         window.location.assign('/' +  $('#sectionName').text());
+      }else {
+        var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
+        $('#saveDiv').after(alert);
+        $('#alert').html("Sorry :( Something went wrong!<br>");
+        data.editStack.forEach(function(obj){
+          if(obj.success === false){
+            $('#alert').append(obj.action);
+            if(obj.elementName){
+              $('#alert').append(" " + obj.elementName + " fails!<br>");
+            }else {
+              $('#alert').append(" fails!<br>");
+            }
+          }
+        });
       }
-    });*/
+    });
   });
 })
