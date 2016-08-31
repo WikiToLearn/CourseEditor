@@ -41,28 +41,44 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
-    $.getJSON( mw.util.wikiScript(), {
-      action: 'ajax',
-      rs: 'SpecialCourseEditor::saveCourse',
-      rsargs: [$('#courseName').text(), JSON.stringify(editStack), JSON.stringify(newSections)]
-    }, function ( data ) {
-      if(data.isSuccess){
-        window.location.assign('/' +  $('#courseName').text());
-      }else {
-        var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
-        $('#saveDiv').after(alert);
-        $('#alert').html("Sorry :( Something went wrong!<br>");
-        data.editStack.forEach(function(obj){
-          if(obj.success === false){
-            $('#alert').append(obj.action);
-            if(obj.elementName){
-              $('#alert').append(" " + obj.elementName + " fails!<br>");
-            }else {
-              $('#alert').append(" fails!<br>");
-            }
-          }
-        });
-      }
+    editStack.push({
+      action: 'update',
+      elementsList: JSON.stringify(newSections)
     });
+
+    var progressDialog = new ProgressDialog( {
+      size: 'medium'
+    } );
+    windowManager.addWindows( [ progressDialog ] );
+    windowManager.openWindow( progressDialog );
+
+    var createTask = function(operation){
+      return function(next){
+        doTask(operation, next);
+      }
+    };
+
+    var doTask = function(operation, next){
+      $.getJSON( mw.util.wikiScript(), {
+        action: 'ajax',
+        rs: 'CourseEditorOperations::applyCourseOp',
+        rsargs: [$('#courseName').text(), JSON.stringify(operation)]
+      }, function ( data ) {
+        //FIXME add error handlers
+        next();
+      });
+    }
+
+    while( editStack.length > 0 ) {
+      var operation =  editStack.shift();
+      $(document).queue('tasks', createTask(operation));
+    };
+
+    $(document).queue('tasks', function(){
+      windowManager.closeWindow([progressDialog]);
+      window.location.assign('/' +  $('#courseName').text());
+    });
+
+    dequeue('tasks');
   });
 })

@@ -12,7 +12,8 @@
     "type":"special",
     "AutoloadClasses":{
         "CourseEditor":"CourseEditor.php",
-        "CourseEditorHooks":"CourseEditorHooks.php",
+        "CourseEditorOperations":"CourseEditorOperations.php",
+        "CourseEditorUtils":"CourseEditorUtils.php",
         "SectionEditorTemplate":"CourseEditorTemplates.php",
         "CourseEditorTemplate" : "CourseEditorTemplates.php",
         "SpecialCourseEditor":"SpecialCourseEditor.php"
@@ -101,8 +102,8 @@
     ],
     "config": {
   		"AjaxExportList": [
-  			"SpecialCourseEditor::saveSection",
-        "SpecialCourseEditor::saveCourse"
+        "CourseEditorOperations::applySectionOp",
+        "CourseEditorOperations::applyCourseOp"
   		]
 },
     "SpecialPages": {

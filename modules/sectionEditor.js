@@ -42,28 +42,48 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newChapters.push(value.data);
     });
-    $.getJSON( mw.util.wikiScript(), {
-      action: 'ajax',
-      rs: 'SpecialCourseEditor::saveSection',
-      rsargs: [$('#sectionName').text(), JSON.stringify(editStack), JSON.stringify(newChapters)]
-    }, function ( data ) {
-      if(data.isSuccess){
-        window.location.assign('/' +  $('#sectionName').text());
-      }else {
-        var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
-        $('#saveDiv').after(alert);
-        $('#alert').html("Sorry :( Something went wrong!<br>");
-        data.editStack.forEach(function(obj){
-          if(obj.success === false){
-            $('#alert').append(obj.action);
-            if(obj.elementName){
-              $('#alert').append(" " + obj.elementName + " fails!<br>");
-            }else {
-              $('#alert').append(" fails!<br>");
-            }
-          }
-        });
-      }
+
+    editStack.push({
+      action: 'update',
+      elementsList: JSON.stringify(newChapters)
     });
+    editStack.push({
+      action: 'purge'
+    });
+
+    var progressDialog = new ProgressDialog( {
+      size: 'medium'
+    } );
+    windowManager.addWindows( [ progressDialog ] );
+    windowManager.openWindow( progressDialog );
+
+    var createTask = function(operation){
+      return function(next){
+        doTask(operation, next);
+      }
+    };
+
+    var doTask = function(operation, next){
+      $.getJSON( mw.util.wikiScript(), {
+        action: 'ajax',
+        rs: 'CourseEditorOperations::applySectionOp',
+        rsargs: [$('#sectionName').text(), JSON.stringify(operation)]
+      }, function ( data ) {
+        //FIXME add error handlers
+        next();
+      });
+    }
+
+    while( editStack.length > 0 ) {
+      var operation =  editStack.shift();
+      $(document).queue('tasks', createTask(operation));
+    };
+
+    $(document).queue('tasks', function(){
+      windowManager.closeWindow([progressDialog]);
+      window.location.assign('/' +  $('#sectionName').text());
+    });
+
+    dequeue('tasks');
   });
 })

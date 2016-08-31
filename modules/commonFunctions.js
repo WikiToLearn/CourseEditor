@@ -99,6 +99,10 @@ var createRecycleBinItem = function(draggableWidget, elementName, editStack){
 
 /******** HELPER METHODS ********/
 
+var dequeue = function(queueName){
+  $(document).dequeue(queueName);
+};
+
 /**
  * Delete a element from the draggableWidget and add a item to the
  * RecycleBin list.
@@ -190,6 +194,23 @@ var editElement = function(draggableWidget, elementName, editStack){
 };
 
 /******** OO.UI OBJECTS ********/
+
+var progressBar = new OO.ui.ProgressBarWidget();
+
+function ProgressDialog( config ) {
+  ProgressDialog.parent.call( this, config );
+};
+OO.inheritClass( ProgressDialog, OO.ui.Dialog );
+ProgressDialog.static.escapable = false;
+ProgressDialog.prototype.initialize = function () {
+  ProgressDialog.parent.prototype.initialize.call( this );
+  this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+  this.content.$element.append(progressBar.$element);
+  this.$body.append( this.content.$element );
+};
+ProgressDialog.prototype.getBodyHeight = function () {
+  return this.content.$element.outerHeight( true );
+};
 
 /****** Draggable Widget ******/
 
