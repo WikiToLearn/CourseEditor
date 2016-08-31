@@ -56,7 +56,7 @@ class CourseEditorUtils {
     }
   }
 
-  public function getChapters($sectionName){
+  public static function getChapters($sectionName){
     $title = Title::newFromText($sectionName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
@@ -66,7 +66,7 @@ class CourseEditorUtils {
     return $matches[2];
   }
 
-  public function getSections($courseName){
+  public static function getSections($courseName){
     $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
@@ -76,7 +76,7 @@ class CourseEditorUtils {
     return $matches[1];
   }
 
-  public function deleteWrapper($title){
+  public static function deleteWrapper($title){
     $context = self::getRequestContext();
     try {
       $user = $context->getUser();
