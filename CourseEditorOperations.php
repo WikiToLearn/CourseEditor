@@ -13,15 +13,15 @@ class CourseEditorOperations {
         $newSectionName = $value->newElementName;
         $chapters = CourseEditorUtils::getChapters($courseName . '/' .$sectionName);
         $newSectionText = "";
-        foreach ($chapters as $value) {
-          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $value ."|". $value ."]]\r\n";
+        foreach ($chapters as $chapter) {
+          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
         }
         $pageTitle = $courseName . "/" . $sectionName;
         $newPageTitle = $courseName . '/' . $newSectionName;
         $resultMove = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle, false, true);
         $resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
         $apiResult = array($resultMove, $resultEdit);
-        $result = CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
+        CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
       break;
       case 'delete':
         $user = CourseEditorUtils::getRequestContext()->getUser();
@@ -40,38 +40,38 @@ class CourseEditorOperations {
           }
         }else {
           $resultChapters = true;
-          foreach ($chapters as $value) {
-            $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
+          foreach ($chapters as $chapter) {
+            $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
             $resultChapters = CourseEditorUtils::deleteWrapper($pageTitle);
           }
           $pageTitle = $courseName . '/' . $sectionName;
           $resultSection = CourseEditorUtils::deleteWrapper($pageTitle);
         }
         $apiResult = array($resultSection, $resultChapters);
-        $result = CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
+        CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
       break;
       case 'add':
         $sectionName = $value->elementName;
         $pageTitle = $courseName . '/' . $sectionName;
         $text =  "";
         $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
-        $result = CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
         $newCourseText = "{{CCourse}}\r\n";
         $newSectionsArray = json_decode($value->elementsList);
-        foreach ($newSectionsArray as $value) {
-          $newCourseText .= "{{SSection|" . $value ."}}\r\n";
+        foreach ($newSectionsArray as $section) {
+          $newCourseText .= "{{SSection|" . $section ."}}\r\n";
         }
         $categories = CourseEditorUtils::getCategories($courseName);
         foreach ($categories as $category) {
           $newCourseText .= "\r\n[[" . $category['title'] . "]]";
         }
         $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
-        $result = CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
     }
-    return json_encode($result);
+    return json_encode($value);
   }
 
   public static function applySectionOp($sectionName, $operation){
