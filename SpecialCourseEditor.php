@@ -125,7 +125,7 @@ class SpecialCourseEditor extends SpecialPage {
         $token = $user->getEditToken();
         $selectedNamespace = $formData['namespace'];
         if($formData['keyword'] == null){
-          $randomCourseId = SpecialCourseEditor::generateRandomCourseId();
+          $randomCourseId = CourseEditorUtils::generateRandomCourseId();
         }else {
           $randomCourseId = $formData['keyword'];
         }
@@ -141,7 +141,7 @@ class SpecialCourseEditor extends SpecialPage {
           array(
             'action'     => 'edit',
             'title'      => $pageTitle,
-            'appendtext' => "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\n\n[[Category:".$formData['topic']."]]",
+            'appendtext' => "{{CCourse}}\r\n[[Category:".$formData['topic']."]]",
             'notminor'   => true,
             'token'      => $token
           ),

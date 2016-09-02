@@ -20,7 +20,8 @@ class CourseEditorOperations {
         $newPageTitle = $courseName . '/' . $newSectionName;
         $resultMove = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle, false, true);
         $resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
-        $result = array('resultMove' => $resultMove, 'resultEdit' => $resultEdit);
+        $apiResult = array($resultMove, $resultEdit);
+        $result = CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
       break;
       case 'delete':
         $user = CourseEditorUtils::getRequestContext()->getUser();
@@ -30,11 +31,11 @@ class CourseEditorOperations {
         if(!$title->userCan('delete', $user, 'secure')){
           $resultChapters = true;
           $pageTitle = $courseName . '/' . $sectionName;
-          $prependText = "\r\n{{deleteme}}";
+          $prependText = "\r\n{{DeleteMe}}";
           $resultSection = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           foreach ($chapters as $value) {
             $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
-            $prependText = "\r\n{{deleteme}}";
+            $prependText = "\r\n{{DeleteMe}}";
             $resultChapters = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           }
         }else {
@@ -46,25 +47,28 @@ class CourseEditorOperations {
           $pageTitle = $courseName . '/' . $sectionName;
           $resultSection = CourseEditorUtils::deleteWrapper($pageTitle);
         }
-        $result = array('resultSection' => $resultSection, 'resultEdit' => $resultChapters);
+        $apiResult = array($resultSection, $resultChapters);
+        $result = CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
       break;
       case 'add':
         $sectionName = $value->elementName;
         $pageTitle = $courseName . '/' . $sectionName;
         $text =  "";
-        $result = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
+        $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
+        $result = CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
-        $newCourseText = "[{{fullurl:Special:CourseEditor|actiontype=editcourse&pagename={{FULLPAGENAMEE}}}} Modifica]\r\n";
+        $newCourseText = "{{CCourse}}\r\n";
         $newSectionsArray = json_decode($value->elementsList);
         foreach ($newSectionsArray as $value) {
-          $newCourseText .= "{{Sezione|" . $value ."}}\r\n";
+          $newCourseText .= "{{SSection|" . $value ."}}\r\n";
         }
         $categories = CourseEditorUtils::getCategories($courseName);
         foreach ($categories as $category) {
           $newCourseText .= "\r\n[[" . $category['title'] . "]]";
         }
-        $result = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
+        $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
+        $result = CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
     }
     return json_encode($result);
@@ -79,7 +83,8 @@ class CourseEditorOperations {
         $newChapterName = $value->newElementName;
         $from = $sectionName . '/' . $chapterName;
         $to = $sectionName . '/' . $newChapterName;
-        $result = CourseEditorUtils::moveWrapper($from, $to, false, true);
+        $apiResult = CourseEditorUtils::moveWrapper($from, $to, false, true);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'delete':
         $user = $context->getUser();
@@ -87,32 +92,36 @@ class CourseEditorOperations {
         $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
         if(!$title->userCan('delete', $user, 'secure')){
           $pageTitle = $sectionName . '/' . $chapterName;
-          $prependText = "\r\n{{deleteme}}";
-          $result = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
+          $prependText = "\r\n{{DeleteMe}}";
+          $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
         }else {
           $pageTitle = $sectionName . '/' . $chapterName;
-          $result = CourseEditorUtils::deleteWrapper($pageTitle);
+          $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
         }
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'add':
         $chapterName = $value->elementName;
         $pageTitle = $sectionName . '/' . $chapterName;
         $text =  "";
-        $result = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
+        $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
         $newSectionText = "";
         $newChaptersArray = json_decode($value->elementsList);
-        foreach ($newChaptersArray as $value) {
-          $newSectionText .= "* [[" . $sectionName . "/" . $value ."|". $value ."]]\r\n";
+        foreach ($newChaptersArray as $chapter) {
+          $newSectionText .= "* [[" . $sectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
         }
-        $result = CourseEditorUtils::editWrapper($sectionName, $newSectionText);
+        $apiResult = CourseEditorUtils::editWrapper($sectionName, $newSectionText);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'purge':
         list($course, $section) = explode("/", $sectionName);
-        $result = CourseEditorUtils::purgeWrapper($course);
+        $apiResult = CourseEditorUtils::purgeWrapper($course);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
     }
-    return json_encode($result);
+    return json_encode($value);
   }
 }

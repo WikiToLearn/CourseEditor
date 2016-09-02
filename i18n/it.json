@@ -20,5 +20,12 @@
   "courseeditor-message-dialog-cancel" : "Indietro",
   "courseeditor-message-dialog-restore" : "Ripristina",
   "courseeditor-message-dialog-create-new" : "Crea nuovo",
-  "courseeditor-recycle-bin" : "Cestino"
+  "courseeditor-recycle-bin" : "Cestino",
+  "courseeditor-error-operation" : "Scusa, qualcosa è andato storto! :(<br>",
+  "courseeditor-error-operation-action-add" : "Aggiungi",
+  "courseeditor-error-operation-action-rename" : "Rinomina ",
+  "courseeditor-error-operation-action-delete" : "Elimina",
+  "courseeditor-error-operation-action-purge" : "Purga",
+  "courseeditor-error-operation-action-update" : "Aggiorna",
+  "courseeditor-error-operation-fail" : " fallito!"
 }

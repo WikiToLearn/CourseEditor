@@ -69,10 +69,24 @@ $(function () {
         rs: 'CourseEditorOperations::applySectionOp',
         rsargs: [$('#sectionName').text(), JSON.stringify(operation)]
       }, function ( data ) {
-        //FIXME add error handlers
-        next();
+        if (data.success !== true) {
+          var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
+          $('#saveDiv').after(alert);
+          $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
+          $('#alert').append(OO.ui.msg('courseeditor-error-operation-action-' + data.action));
+          if(data.elementName){
+            var localizedMsg = " " + data.elementName + OO.ui.msg('courseeditor-error-operation-fail');
+            $('#alert').append(localizedMsg);
+          }else {
+            $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
+          }
+          windowManager.closeWindow(progressDialog);
+          $(document).clearQueue('tasks');
+        }else{
+          next();
+        }
       });
-    }
+    };
 
     while( editStack.length > 0 ) {
       var operation =  editStack.shift();
@@ -80,10 +94,10 @@ $(function () {
     };
 
     $(document).queue('tasks', function(){
-      windowManager.closeWindow([progressDialog]);
+      windowManager.closeWindow(progressDialog);
       window.location.assign('/' +  $('#sectionName').text());
     });
 
-    dequeue('tasks');
+    dequeue('tasks')
   });
 })

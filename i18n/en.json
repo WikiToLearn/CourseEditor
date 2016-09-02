@@ -20,5 +20,12 @@
   "courseeditor-message-dialog-cancel" : "Cancel",
   "courseeditor-message-dialog-restore" : "Restore",
   "courseeditor-message-dialog-create-new" : "Create new",
-  "courseeditor-recycle-bin" : "Recycle bin"
+  "courseeditor-recycle-bin" : "Recycle bin",
+  "courseeditor-error-operation" : "Sorry, something went wrong! :(<br>",
+  "courseeditor-error-operation-action-add" : "Add",
+  "courseeditor-error-operation-action-rename" : "Rename",
+  "courseeditor-error-operation-action-delete" : "Delete",
+  "courseeditor-error-operation-action-purge" : "Purge",
+  "courseeditor-error-operation-action-update" : "Update",
+  "courseeditor-error-operation-fail" : " fails!"
 }

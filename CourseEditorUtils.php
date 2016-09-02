@@ -6,23 +6,30 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
-  public static function setElementSuccess($result, &$value, &$isSuccess){
-    if($result){
-      $value->success = true;
-    }else {
-      $value->success = false;
+  /**
+  * This method is a workaround (read it HACK) to check the API results.
+  * MediaWiki ApiResult object is not "standard" but if an error/exception
+  * occurs the result variable is a string.
+  */
+  public static function setSingleOperationSuccess(&$operation, $result){
+    $isSuccess = true;
+    if (is_string($result)) {
       $isSuccess = false;
     }
+    $operation->success = $isSuccess;
   }
 
-  public static function setOperationSuccess($result, $action, &$isSuccess, &$stack){
-    if(!$result){
+  /**
+  * This method is a workaround (read it HACK) to check the API results.
+  * MediaWiki ApiResult object is not "standard" but if an error/exception
+  * occurs the result variable is a string.
+  */
+  public static function setComposedOperationSuccess(&$operation, $result){
+    $isSuccess = true;
+    if (is_string($result[0]) || is_string($result[1])) {
       $isSuccess = false;
-      $obj = new stdClass();
-      $obj->action = $action;
-      $obj->success = false;
-      array_push($stack, $obj);
     }
+    $operation->success = $isSuccess;
   }
 
   public static function getRequestContext(){
@@ -71,7 +78,7 @@ class CourseEditorUtils {
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
-    $regex = "/\{{2}\w+\|(.*)\}{2}/";
+    $regex = "/\{{2}SSection\|(.*)\}{2}/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     return $matches[1];
   }
