@@ -18,7 +18,7 @@ class CourseEditorOperations {
         }
         $pageTitle = $courseName . "/" . $sectionName;
         $newPageTitle = $courseName . '/' . $newSectionName;
-        $resultMove = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle, false, true);
+        $resultMove = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
         $resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
         $apiResult = array($resultMove, $resultEdit);
         CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
@@ -33,8 +33,8 @@ class CourseEditorOperations {
           $pageTitle = $courseName . '/' . $sectionName;
           $prependText = "\r\n{{DeleteMe}}";
           $resultSection = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
-          foreach ($chapters as $value) {
-            $pageTitle = $courseName . '/' . $sectionName . '/' . $value;
+          foreach ($chapters as $chapter) {
+            $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
             $prependText = "\r\n{{DeleteMe}}";
             $resultChapters = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           }
@@ -83,7 +83,7 @@ class CourseEditorOperations {
         $newChapterName = $value->newElementName;
         $from = $sectionName . '/' . $chapterName;
         $to = $sectionName . '/' . $newChapterName;
-        $apiResult = CourseEditorUtils::moveWrapper($from, $to, false, true);
+        $apiResult = CourseEditorUtils::moveWrapper($from, $to);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'delete':

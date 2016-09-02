@@ -160,7 +160,7 @@ class CourseEditorUtils {
     }
   }
 
-  public static function moveWrapper($from, $to, $redirect, $subpages){
+  public static function moveWrapper($from, $to){
     $context = self::getRequestContext();
     try {
       $user = $context->getUser();
