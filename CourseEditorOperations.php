@@ -64,8 +64,10 @@ class CourseEditorOperations {
           $newCourseText .= "{{SSection|" . $section ."}}\r\n";
         }
         $categories = CourseEditorUtils::getCategories($courseName);
-        foreach ($categories as $category) {
-          $newCourseText .= "\r\n[[" . $category['title'] . "]]";
+        if(sizeof($categories) > 0){
+          foreach ($categories as $category) {
+            $newCourseText .= "\r\n[[" . $category['title'] . "]]";
+          }
         }
         $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
