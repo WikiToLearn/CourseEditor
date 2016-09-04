@@ -50,17 +50,39 @@ $(function () {
 
   $('#createCourseButton').click(function(e){
     e.preventDefault();
-    var courseTopic = $('#courseTopic').val().trim();
     var courseName = $('#courseName').val().trim();
     var courseDescription = $('#courseDescription').val().trim();
     var courseNamespace = $('input[name="courseNamespace"]').val();
-
+    var courseTopic, courseDepartment, operationRequested;
+    if($('#courseTopic').length !== 0){
+      courseTopic = $('#courseTopic').val().trim();
+      operationRequested = {
+        type : 'fromTopic',
+        params : [
+          courseTopic,
+          courseName,
+          courseDescription,
+          courseNamespace
+        ]
+      };
+    }else{
+      courseDepartment = $('#courseDepartment').val().trim();
+      operationRequested = {
+        type : 'fromDepartment',
+        params : [
+          courseDepartment,
+          courseName,
+          courseDescription,
+          courseNamespace
+        ]
+      };
+    }
     $.post( mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'CourseEditorOperations::createCourseOp',
-      rsargs: [courseTopic, courseName, courseDescription, courseNamespace]
+      rsargs: [JSON.stringify(operationRequested)]
     }, function ( data ) {
-      window.location.assign('/' +  courseTopic);
+      //window.location.assign('/' +  courseTopic);
     });
   });
 })

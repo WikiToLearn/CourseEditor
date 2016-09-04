@@ -9,6 +9,7 @@
   "courseeditor-rename" : "Rename",
   "courseeditor-organize-chapters" : "You can organize, add and delete chapters",
   "courseeditor-organize-sections" : "You can organize, add and delete sections",
+  "courseeditor-input-department-label" : "Department:",
   "courseeditor-input-topic-label" : "Topic:",
   "courseeditor-input-course-label" : "Title:",
   "courseeditor-input-course-placeholder" : "Insert the title of the course",

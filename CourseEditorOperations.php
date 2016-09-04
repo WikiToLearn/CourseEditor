@@ -5,37 +5,98 @@ if ( !defined( 'MEDIAWIKI' ) ){
 
 class CourseEditorOperations {
 
-  public static function createCourseOp($topic, $title, $description, $namespace){
-    if($topic != null && $title != null && $namespace != null){
-      $context = CourseEditorUtils::getRequestContext();
+  public static function createCourseOp($operationRequested){
+    $operation = json_decode($operationRequested);
+    switch ($operation->type) {
+      case 'fromTopic':
+        self::createNewCourseFromTopic($operation->params);
+      break;
+      case 'fromDepartment':
+        self::createNewCourseFromDepartment($operation->params);
+      break;
+    }
+    return "ok";
+  }
+
+  private function createNewCourseFromDepartment($params){
+    $department = $params[0];
+    $title = $params[1];
+    $description = $params[2];
+    $namespace = $params[3];
+
+    if($department != null && $title != null && $namespace != null){
       $compareResult = strcmp($namespace, 'NS_COURSE');
       $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
       $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
-
       if($namespaceCostant == NS_USER){
-        $pageTitle .=  $user->getName() . '/' . $title;
-        $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+        self::createPrivateCourse($pageTitle, $title);
       }else{
-        $pageTitle .= $title;
-        $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
-        $topicCourses = CourseEditorUtils::getTopicCourses($topic);
-        $text = $topicCourses . "{{Course|" . $title;
-        /*if(sizeof($topicCourses[1][0]) > 0){
-          $text = $topicCourses[1][0] . "{{Course|" . $title;
-        }else {
-          $text = "{{Topic|" . "{{Course|" . $title;
-        }*/
-        if($description !== ""){
-          $text .= "|" . $description . "}}}}";
-        }else {
-          $text .= "}}}}";
-        }
-        $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
+        self::createPublicCourseFromDepartment($pageTitle, $department, $title);
       }
-      //FIXME Return an object with results in order to display error to the user
-      return json_encode("Ok");
     }
   }
+
+  private function createNewCourseFromTopic($params){
+    $topic = $params[0];
+    $title = $params[1];
+    $description = $params[2];
+    $namespace = $params[3];
+    if($topic != null && $title != null && $namespace != null){
+      $compareResult = strcmp($namespace, 'NS_COURSE');
+      $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
+      $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
+      if($namespaceCostant == NS_USER){
+        self::createPrivateCourse($pageTitle, $title);
+      }else{
+        self::createPublicCourse($pageTitle, $topic, $title);
+      }
+    }
+  }
+
+  private function createPrivateCourse($pageTitle, $title){
+    $context = CourseEditorUtils::getRequestContext();
+    $user = $context->getUser();
+    $pageTitle .=  $user->getName() . '/' . $title;
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    //FIXME Return an object with results in order to display error to the user
+  }
+
+  private function createPublicCourseFromTopic($pageTitle, $topic, $title){
+    $pageTitle .= $title;
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    $topicCourses = CourseEditorUtils::getTopicCourses($topic);
+    $text = $topicCourses . "{{Course|" . $title;
+    /*if(sizeof($topicCourse) > 0){
+      $text = $topicCourses[1][0] . "{{Course|" . $title;
+    }else {
+      $text = "{{Topic|" . "{{Course|" . $title;
+    }*/
+    if($description !== ""){
+      $text .= "|" . $description . "}}}}";
+    }else {
+      $text .= "}}}}";
+    }
+    $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
+    //FIXME Return an object with results in order to display error to the user
+
+  }
+
+  private function createPublicCourseFromDepartment($pageTitle, $department, $title){
+    $pageTitle .= $title;
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    $text = "{{Topic|" . "{{Course|" . $title;
+    if($description !== ""){
+      $text .= "|" . $description . "}}}}";
+    }else {
+      $text .= "}}}}";
+    }
+    $listElementText =  "\r\n* [[" . $title . "]]";
+    $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
+    $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
+    //FIXME Return an object with results in order to display error to the user
+
+  }
+
 
   public static function applyCourseOp($courseName, $operation){
     $value = json_decode($operation);

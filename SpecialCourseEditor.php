@@ -95,6 +95,18 @@ class SpecialCourseEditor extends SpecialPage {
     CourseEditorUtils::purgeWrapper($to);
   }
 
+  private function createNewCourseFromDepartment($department){
+    $out = $this->getOutput();
+    $out->enableOOUI();
+    $out->addModules('ext.courseEditor.create');
+    $out->setPageTitle("Create course");
+    $template = new CourseCreatorTemplate();
+    $template->setRef('courseEditor', $this);
+    $template->set('context', $this->getContext());
+    $template->set('department', $department);
+    $out->addTemplate( $template );
+  }
+
   private function createNewCourseFromTopic($topic) {
     $out = $this->getOutput();
     $out->enableOOUI();

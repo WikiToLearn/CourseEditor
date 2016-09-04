@@ -68,13 +68,27 @@ class CourseEditorTemplate extends QuickTemplate {
 
 class CourseCreatorTemplate extends QuickTemplate {
   public function execute(){
-    $topic = $this->data['topic'];
     ?>
     <form>
+      <?php
+    if($this->data['topic']){
+        $topic = $this->data['topic'];
+      ?>
       <div class="form-group">
         <label for="courseTopic"><?php echo wfMessage( 'courseeditor-input-topic-label' ) ?></label>
         <input type="text" class="form-control" id="courseTopic" disabled="true" value="<?php echo $topic ?>">
       </div>
+    <?php
+  }else if($this->data['department']){
+    $department = $this->data['department'];
+    ?>
+    <div class="form-group">
+      <label for="courseDepartment"><?php echo wfMessage( 'courseeditor-input-department-label' ) ?></label>
+      <input type="text" class="form-control" id="courseDepartment" disabled="true" value="<?php echo $department ?>">
+    </div>
+    <?php
+  }
+    ?>
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
         <input type="text" class="form-control" id="courseName" placeholder="<?php echo wfMessage( 'courseeditor-input-course-placeholder' ) ?>" required>
