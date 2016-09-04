@@ -17,7 +17,8 @@ class SpecialCourseEditor extends SpecialPage {
       // If desired a dedicated right e.g. "viewmathstatus" could be used instead.
       throw new PermissionsError( 'move' );
     }
-    switch ($request->getVal('actiontype')){
+    $actionType = $request->getVal('actiontype');
+    switch ($actionType){
       case 'editsection':
         $sectionName = $request->getVal('pagename');
         $this->editSection($sectionName);
@@ -30,9 +31,18 @@ class SpecialCourseEditor extends SpecialPage {
         $courseName = $request->getVal('pagename');
         $this->moveCourse($courseName);
         return;
-      default:
-        $this->createNewCourse();
+      case 'createcourse':
+        if($request->getVal('department')){
+          $department = $request->getVal('department');
+          $this->createNewCourseFromDepartment($department);
+        }else if($request->getVal('topic')){
+          $topic = $request->getVal('topic');
+          $this->createNewCourseFromTopic($topic);
+        }
         return;
+      default:
+        //$this->createNewCourse();
+      return;
     }
   }
 
@@ -71,25 +81,31 @@ class SpecialCourseEditor extends SpecialPage {
     preg_match($regex, $courseName, $matches);
     $courseNameWithoutNamespace = $matches[1];
     $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
-    $this->moveWrapper($courseName, $to, true, true);
-    $sections = $this->getSections($to);
+    CourseEditorUtils::moveWrapper($courseName, $to);
+    $sections = CourseEditorUtils::getSections($to);
     foreach ($sections as $sectionName) {
-      $chapters = $this->getChapters($to . '/' . $sectionName);
+      $chapters = CourseEditorUtils::getChapters($to . '/' . $sectionName);
       $newSectionText = "";
       foreach ($chapters as $chapterName) {
         $newSectionText .= "* [[" . $to . "/" . $sectionName . "/" . $chapterName ."|". $chapterName ."]]\r\n";
       }
       $pageTitle = $to . "/" . $sectionName;
-      $this->editWrapper($pageTitle, $newSectionText, null, null);
+      CourseEditorUtils::editWrapper($pageTitle, $newSectionText, null, null);
     }
-    $this->purgeWrapper($to);
+    CourseEditorUtils::purgeWrapper($to);
   }
 
-  private function createNewCourse() {
+  private function createNewCourseFromTopic($topic) {
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->addModules('ext.courseEditor.create');
-    $formDescriptor = array(
+    $out->setPageTitle("Create course");
+    $template = new CourseCreatorTemplate();
+    $template->setRef('courseEditor', $this);
+    $template->set('context', $this->getContext());
+    $template->set('topic', $topic);
+    $out->addTemplate( $template );
+    /*$formDescriptor = array(
       'topic' => array(
         'class' => 'HTMLTextField',
         'label' => wfMessage( 'courseeditor-set-topic' )
@@ -113,11 +129,12 @@ class SpecialCourseEditor extends SpecialPage {
 			)
     );
     $form = HTMLForm::factory( 'ooui', $formDescriptor, $this->getContext() );
-    $form->setSubmitCallback( array( 'SpecialCourseEditor', 'validateForm' ) );
-    $form->show();
+    //$form->setSubmitCallback( array( 'SpecialCourseEditor', 'validateForm' ) );
+    $form->show();*/
+
   }
 
-  public static function validateForm($formData){
+  /*public static function validateForm($formData){
     if($formData['topic'] != null || $formData['name'] != null){
       $context = CourseEditorUtils::getRequestContext();
       try {
@@ -156,5 +173,5 @@ class SpecialCourseEditor extends SpecialPage {
       return true;
     }
     return wfMessage( 'courseeditor-validate-form' );
-  }
+  }*/
 }

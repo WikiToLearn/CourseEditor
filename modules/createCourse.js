@@ -1,23 +1,61 @@
 $(function () {
-  $('input[name="wpname"]').blur(function(){
-    var courseTitle = $(this).val();
-    if($.trim(courseTitle).length !== 0){
-      var cmtitle = 'Category:' + $('input[name="wptopic"]').val().trim();
-      var api = new mw.Api();
-      api.get( {
-        action: 'query',
-        list: 'categorymembers',
-        cmtitle: cmtitle,
-        cmnamespace: '2800' //NS_COURSE
-      } ).done( function ( data ) {
-        if(data.query.categorymembers.length !== 0){
-          $('#mw-input-wpname').after('<br><div class="alert alert-warning alert-dismissible" id="alert" role="alert"><button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">&times;</span></button></div>');
-          $('#alert').append('Ehi, ci sono dei corsi dello stesso argomento! <br>Che ne diresti di modificarne uno al posto di crearlo nuovamente?<br>Se sei sicuro di voler continuare, ignora questo messaggio ma assicurati di associare una keyword al tuo corso, altrimenti verrà usata una keyword random.<br>');
-          for (var page of data.query.categorymembers) {
-            $('#alert').append('<a class="alert-link" href="/' + page.title + '">' + page.title + '</a><br>');
+    var delay = (function(){
+      var timer = 0;
+      return function(callback, ms){
+        clearTimeout (timer);
+        timer = setTimeout(callback, ms);
+      };
+    })();
+
+    $('#courseName').keypress(function() {
+      delay(function(){
+        $('#alert').hide();
+        $('#createCourseButton').removeAttr('disabled');
+        if($.trim($('#courseName').val()).length !== 0){
+          var api = new mw.Api();
+          /*api.get({
+            action : 'query',
+            list : 'prefixsearch',
+            pssearch : $('#courseName').val().trim(),
+            psnamespace: '2800',
+            psprofile: 'classic'
+          }*/
+          api.get({
+            action : 'query',
+            titles : 'Course:' + $('#courseName').val().trim()
           }
+          ).done( function ( data ) {
+            /*var resultsArray = data.query.prefixsearch;
+            if (resultsArray.length > 0) {
+              for (var i = 0; i < resultsArray.length; i++){
+                //Exit when the result is a subpage
+                if(resultsArray[i].title.indexOf('/') >= 0) break;
+                $('#alert').append('<a class="alert-link" href="/' + resultsArray[i].title + '">' +  resultsArray[i].title + '</a><br>');
+              }
+              $('#alert').show();
+              $('#courseKeywordDiv').show();
+            }*/
+            var pages = data.query.pages;
+            if (!pages['-1']) {
+              for (var pageId in pages) {
+                $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
+              }
+              $('#createCourseButton').attr('disabled', true);
+              $('#alert').show();
+            }
+          } );
         }
-      } );
-    }
+      }, 500 );
+    });
+
+  $('#createCourseButton').click(function(){
+    var courseTopic = $('#courseTopic').val().trim();
+    var courseName = $('#courseTopic').val().trim();
+    var courseNamespace = $('input[name="courseNamespace"]').val();
+    $.post( mw.util.wikiScript(), {
+      action: 'ajax',
+      rs: 'CourseEditorOperations::createCourseOp',
+      rsargs: [courseTopic, courseName, courseNamespace]
+    }, function ( data ) {});
   });
 })
