@@ -117,6 +117,7 @@
     ],
     "config": {
   		"AjaxExportList": [
+        "CourseEditorOperations::createCourseOp",
         "CourseEditorOperations::applySectionOp",
         "CourseEditorOperations::applyCourseOp"
   		]

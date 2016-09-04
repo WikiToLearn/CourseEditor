@@ -5,6 +5,38 @@ if ( !defined( 'MEDIAWIKI' ) ){
 
 class CourseEditorOperations {
 
+  public static function createCourseOp($topic, $title, $description, $namespace){
+    if($topic != null && $title != null && $namespace != null){
+      $context = CourseEditorUtils::getRequestContext();
+      $compareResult = strcmp($namespace, 'NS_COURSE');
+      $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
+      $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
+
+      if($namespaceCostant == NS_USER){
+        $pageTitle .=  $user->getName() . '/' . $title;
+        $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+      }else{
+        $pageTitle .= $title;
+        $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+        $topicCourses = CourseEditorUtils::getTopicCourses($topic);
+        $text = $topicCourses . "{{Course|" . $title;
+        /*if(sizeof($topicCourses[1][0]) > 0){
+          $text = $topicCourses[1][0] . "{{Course|" . $title;
+        }else {
+          $text = "{{Topic|" . "{{Course|" . $title;
+        }*/
+        if($description !== ""){
+          $text .= "|" . $description . "}}}}";
+        }else {
+          $text .= "}}}}";
+        }
+        $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
+      }
+      //FIXME Return an object with results in order to display error to the user
+      return json_encode("Ok");
+    }
+  }
+
   public static function applyCourseOp($courseName, $operation){
     $value = json_decode($operation);
     switch ($value->action) {

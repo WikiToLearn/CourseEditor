@@ -77,7 +77,7 @@ class CourseCreatorTemplate extends QuickTemplate {
       </div>
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
-        <input type="text" class="form-control" id="courseName" placeholder="<?php echo wfMessage( 'courseeditor-input-course-placeholder' ) ?>">
+        <input type="text" class="form-control" id="courseName" placeholder="<?php echo wfMessage( 'courseeditor-input-course-placeholder' ) ?>" required>
       </div>
     <div class="alert alert-warning alert-dismissible" id="alert" role="alert"  style="display:none;">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -86,10 +86,10 @@ class CourseCreatorTemplate extends QuickTemplate {
       <?php echo wfMessage( 'courseeditor-alert-message' ) ?>
       <div id="coursesList"></div>
     </div>
-      <!-- <div class="form-group" style="display:none;" id="courseKeywordDiv">
-        <label for="courseKeyword"><?php echo wfMessage( 'courseeditor-input-keyword-label' ) ?></label>
-        <input type="text" class="form-control" id="courseKeyword" placeholder="<?php echo wfMessage( 'courseeditor-input-keyword-placeholder' ) ?>">
-      </div> -->
+      <div class="form-group">
+        <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
+        <input type="text" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>">
+      </div>
       <label for="courseNamespace"><?php echo wfMessage('courseeditor-radiobutton-namespace') ?></label>
       <div class="radio" id="radioButtons">
         <label>
@@ -103,7 +103,7 @@ class CourseCreatorTemplate extends QuickTemplate {
           <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
         </label>
       </div>
-      <button type="submit" class="btn btn-primary btn-lg" id="createCourseButton">Submit</button>
+      <button class="btn btn-primary btn-lg" id="createCourseButton">Submit</button>
     </form>
 <?php
   }

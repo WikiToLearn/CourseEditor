@@ -48,14 +48,19 @@ $(function () {
       }, 500 );
     });
 
-  $('#createCourseButton').click(function(){
+  $('#createCourseButton').click(function(e){
+    e.preventDefault();
     var courseTopic = $('#courseTopic').val().trim();
-    var courseName = $('#courseTopic').val().trim();
+    var courseName = $('#courseName').val().trim();
+    var courseDescription = $('#courseDescription').val().trim();
     var courseNamespace = $('input[name="courseNamespace"]').val();
+
     $.post( mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'CourseEditorOperations::createCourseOp',
-      rsargs: [courseTopic, courseName, courseNamespace]
-    }, function ( data ) {});
+      rsargs: [courseTopic, courseName, courseDescription, courseNamespace]
+    }, function ( data ) {
+      window.location.assign('/' +  courseTopic);
+    });
   });
 })

@@ -6,6 +6,17 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  public static function getTopicCourses($topic){
+    $title = Title::newFromText($topic, $defaultNamespace=NS_MAIN );
+    $page = WikiPage::factory( $title );
+    $content = $page->getContent( Revision::RAW );
+    $text = ContentHandler::getContentText( $content );
+    $textNoNewLines = trim(preg_replace('/\n+/', '', $text));
+    $regex = "/({{Topic|.+)}}.*$/";
+    preg_match_all($regex, $textNoNewLines, $matches, PREG_PATTERN_ORDER);
+    return $matches[1][0];
+  }
+
   /**
   * This method is a workaround (read it HACK) to check the API results.
   * MediaWiki ApiResult object is not "standard" but if an error/exception
