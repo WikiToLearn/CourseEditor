@@ -52,7 +52,7 @@ $(function () {
     e.preventDefault();
     var courseName = $('#courseName').val().trim();
     var courseDescription = $('#courseDescription').val().trim();
-    var courseNamespace = $('input[name="courseNamespace"]').val();
+    var courseNamespace = $('input[name="courseNamespace"]:checked').val();
     var courseTopic, courseDepartment, operationRequested;
     if($('#courseTopic').length !== 0){
       courseTopic = $('#courseTopic').val().trim();

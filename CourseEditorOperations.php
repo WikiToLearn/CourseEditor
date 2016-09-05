@@ -15,7 +15,19 @@ class CourseEditorOperations {
         self::createNewCourseFromDepartment($operation->params);
       break;
     }
+    //FIXME Must be a serius return object and error handling
     return "ok";
+  }
+
+  private function createCourseMetadata($topic, $title, $description){
+    $topic = ($topic ===  null ? $title : $topic);
+    $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
+    $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
+    if($description !== '' && $description !== null){
+      $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
+    }
+    $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
+    //FIXME Return an object with results in order to display error to the user
   }
 
   private function createNewCourseFromDepartment($params){
@@ -29,9 +41,9 @@ class CourseEditorOperations {
       $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
       $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
       if($namespaceCostant == NS_USER){
-        self::createPrivateCourse($pageTitle, $title);
+        self::createPrivateCourse($pageTitle, null, $title, $description);
       }else{
-        self::createPublicCourseFromDepartment($pageTitle, $department, $title);
+        self::createPublicCourseFromDepartment($pageTitle, $department, $title, $description);
       }
     }
   }
@@ -43,54 +55,61 @@ class CourseEditorOperations {
     $namespace = $params[3];
     if($topic != null && $title != null && $namespace != null){
       $compareResult = strcmp($namespace, 'NS_COURSE');
-      $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
+      $namespaceCostant = ($compareResult === 0 ? NS_COURSE : NS_USER);
       $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
       if($namespaceCostant == NS_USER){
-        self::createPrivateCourse($pageTitle, $title);
+        self::createPrivateCourse($pageTitle, $topic, $title, $description);
       }else{
-        self::createPublicCourse($pageTitle, $topic, $title);
+        self::createPublicCourseFromTopic($pageTitle, $topic, $title, $description);
       }
     }
   }
 
-  private function createPrivateCourse($pageTitle, $title){
+  private function createPrivateCourse($pageTitle, $topic, $title, $description){
     $context = CourseEditorUtils::getRequestContext();
     $user = $context->getUser();
-    $pageTitle .=  $user->getName() . '/' . $title;
+    $userPage = $pageTitle . $user->getName();
+    $titleWithUser = $user->getName() . '/' . $title;
+    $pageTitle .=  $userPage . "/" . $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    $resultCreateMetadataPage = self::createCourseMetadata($topic, $titleWithUser, $description);
+    $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
+    $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
     //FIXME Return an object with results in order to display error to the user
   }
 
-  private function createPublicCourseFromTopic($pageTitle, $topic, $title){
+  private function createPublicCourseFromTopic($pageTitle, $topic, $title, $description){
     $pageTitle .= $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
-    $text = $topicCourses . "{{Course|" . $title;
+    $text = $topicCourses . "{{Course|" . $title . "}}}}";
     /*if(sizeof($topicCourse) > 0){
       $text = $topicCourses[1][0] . "{{Course|" . $title;
     }else {
       $text = "{{Topic|" . "{{Course|" . $title;
-    }*/
-    if($description !== ""){
+    }
+    if($description !== "" && $description !== null){
       $text .= "|" . $description . "}}}}";
     }else {
       $text .= "}}}}";
-    }
+    }*/
+    $resultCreateMetadataPage = self::createCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
     //FIXME Return an object with results in order to display error to the user
 
   }
 
-  private function createPublicCourseFromDepartment($pageTitle, $department, $title){
+  private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
     $pageTitle .= $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
-    $text = "{{Topic|" . "{{Course|" . $title;
-    if($description !== ""){
+    $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
+    /*if($description !== "" && $description !== null){
       $text .= "|" . $description . "}}}}";
     }else {
       $text .= "}}}}";
-    }
+    }*/
     $listElementText =  "\r\n* [[" . $title . "]]";
+    $resultCreateMetadataPage = self::createCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
     $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
     //FIXME Return an object with results in order to display error to the user

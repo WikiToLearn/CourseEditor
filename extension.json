@@ -113,6 +113,11 @@
   			"constant": "NS_COURSE_TALK",
   			"name": "Course_talk",
         "subpages" : true
+  		},
+      {
+  			"id": 2900,
+  			"constant": "NS_COURSEMETADATA",
+  			"name": "CourseMetadata"
   		}
     ],
     "config": {
