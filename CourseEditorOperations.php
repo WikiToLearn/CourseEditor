@@ -70,7 +70,7 @@ class CourseEditorOperations {
     $user = $context->getUser();
     $userPage = $pageTitle . $user->getName();
     $titleWithUser = $user->getName() . '/' . $title;
-    $pageTitle .=  $userPage . "/" . $title;
+    $pageTitle = $userPage . "/" . $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $resultCreateMetadataPage = self::createCourseMetadata($topic, $titleWithUser, $description);
     $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
@@ -231,8 +231,9 @@ class CourseEditorOperations {
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'purge':
-        list($course, $section) = explode("/", $sectionName);
-        $apiResult = CourseEditorUtils::purgeWrapper($course);
+        $explodedString = explode("/", $sectionName);
+        $pageToBePurged = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
+        $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
     }
