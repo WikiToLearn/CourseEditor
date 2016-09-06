@@ -25,7 +25,8 @@
         ]
     },
     "ExtensionMessagesFiles": {
-        "CourseEditorAlias": "CourseEditor.alias.php"
+        "CourseEditorAlias": "CourseEditor.alias.php",
+        "CourseEditorNamespaces": "CourseEditor.namespaces.php"
     },
     "ResourceFileModulePaths": {
         "localBasePath": ""

@@ -78,8 +78,12 @@ class SpecialCourseEditor extends SpecialPage {
 
   private function moveCourse($courseName){
     $regex = "/\/(.*)/";
-    preg_match($regex, $courseName, $matches);
-    $courseNameWithoutNamespace = $matches[1];
+    $resultStatus = preg_match($regex, $courseName, $matches);
+    if ($resultStatus === 0 ||  $resultStatus === false) {
+      $courseNameWithoutNamespace = $courseName;
+    }else {
+      $courseNameWithoutNamespace = $matches[1];
+    }
     $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
     CourseEditorUtils::moveWrapper($courseName, $to);
     $sections = CourseEditorUtils::getSections($to);
