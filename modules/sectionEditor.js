@@ -23,21 +23,21 @@ $(function () {
   var fieldInput = 	new OO.ui.FieldLayout( textInputWidget);
 
   //Create save button
-  var buttonSave = new OO.ui.ButtonWidget( {
+  /*var buttonSave = new OO.ui.ButtonWidget( {
     id: 'saveSection',
     label: OO.ui.deferMsg( 'courseeditor-save-section' ),
     flags: ['constructive'],
   } );
-  buttonSave.$label.append("<i class='fa fa-floppy-o pull-left' aria-hidden='true'></i>");
+  buttonSave.$label.append("<i class='fa fa-floppy-o pull-left' aria-hidden='true'></i>");*/
 
   //Append all created elements to DOM
   $('#chaptersList').append(fieldDrag.$element, fieldInput.$element);
-  $('#saveDiv').append('<br><br>', buttonSave.$element);
+  //$('#saveDiv').append('<br><br>', buttonSave.$element);
 
   //Init Handlers
   initHandlers(draggableWidget, textInputWidget, editStack);
 
-  $('#saveSection').click(function(){
+  $('#saveSectionButton').click(function(){
     var newChapters = [];
     $.each(draggableWidget.getItems(), function(key, value){
       newChapters.push(value.data);

@@ -18,20 +18,27 @@ class SectionEditorTemplate extends QuickTemplate {
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
     <h2 id="sectionName"><?php echo htmlspecialchars($section) ?></h2>
-    <div class="col-md-8">
-      <div id="chaptersList"></div>
-      <div id="saveDiv"></div>
-    </div>
-    <div class="col-md-4">
-      <div id="undoStack">
-        <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo wfMessage( 'courseeditor-recycle-bin' ); ?></div>
-          <!-- List group -->
-          <div class="list-group">
+    <div class="row">
+      <div class="col-md-8">
+        <div id="chaptersList"></div>
+        <div id="saveDiv"></div>
+      </div>
+      <div class="col-md-4">
+        <div id="undoStack">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo wfMessage( 'courseeditor-recycle-bin' ); ?></div>
+            <!-- List group -->
+            <div class="list-group">
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <br>
+    <br>
+    <div id="saveDiv" class="text-center">
+      <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
     </div>
     <?php
   }
@@ -47,20 +54,26 @@ class CourseEditorTemplate extends QuickTemplate {
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
     <h2 id="courseName"><?php echo htmlspecialchars($courseName) ?></h2>
-    <div class="col-md-8">
-      <div id="sectionsList"></div>
-      <div id="saveDiv"></div>
-    </div>
-    <div class="col-md-4">
-      <div id="undoStack">
-        <div class="panel panel-default">
-          <!-- Default panel contents -->
-          <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo wfMessage( 'courseeditor-recycle-bin' ); ?></div>
-          <!-- List group -->
-          <div class="list-group">
+    <div class="row">
+      <div class="col-md-8">
+        <div id="sectionsList"></div>
+      </div>
+      <div class="col-md-4">
+        <div id="undoStack">
+          <div class="panel panel-default">
+            <!-- Default panel contents -->
+            <div class="panel-heading"><i class="fa fa-recycle" aria-hidden="true"></i>&nbsp;&nbsp;<?php echo wfMessage( 'courseeditor-recycle-bin' ); ?></div>
+            <!-- List group -->
+            <div class="list-group">
+            </div>
           </div>
         </div>
       </div>
+    </div>
+    <br>
+    <br>
+    <div id="saveDiv" class="text-center">
+      <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
     </div>
     <?php
   }

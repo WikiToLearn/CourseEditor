@@ -3,11 +3,12 @@
 if (!defined('MEDIAWIKI')){
     die();
 }
+
 if(function_exists('wfLoadExtension')) {
     wfLoadExtension('CourseEditor');
-    
-    wfWarn( "Deprecated entry point to CourseEditor. Please use wfLoadExtension('CourseEditor').");
-    
+    $wgMessagesDirs['CourseEditor'] = __DIR__ . '/i18n';
+    $wgExtensionMessagesFiles['CourseEditorAlias'] = __DIR__ . '/CourseEditor.alias.php';
+    return;
 }
 else
 {
