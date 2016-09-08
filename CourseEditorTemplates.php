@@ -21,7 +21,14 @@ class SectionEditorTemplate extends QuickTemplate {
     <div class="row">
       <div class="col-md-8">
         <div id="chaptersList"></div>
-        <div id="saveDiv"></div>
+        <br>
+        <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
+          <div id="coursesList"></div>
+        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -57,6 +64,14 @@ class CourseEditorTemplate extends QuickTemplate {
     <div class="row">
       <div class="col-md-8">
         <div id="sectionsList"></div>
+        <br>
+        <div class="alert alert-warning alert-danger" id="alert" role="alert"  style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
+          <div id="coursesList"></div>
+        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">

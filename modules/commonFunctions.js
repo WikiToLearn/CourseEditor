@@ -20,6 +20,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });
   $('.oo-ui-inputWidget-input').attr('id', 'addElement');
   $('#addElement').blur(function(){
+    $('#alert').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
   });
@@ -44,6 +45,22 @@ var findIndexOfDeletedElement = function(editStack, elementName) {
   }
   return null;
 };
+/**
+ * Find the index of already added or renamed element in the editStack
+ * @param {String} [elementName]
+ * @param {DraggableWidget} [draggableWidget]
+ * @return boolean
+ */
+var elementExist = function(draggableWidget, elementName) {
+  var items = draggableWidget.getItems();
+  for (var item in items) {
+    if (items[item].data === elementName) {
+      return true;
+    }
+  }
+  return false;
+};
+
 /**
  * Create a drag item, its handlers on edit and remove icons and append it to
  * to the draggableWidget.
@@ -143,13 +160,7 @@ var restoreElement = function(draggableWidget, elementName, editStack){
  */
 var addElement = function(draggableWidget, elementName, editStack){
   if($.trim(elementName).length !== 0){
-    if(findIndexOfDeletedElement(editStack, elementName) === null){
-      createDragItem(draggableWidget, elementName, editStack);
-      editStack.push({
-        action: 'add',
-        elementName: elementName
-      });
-    }else {
+    if(findIndexOfDeletedElement(editStack, elementName) !== null){
       var messageDialog = new OO.ui.MessageDialog();
       windowManager.addWindows( [ messageDialog ] );
       windowManager.openWindow( messageDialog, {
@@ -177,6 +188,14 @@ var addElement = function(draggableWidget, elementName, editStack){
           }
         } );
       } );
+    }else if (elementExist(draggableWidget, elementName)) {
+      $('#alert').show();
+    }else {
+      createDragItem(draggableWidget, elementName, editStack);
+      editStack.push({
+        action: 'add',
+        elementName: elementName
+      });
     }
   }
 };

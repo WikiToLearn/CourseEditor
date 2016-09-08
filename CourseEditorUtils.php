@@ -198,22 +198,4 @@ class CourseEditorUtils {
       return $e->getMessage();
     }
   }
-
-  public static function generateRandomCourseId(){
-    $randomCourseId = '';
-    $switchToChar = true;
-    $random = 0;
-    for ($i=0; $i < 6; $i++) {
-      $random = mt_rand(48, 57);
-      if($switchToChar){
-        $random += 49;
-        $randomCourseId .= chr($random);
-        $switchToChar = false;
-      }else {
-        $randomCourseId .=  chr($random);
-        $switchToChar = true;
-      }
-    }
-    return $randomCourseId;
-  }
 }

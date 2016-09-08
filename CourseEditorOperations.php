@@ -83,16 +83,6 @@ class CourseEditorOperations {
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
     $text = $topicCourses . "{{Course|" . $title . "}}}}";
-    /*if(sizeof($topicCourse) > 0){
-      $text = $topicCourses[1][0] . "{{Course|" . $title;
-    }else {
-      $text = "{{Topic|" . "{{Course|" . $title;
-    }
-    if($description !== "" && $description !== null){
-      $text .= "|" . $description . "}}}}";
-    }else {
-      $text .= "}}}}";
-    }*/
     $resultCreateMetadataPage = self::createCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
     //FIXME Return an object with results in order to display error to the user
@@ -103,11 +93,6 @@ class CourseEditorOperations {
     $pageTitle .= $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
-    /*if($description !== "" && $description !== null){
-      $text .= "|" . $description . "}}}}";
-    }else {
-      $text .= "}}}}";
-    }*/
     $listElementText =  "\r\n* [[" . $title . "]]";
     $resultCreateMetadataPage = self::createCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
@@ -170,11 +155,12 @@ class CourseEditorOperations {
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
-        $newCourseText = "{{CCourse}}\r\n";
+        $newCourseText = "{{CCourse|\r\n";
         $newSectionsArray = json_decode($value->elementsList);
         foreach ($newSectionsArray as $section) {
           $newCourseText .= "{{SSection|" . $section ."}}\r\n";
         }
+        $newCourseText .= "}}"
         $categories = CourseEditorUtils::getCategories($courseName);
         if(sizeof($categories) > 0){
           foreach ($categories as $category) {

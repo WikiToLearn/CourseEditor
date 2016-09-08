@@ -25,6 +25,7 @@
   "courseeditor-message-dialog-cancel" : "Indietro",
   "courseeditor-message-dialog-restore" : "Ripristina",
   "courseeditor-message-dialog-create-new" : "Crea nuovo",
+  "courseeditor-alert-message-existing-element" : "È già presente un elemento con lo stesso nome. Per favore, inserire un nome diverso.",
   "courseeditor-recycle-bin" : "Cestino",
   "courseeditor-error-operation" : "Scusa, qualcosa è andato storto! :(<br>",
   "courseeditor-error-operation-action-add" : "Aggiungi",
