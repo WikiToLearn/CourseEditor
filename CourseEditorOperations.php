@@ -160,7 +160,7 @@ class CourseEditorOperations {
         foreach ($newSectionsArray as $section) {
           $newCourseText .= "{{SSection|" . $section ."}}\r\n";
         }
-        $newCourseText .= "}}"
+        $newCourseText .= "}}";
         $categories = CourseEditorUtils::getCategories($courseName);
         if(sizeof($categories) > 0){
           foreach ($categories as $category) {
