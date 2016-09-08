@@ -17,6 +17,7 @@
         "SectionEditorTemplate":"CourseEditorTemplates.php",
         "CourseEditorTemplate" : "CourseEditorTemplates.php",
         "CourseCreatorTemplate" : "CourseEditorTemplates.php",
+        "ManageMetadataTemplate" : "CourseEditorTemplates.php",
         "SpecialCourseEditor":"SpecialCourseEditor.php"
     },
     "MessagesDirs":{

@@ -40,8 +40,12 @@ class SpecialCourseEditor extends SpecialPage {
           $this->createNewCourseFromTopic($topic);
         }
         return;
+      case 'managemetadata':
+        $courseName = $request->getVal('pagename');
+        $this->manageMetadata($courseName);
+      break;
       default:
-        //$this->createNewCourse();
+        $this->renderCreditsAndInfo();
       return;
     }
   }
@@ -121,5 +125,26 @@ class SpecialCourseEditor extends SpecialPage {
     $template->set('context', $this->getContext());
     $template->set('topic', $topic);
     $out->addTemplate( $template );
+  }
+
+  private function manageMetadata($courseName){
+    $out = $this->getOutput();
+    $out->enableOOUI();
+    //$out->addModules('ext.courseEditor.create');
+    $out->setPageTitle("Manage metadata");
+    $template = new ManageMetadataTemplate();
+    $template->setRef('courseEditor', $this);
+    $template->set('context', $this->getContext());
+    $template->set('course', $courseName);
+    $metadataResult = CourseEditorUtils::getMetadata($courseName);
+    if($metadataResult !== null){
+      $template->set('metadataResult', $metadataResult);
+    }
+    $out->addTemplate( $template );
+  }
+
+  private function renderCreditsAndInfo() {
+    $out = $this->getOutput();
+    $out->addWikiMsg('courseeditor-credits-info');
   }
 }

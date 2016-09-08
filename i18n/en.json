@@ -1,5 +1,6 @@
 {
   "courseeditor" : "Course editor",
+  "courseeditor-credits-info": "CourseEditor is an extension to create and manage courses.",
   "courseeditor-add-new-section" : "Add a new section",
   "courseeditor-save-course": "Save course",
   "courseeditor-add-new-chapter" : "Add New Chapter",

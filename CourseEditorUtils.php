@@ -6,6 +6,21 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  public static function getMetadata($courseName){
+    $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSEMETADATA );
+    $page = WikiPage::factory( $title );
+    $content = $page->getContent( Revision::RAW );
+    $text = ContentHandler::getContentText( $content );
+    if($text === ''){
+      return null;
+    }
+    $regex = "/<section begin=(.*?)\/>(.*?)<section end=.*?\/>/";
+    preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+    $metadataKeys =  $matches[1];
+    $metadataValues = $matches[2];
+    return array('keys' => $metadataKeys, 'values' => $metadataValues);
+  }
+
   public static function getTopicCourses($topic){
     $title = Title::newFromText($topic, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
