@@ -13,37 +13,42 @@ $(function () {
         $('#createCourseButton').removeAttr('disabled');
         if($.trim($('#courseName').val()).length !== 0){
           var api = new mw.Api();
-          /*api.get({
-            action : 'query',
-            list : 'prefixsearch',
-            pssearch : $('#courseName').val().trim(),
-            psnamespace: '2800',
-            psprofile: 'classic'
-          }*/
-          api.get({
-            action : 'query',
-            titles : 'Course:' + $('#courseName').val().trim()
-          }
-          ).done( function ( data ) {
-            /*var resultsArray = data.query.prefixsearch;
-            if (resultsArray.length > 0) {
-              for (var i = 0; i < resultsArray.length; i++){
-                //Exit when the result is a subpage
-                if(resultsArray[i].title.indexOf('/') >= 0) break;
-                $('#alert').append('<a class="alert-link" href="/' + resultsArray[i].title + '">' +  resultsArray[i].title + '</a><br>');
-              }
-              $('#alert').show();
-              $('#courseKeywordDiv').show();
-            }*/
-            var pages = data.query.pages;
-            if (!pages['-1']) {
-              for (var pageId in pages) {
-                $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
-              }
-              $('#createCourseButton').attr('disabled', true);
-              $('#alert').show();
+          if($('#courseTopic').length !== 0){
+            api.get({
+              action : 'query',
+              titles : 'Course:' + $('#courseName').val().trim()
             }
-          } );
+            ).done( function ( data ) {
+              var pages = data.query.pages;
+              if (!pages['-1']) {
+                for (var pageId in pages) {
+                  $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
+                }
+                $('#createCourseButton').attr('disabled', true);
+                $('#alert').show();
+              }
+            } );
+          }else {
+            api.get({
+              action : 'query',
+              list : 'prefixsearch',
+              pssearch : $('#courseName').val().trim(),
+              psnamespace: '2800',
+              psprofile: 'classic'
+            }).done( function ( data ) {
+              $('#coursesList').html('');
+              var resultsArray = data.query.prefixsearch;
+              if (resultsArray.length > 0) {
+                for (var i = 0; i < resultsArray.length; i++){
+                  //Exit when the result is a subpage
+                  if(resultsArray[i].title.indexOf('/') >= 0) break;
+                  $('#coursesList').append('<a class="alert-link" href="/' + resultsArray[i].title + '">' +  resultsArray[i].title + '</a><br>');
+                }
+                $('#createCourseButton').attr('disabled', true);
+                $('#alert').show();
+              }
+            });
+          }
         }
       }, 500 );
     });
