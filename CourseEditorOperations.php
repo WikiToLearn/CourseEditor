@@ -19,12 +19,21 @@ class CourseEditorOperations {
     return "ok";
   }
 
-  private function createCourseMetadata($topic, $title, $description){
+  public static function manageCourseMetadataOp($topic, $title, $description, $externalReferences, $isImported, $isReviewed){
     $topic = ($topic ===  null ? $title : $topic);
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
+    }
+    if($externalReferences !== '' && $externalReferences !== null){
+      $metadata .= "<section begin=externalReferences />" . $externalReferences . "<section end=externalReferences />\r\n";
+    }
+    if($isImported !== false){
+      $metadata .= "<section begin=isImported />" . $isImported . "<section end=isImported />\r\n";
+    }
+    if($isReviewed !== false){
+      $metadata .= "<section begin=isReviewed />" . $isReviewed . "<section end=isReviewed />\r\n";
     }
     $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
     //FIXME Return an object with results in order to display error to the user
@@ -72,7 +81,7 @@ class CourseEditorOperations {
     $titleWithUser = $user->getName() . '/' . $title;
     $pageTitle = $userPage . "/" . $title;
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
-    $resultCreateMetadataPage = self::createCourseMetadata($topic, $titleWithUser, $description);
+    $resultCreateMetadataPage = self::manageCourseMetadataOp($topic, $titleWithUser, $description);
     $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
     //FIXME Return an object with results in order to display error to the user
@@ -83,7 +92,7 @@ class CourseEditorOperations {
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
     $text = $topicCourses . "{{Course|" . $title . "}}}}";
-    $resultCreateMetadataPage = self::createCourseMetadata($topic, $title, $description);
+    $resultCreateMetadataPage = self::manageCourseMetadataOp($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
     //FIXME Return an object with results in order to display error to the user
 
@@ -94,7 +103,7 @@ class CourseEditorOperations {
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
     $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
     $listElementText =  "\r\n* [[" . $title . "]]";
-    $resultCreateMetadataPage = self::createCourseMetadata(null, $title, $description);
+    $resultCreateMetadataPage = self::manageCourseMetadataOp(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
     $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
     //FIXME Return an object with results in order to display error to the user

@@ -14,11 +14,15 @@ class CourseEditorUtils {
     if($text === ''){
       return null;
     }
-    $regex = "/<section begin=(.*?)\/>(.*?)<section end=.*?\/>/";
+    $regex = "/<section begin=(.*?)\s*\/>(.*?)<section end=.*?\/>/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
+    $metadataResult =  array();
     $metadataKeys =  $matches[1];
     $metadataValues = $matches[2];
-    return array('keys' => $metadataKeys, 'values' => $metadataValues);
+    for ($i=0; $i < sizeof($metadataKeys); $i++) {
+      $metadataResult[$metadataKeys[$i]] =  $metadataValues[$i];
+    }
+    return $metadataResult;
   }
 
   public static function getTopicCourses($topic){

@@ -130,7 +130,7 @@ class SpecialCourseEditor extends SpecialPage {
   private function manageMetadata($courseName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    //$out->addModules('ext.courseEditor.create');
+    $out->addModules('ext.courseEditor.manageMetadata');
     $out->setPageTitle("Manage metadata");
     $template = new ManageMetadataTemplate();
     $template->setRef('courseEditor', $this);

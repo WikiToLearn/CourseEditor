@@ -33,6 +33,9 @@
         "localBasePath": ""
     },
     "ResourceModules": {
+        "ext.courseEditor.manageMetadata": {
+          "scripts":["modules/manageMetadata.js"]
+        },
         "ext.courseEditor.create": {
           "scripts":["modules/createCourse.js"]
         },
@@ -124,6 +127,7 @@
     ],
     "config": {
   		"AjaxExportList": [
+        "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
         "CourseEditorOperations::applySectionOp",
         "CourseEditorOperations::applyCourseOp"
