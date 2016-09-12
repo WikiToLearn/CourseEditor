@@ -22,7 +22,9 @@ $(function () {
               var pages = data.query.pages;
               if (!pages['-1']) {
                 for (var pageId in pages) {
-                  $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
+                  if (pages.hasOwnProperty(pagesId)) {
+                    $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
+                  }
                 }
                 $('#createCourseButton').attr('disabled', true);
                 $('#alert').show();

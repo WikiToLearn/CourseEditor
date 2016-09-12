@@ -131,7 +131,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->addModules('ext.courseEditor.manageMetadata');
-    $out->setPageTitle("Manage metadata");
+    $out->setPageTitle(wfMessage('courseeditor-managemetata-pagetitle'));
     $template = new ManageMetadataTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());

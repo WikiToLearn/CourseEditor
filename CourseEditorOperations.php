@@ -19,21 +19,49 @@ class CourseEditorOperations {
     return "ok";
   }
 
-  public static function manageCourseMetadataOp($topic, $title, $description, $externalReferences, $isImported, $isReviewed){
-    $topic = ($topic ===  null ? $title : $topic);
+  public static function manageCourseMetadataOp($operationRequested){
+    $operation = json_decode($operationRequested);
+    $params = $operation->params;
+    $title = $params[0];
+    $topic = $params[1];
+    $description = $params[2];
+    $externalReferences = $params[3];
+    $isImported = $params[4];
+    $originalAuthors =  $params[5];
+    $isReviewed = $params[6];
+    $reviewedOn =  $params[7];
+
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
     }
     if($externalReferences !== '' && $externalReferences !== null){
-      $metadata .= "<section begin=externalReferences />" . $externalReferences . "<section end=externalReferences />\r\n";
+      $metadata .= "<section begin=externalreferences />" . $externalReferences . "<section end=externalreferences />\r\n";
     }
-    if($isImported !== false){
-      $metadata .= "<section begin=isImported />" . $isImported . "<section end=isImported />\r\n";
+    if($isImported !== false || $isReviewed !== false){
+      $metadata .= "<section begin=hasbadge />" . true . "<section end=hasbadge />\r\n";
+      if($isImported !== false){
+        $metadata .= "<section begin=isimported />" . $isImported . "<section end=isimported />\r\n";
+        $metadata .= "<section begin=originalauthors />" . $originalAuthors . "<section end=originalauthors />\r\n";
+      }
+      if($isReviewed !== false){
+        $metadata .= "<section begin=isreviewed />" . $isReviewed . "<section end=isreviewed />\r\n";
+        $metadata .= "<section begin=reviewedon />" . $reviewedOn . "<section end=reviewedon />\r\n";
+      }
     }
-    if($isReviewed !== false){
-      $metadata .= "<section begin=isReviewed />" . $isReviewed . "<section end=isReviewed />\r\n";
+    $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
+    CourseEditorUtils::setSingleOperationSuccess($operation, $resultCreateMetadataPage);
+    return json_encode($operation);
+    //FIXME Return an object with results in order to display error to the user
+  }
+
+  private function createBasicCourseMetadata($topic, $title, $description){
+    $topic = ($topic ===  null ? $title : $topic);
+    $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
+    $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
+    if($description !== '' && $description !== null){
+      $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
     }
     $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
     //FIXME Return an object with results in order to display error to the user
@@ -80,8 +108,8 @@ class CourseEditorOperations {
     $userPage = $pageTitle . $user->getName();
     $titleWithUser = $user->getName() . '/' . $title;
     $pageTitle = $userPage . "/" . $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
-    $resultCreateMetadataPage = self::manageCourseMetadataOp($topic, $titleWithUser, $description);
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
+    $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $titleWithUser, $description);
     $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
     //FIXME Return an object with results in order to display error to the user
@@ -89,10 +117,10 @@ class CourseEditorOperations {
 
   private function createPublicCourseFromTopic($pageTitle, $topic, $title, $description){
     $pageTitle .= $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
     $text = $topicCourses . "{{Course|" . $title . "}}}}";
-    $resultCreateMetadataPage = self::manageCourseMetadataOp($topic, $title, $description);
+    $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
     //FIXME Return an object with results in order to display error to the user
 
@@ -100,10 +128,10 @@ class CourseEditorOperations {
 
   private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
     $pageTitle .= $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse}}", null, null);
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
     $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
     $listElementText =  "\r\n* [[" . $title . "]]";
-    $resultCreateMetadataPage = self::manageCourseMetadataOp(null, $title, $description);
+    $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
     $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
     //FIXME Return an object with results in order to display error to the user

@@ -145,7 +145,7 @@ class CourseCreatorTemplate extends QuickTemplate {
           <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
         </label>
       </div>
-      <button class="btn btn-primary btn-lg" id="createCourseButton">Submit</button>
+      <button class="btn btn-primary btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
     </form>
 <?php
   }
@@ -173,11 +173,11 @@ class ManageMetadataTemplate extends QuickTemplate {
       </div>
       <div class="form-group">
         <label for="courseExternalReferences"><?php echo wfMessage( 'courseeditor-input-externalreferences-label' ) ?></label>
-        <textarea class="form-control" rows="3" id="courseExternalReferences" placeholder="<?php echo wfMessage( 'courseeditor-input-externalreferences-placeholder' ) ?>"><?php echo $metadataResult['externalReferences'] ?></textarea>
+        <textarea class="form-control" rows="3" id="courseExternalReferences" placeholder="<?php echo wfMessage( 'courseeditor-input-externalreferences-placeholder' ) ?>"><?php echo $metadataResult['externalreferences'] ?></textarea>
       </div>
       <div class="checkbox">
         <label for="importedCourse">
-          <?php if(array_key_exists('imported', $metadataResult)){ ?>
+          <?php if(array_key_exists('isimported', $metadataResult)){ ?>
           <input type="checkbox" name="isImported" id="isImported" checked="true">
           <?php }else {
             ?>
@@ -185,9 +185,13 @@ class ManageMetadataTemplate extends QuickTemplate {
           <?php } echo wfMessage( 'courseeditor-input-imported-label' ) ?>
         </label>
       </div>
+      <div class="form-group" id="courseOriginalAuthorsDiv" style="display:none;">
+        <label for="courseOriginalAuthors"><?php echo wfMessage( 'courseeditor-input-originalauthors-label' ) ?></label>
+        <input type="text" class="form-control" id="courseOriginalAuthors" placeholder="<?php echo wfMessage( 'courseeditor-input-originalauthors-placeholder' ) ?>"  value="<?php echo $metadataResult['originalauthors'] ?>" />
+      </div>
       <div class="checkbox">
         <label for="reviewedCourse">
-          <?php if(array_key_exists('reviewed', $metadataResult)){ ?>
+          <?php if(array_key_exists('isreviewed', $metadataResult)){ ?>
           <input type="checkbox"  name="isReviewed" id="isReviewed" checked="true">
           <?php }else {
             ?>
@@ -195,7 +199,18 @@ class ManageMetadataTemplate extends QuickTemplate {
           <?php } echo wfMessage( 'courseeditor-input-reviewed-label' ) ?>
         </label>
       </div>
+      <div class="form-group" id="courseReviewedOnDiv" style="display:none;">
+        <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
+        <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
+      </div>
       <button class="btn btn-primary btn-lg" id="manageMetadataButton"><?php echo wfMessage('courseeditor-save-button') ?></button>
+      <br><br>
+      <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php echo wfMessage( 'courseeditor-error-operation' ) ?>
+      </div>
     </form>
 <?php
   }
