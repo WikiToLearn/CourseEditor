@@ -14,7 +14,7 @@ class CourseEditorUtils {
     if($text === ''){
       return null;
     }
-    $regex = "/<section begin=(.*?)\s*\/>(.*?)<section end=.*?\/>/";
+    $regex = "/<section begin=(.*?)\s*\/>(.*?)<section end=.*?\/>/s";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     $metadataResult =  array();
     $metadataKeys =  $matches[1];
