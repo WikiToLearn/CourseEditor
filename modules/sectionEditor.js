@@ -41,6 +41,9 @@ $(function () {
     editStack.push({
       action: 'purge'
     });
+    editStack.push({
+      action: 'update-collection'
+    });
 
     var progressDialog = new ProgressDialog( {
       size: 'medium'

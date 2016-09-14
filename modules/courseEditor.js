@@ -36,6 +36,9 @@ $(function () {
       action: 'update',
       elementsList: JSON.stringify(newSections)
     });
+    editStack.push({
+      action: 'update-collection'
+    });
 
     var progressDialog = new ProgressDialog( {
       size: 'medium'

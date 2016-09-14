@@ -45,5 +45,8 @@
   "courseeditor-error-operation-action-delete" : "Elimina",
   "courseeditor-error-operation-action-purge" : "Purga",
   "courseeditor-error-operation-action-update" : "Aggiorna",
-  "courseeditor-error-operation-fail" : " fallito!"
+  "courseeditor-error-operation-action-updatecollection" : "Aggiorna libro",
+  "courseeditor-error-operation-fail" : " fallito!",
+  "courseeditor-collection-book-category": "Libri",
+  "courseeditor-collection-savedbook-template": "libro_salvato"
 }

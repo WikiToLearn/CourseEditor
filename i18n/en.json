@@ -45,5 +45,8 @@
   "courseeditor-error-operation-action-delete" : "Delete",
   "courseeditor-error-operation-action-purge" : "Purge",
   "courseeditor-error-operation-action-update" : "Update",
-  "courseeditor-error-operation-fail" : " fails!"
+  "courseeditor-error-operation-action-updatecollection" : "Update book",
+  "courseeditor-error-operation-fail" : " fails!",
+  "courseeditor-collection-book-category": "Books",
+  "courseeditor-collection-savedbook-template": "saved_book"
 }

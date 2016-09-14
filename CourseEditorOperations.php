@@ -207,6 +207,10 @@ class CourseEditorOperations {
         $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
+      case 'update-collection':
+      $apiResult = CourseEditorUtils::updateCollection($courseName);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
     }
     return json_encode($value);
   }
@@ -258,6 +262,12 @@ class CourseEditorOperations {
         $pageToBePurged = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
         $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'update-collection':
+      $explodedString = explode("/", $sectionName);
+      $courseName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
+      $apiResult = CourseEditorUtils::updateCollection($courseName);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
     }
     return json_encode($value);

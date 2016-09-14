@@ -6,6 +6,57 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  public static function updateCollection($courseName) {
+    list($namespace, $name) = explode(':', $courseName, 2);
+    $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSE );
+    $namespaceIndex = $title->getNamespace();
+
+    if(MWNamespace::equals($namespaceIndex, NS_USER)){
+      self::updateUserCollection($courseName);
+    }else {
+      $pageTitle = "Project:" . wfMessage('courseeditor-collection-book-category') ."/" . $name;
+      $collectionText = "{{" . wfMessage('courseeditor-collection-savedbook-template') . "
+        \n| setting-papersize = a4
+        \n| setting-toc = auto
+        \n| setting-columns = 1
+        \n| setting-footer = yes\n}}\n";
+      $collectionText .= "== " . $name . "==\r\n";
+      $sections = self::getSections($courseName);
+      foreach ($sections as $section) {
+        $chapters = self::getChapters($courseName . '/' .$section);
+        $collectionText .= ";" . $section . "\r\n";
+        foreach ($chapters as $chapter) {
+          $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+        }
+      }
+      $collectionText .= "[[Category:" . wfMessage('courseeditor-collection-book-category') ."|" . $name . "]]";
+      $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
+      return $editResult;
+    }
+  }
+
+  private function updateUserCollection($courseName){
+    list($namespaceAndUser, $title) = explode('/', $courseName, 2);
+    $pageTitle = $namespaceAndUser . "/" . wfMessage('courseeditor-collection-book-category') . "/" . $title;
+    $collectionText = "{{" . wfMessage('courseeditor-collection-savedbook-template') . "
+      \n| setting-papersize = a4
+      \n| setting-toc = auto
+      \n| setting-columns = 1
+      \n| setting-footer = yes\n}}\n";
+    $collectionText .= "== " . $title. "==\r\n";
+    $sections = self::getSections($courseName);
+    foreach ($sections as $section) {
+      $chapters = self::getChapters($courseName . '/' .$section);
+      $collectionText .= ";" . $section . "\r\n";
+      foreach ($chapters as $chapter) {
+        $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+      }
+    }
+    $collectionText .= "[[Category:" . wfMessage('courseeditor-collection-book-category') ."|" . $title. "]]";
+    $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
+    return $editResult;
+  }
+
   public static function getMetadata($courseName){
     $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSEMETADATA );
     $page = WikiPage::factory( $title );
