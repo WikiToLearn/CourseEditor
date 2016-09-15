@@ -29,7 +29,15 @@ class CourseEditorUtils {
           $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
         }
       }
-      $collectionText .= "[[Category:" . wfMessage('courseeditor-collection-book-category') ."|" . $name . "]]";
+      $categoryName = wfMessage('courseeditor-collection-book-category');
+
+  		if ( !$categoryName->isDisabled() ) {
+  			$catTitle = Title::makeTitle( NS_CATEGORY, $categoryName );
+  			if ( !is_null( $catTitle ) ) {
+          $collectionText .= "\n[[" . $catTitle->getPrefixedText() ."|" . $name . "]]";
+        }
+      }
+
       $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
       return $editResult;
     }
@@ -43,7 +51,7 @@ class CourseEditorUtils {
       \n| setting-toc = auto
       \n| setting-columns = 1
       \n| setting-footer = yes\n}}\n";
-    $collectionText .= "== " . str_replace('_', ' ', $title). "==\r\n";
+    $collectionText .= "== " . str_replace('_', ' ', $title). " ==\r\n";
     $sections = self::getSections($courseName);
     foreach ($sections as $section) {
       $chapters = self::getChapters($courseName . '/' .$section);
@@ -52,7 +60,14 @@ class CourseEditorUtils {
         $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
       }
     }
-    $collectionText .= "[[Category:" . wfMessage('courseeditor-collection-book-category') ."|" . $title. "]]";
+    $categoryName = wfMessage('courseeditor-collection-book-category');
+
+		if ( !$categoryName->isDisabled() ) {
+			$catTitle = Title::makeTitle( NS_CATEGORY, $categoryName );
+			if ( !is_null( $catTitle ) ) {
+        $collectionText .= "\n[[" . $catTitle->getPrefixedText() ."|" . $title. "]]";
+      }
+    }
     $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
     return $editResult;
   }
