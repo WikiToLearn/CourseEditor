@@ -214,8 +214,7 @@ var editElement = function(draggableWidget, elementName, editStack){
 
 /******** OO.UI OBJECTS ********/
 
-var progressBar = new OO.ui.ProgressBarWidget();
-
+//var progressBar = new OO.ui.ProgressBarWidget();
 function ProgressDialog( config ) {
   ProgressDialog.parent.call( this, config );
 };
@@ -223,12 +222,29 @@ OO.inheritClass( ProgressDialog, OO.ui.Dialog );
 ProgressDialog.static.escapable = false;
 ProgressDialog.prototype.initialize = function () {
   ProgressDialog.parent.prototype.initialize.call( this );
+  this.progressBar = new OO.ui.ProgressBarWidget({
+    progress: 0
+  });
+  this.currentOp = new OO.ui.LabelWidget( {
+    label: ''
+  } );
   this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-  this.content.$element.append(progressBar.$element);
+  this.content.$element.append(this.progressBar.$element, this.currentOp.$element);
   this.$body.append( this.content.$element );
 };
 ProgressDialog.prototype.getBodyHeight = function () {
   return this.content.$element.outerHeight( true );
+};
+ProgressDialog.prototype.updateProgress =  function(unitaryIncrement){
+  var currentProgress  = this.progressBar.getProgress();
+  this.progressBar.setProgress(currentProgress + unitaryIncrement);
+};
+ProgressDialog.prototype.setCurrentOp = function(operation){
+  var labelToSet = OO.ui.msg('courseeditor-operation-action-' + operation.action);
+  if(operation.elementName){
+    labelToSet += " " + operation.elementName;
+  }
+  this.currentOp.setLabel(labelToSet);
 };
 
 /****** Draggable Widget ******/

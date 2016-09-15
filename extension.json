@@ -64,11 +64,12 @@
                 "courseeditor-message-dialog-restore",
                 "courseeditor-message-dialog-create-new",
                 "courseeditor-error-operation",
-                "courseeditor-error-operation-action-add",
-                "courseeditor-error-operation-action-delete",
-                "courseeditor-error-operation-action-rename",
-                "courseeditor-error-operation-action-purge",
-                "courseeditor-error-operation-action-update",
+                "courseeditor-operation-action-add",
+                "courseeditor-operation-action-delete",
+                "courseeditor-operation-action-rename",
+                "courseeditor-operation-action-purge",
+                "courseeditor-operation-action-update",
+                "courseeditor-operation-action-update-collection",
                 "courseeditor-error-operation-fail"
             ]
         },
@@ -97,11 +98,12 @@
                 "courseeditor-message-dialog-restore",
                 "courseeditor-message-dialog-create-new",
                 "courseeditor-error-operation",
-                "courseeditor-error-operation-action-add",
-                "courseeditor-error-operation-action-delete",
-                "courseeditor-error-operation-action-rename",
-                "courseeditor-error-operation-action-purge",
-                "courseeditor-error-operation-action-update",
+                "courseeditor-operation-action-add",
+                "courseeditor-operation-action-delete",
+                "courseeditor-operation-action-rename",
+                "courseeditor-operation-action-purge",
+                "courseeditor-operation-action-update",
+                "courseeditor-operation-action-update-collection",
                 "courseeditor-error-operation-fail"
             ]
         }
