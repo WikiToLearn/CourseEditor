@@ -20,7 +20,7 @@ class CourseEditorUtils {
         \n| setting-toc = auto
         \n| setting-columns = 1
         \n| setting-footer = yes\n}}\n";
-      $collectionText .= "== " . $name . "==\r\n";
+      $collectionText .= "== " . str_replace('_', ' ', $name) . " ==\r\n";
       $sections = self::getSections($courseName);
       foreach ($sections as $section) {
         $chapters = self::getChapters($courseName . '/' .$section);
@@ -43,7 +43,7 @@ class CourseEditorUtils {
       \n| setting-toc = auto
       \n| setting-columns = 1
       \n| setting-footer = yes\n}}\n";
-    $collectionText .= "== " . $title. "==\r\n";
+    $collectionText .= "== " . str_replace('_', ' ', $title). "==\r\n";
     $sections = self::getSections($courseName);
     foreach ($sections as $section) {
       $chapters = self::getChapters($courseName . '/' .$section);
