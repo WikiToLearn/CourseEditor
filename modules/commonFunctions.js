@@ -4,6 +4,72 @@ $('body').append( windowManager.$element );
 
 /******** UTIL METHODS ********/
 
+var createMicroOperations =  function(operation, callback){
+  switch (operation.action) {
+    case 'rename':
+      createMicroRenameOperations(operation, function(results){
+        callback(results);
+      });
+    default:
+      //no default
+  }
+};
+
+var createMicroRenameOperations =  function(operation, callback) {
+  var title = new mw.Title($('#courseName').text());
+  var microOps = [];
+  //Move the page and all its subpages
+  microOps.push(operation);
+  getSubpages(title, operation, function(subpages){
+    for (var i = 0; i < subpages.query.allpages.length; i++) {
+      var page = subpages.query.allpages[i];
+      if(i === subpages.query.allpages.length - 1) {
+        getMicroOpsFromBacklinks(page, operation, microOps, function(microOps) {
+          callback(microOps);
+        });
+      } else {
+        getMicroOpsFromBacklinks(page, operation, microOps, function(){});
+      }
+    }
+  });
+};
+
+
+var getMicroOpsFromBacklinks = function(page, operation, microOps, returnMicroOps){
+  var api = new mw.Api();
+  api.get( {
+    action: 'query',
+    list: 'backlinks',
+    bltitle:  page.title,
+  } ).done( function ( data) {
+    if(data.query.backlinks.length > 0){
+      var backlinks = data.query.backlinks;
+      backlinks.shift(); //the course with transcluded pages
+      for (var i = 0; i < backlinks.length; i++) {
+        microOps.push({
+          action: 'fix-link',
+          elementName: backlinks[i].title,
+          linkToReplace: page.title,
+          replacement: operation.newElementName
+        });
+      }
+      returnMicroOps(microOps);
+    }
+  });
+};
+
+var getSubpages = function (title, operation, returnSubpages){
+  var api = new mw.Api();
+  api.get( {
+    action: 'query',
+    list: 'allpages',
+    apprefix:  title.getMain() + "/" + operation.elementName,
+    apnamespace: title.getNamespaceId()
+  } ).done( function ( data) {
+    returnSubpages(data);
+  });
+};
+
 /**
  * Init handlers
  * @param {DraggableGroupWidget} [draggableWidget]

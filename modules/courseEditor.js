@@ -32,19 +32,19 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
-    editStack.push({
+    /*editStack.push({
       action: 'update',
       elementsList: JSON.stringify(newSections)
     });
     editStack.push({
       action: 'update-collection'
-    });
+    });*/
 
     var progressDialog = new ProgressDialog( {
       size: 'medium'
     } );
     var unitaryIncrement = 100/editStack.length;
-    
+
     windowManager.addWindows( [ progressDialog ] );
     windowManager.openWindow( progressDialog );
 
@@ -83,7 +83,12 @@ $(function () {
 
     while( editStack.length > 0 ) {
       var operation =  editStack.shift();
-      $(document).queue('tasks', createTask(operation));
+      createMicroOperations(operation, function(microOps){
+        for (var i = 0; i < microOps.length; i++) {
+          //console.log(microOps[i]);
+          $(document).queue('tasks', createTask(microOps[i]));
+        }
+      });
     };
 
     $(document).queue('tasks', function(){

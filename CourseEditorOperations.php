@@ -211,6 +211,19 @@ class CourseEditorOperations {
       $apiResult = CourseEditorUtils::updateCollection($courseName);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
+      case 'fix-link':
+        $targetPage = $value->elementName;
+        $linkToReplace = $value->linkToReplace;
+        list($course, $section, $chapter) = explode('/', $linkToReplace);
+        $replacement = $course . '/' . $value->replacement . '/' . $chapter;
+        $title = Title::newFromText($targetPage);
+        $page = WikiPage::factory( $title );
+        $content = $page->getContent( Revision::RAW );
+        $text = ContentHandler::getContentText( $content );
+        str_replace($linkToReplace, $replacement, $text);
+        $apiResult = CourseEditorUtils::editWrapper($targetPage, $text, null, null);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+        break;
     }
     return json_encode($value);
   }
