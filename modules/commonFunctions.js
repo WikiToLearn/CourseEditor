@@ -4,27 +4,72 @@ $('body').append( windowManager.$element );
 
 /******** UTIL METHODS ********/
 
-var createMicroOperations =  function(operation, callback){
+var createMicroOperations =  function(operation){
   switch (operation.action) {
     case 'rename':
-      createMicroRenameOperations(operation, function(results){
-        callback(results);
-      });
+      return createRenameMicroOperations(operation);
+      break;
+    case 'delete':
+      return createDeleteMicroOperations(operation);
+      break;
     default:
-      //no default
+      return createDefaultMicroOperations(operation);
   }
+};
+
+var createDefaultMicroOperations = function(operation){
+  var microOps = [];
+  microOps.push(operation);
+  return microOps;
+}
+
+var createRenameMicroOperations = function(operation) {
+  var microOps = [];
+  microOps.push({
+    action: 'rename-move-task',
+    elementName: operation.elementName,
+    newElementName: operation.newElementName
+  });
+  microOps.push({
+    action: 'rename-update-task',
+    elementName: operation.elementName,
+    newElementName: operation.newElementName
+  });
+  return microOps;
+};
+
+var createDeleteMicroOperations = function(operation) {
+  var microOps = [];
+  microOps.push({
+    action: 'delete-chapters-task',
+    elementName: operation.elementName
+  });
+  microOps.push({
+    action: 'delete-section-task',
+    elementName: operation.elementName
+  });
+  return microOps;
+};
+
+/*
+var createMicroDefaultOperations = function(operation, callback) {
+  var microOps = [];
+  microOps.push(operation);
+  callback(microOps);
 };
 
 var createMicroRenameOperations =  function(operation, callback) {
   var title = new mw.Title($('#courseName').text());
   var microOps = [];
-  //Move the page and all its subpages
-  microOps.push(operation);
   getSubpages(title, operation, function(subpages){
     for (var i = 0; i < subpages.query.allpages.length; i++) {
       var page = subpages.query.allpages[i];
+      //The better HACK ever: not return the callback until the for dosn't
+      //  completed
       if(i === subpages.query.allpages.length - 1) {
         getMicroOpsFromBacklinks(page, operation, microOps, function(microOps) {
+          //Move the page and all its subpages
+          microOps.push(operation);
           callback(microOps);
         });
       } else {
@@ -53,8 +98,8 @@ var getMicroOpsFromBacklinks = function(page, operation, microOps, returnMicroOp
           replacement: operation.newElementName
         });
       }
-      returnMicroOps(microOps);
     }
+    returnMicroOps(microOps);
   });
 };
 
@@ -68,7 +113,7 @@ var getSubpages = function (title, operation, returnSubpages){
   } ).done( function ( data) {
     returnSubpages(data);
   });
-};
+};*/
 
 /**
  * Init handlers

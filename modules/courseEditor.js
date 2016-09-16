@@ -32,13 +32,13 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newSections.push(value.data);
     });
-    /*editStack.push({
+    editStack.push({
       action: 'update',
       elementsList: JSON.stringify(newSections)
     });
     editStack.push({
       action: 'update-collection'
-    });*/
+    });
 
     var progressDialog = new ProgressDialog( {
       size: 'medium'
@@ -48,19 +48,14 @@ $(function () {
     windowManager.addWindows( [ progressDialog ] );
     windowManager.openWindow( progressDialog );
 
-    var createTask = function(operation){
-      return function(next){
-        doTask(operation, next);
-      }
-    };
-
-    var doTask = function(operation, next){
-      progressDialog.setCurrentOp(operation);
+    var doTask = function(microOp, next){
+      progressDialog.setCurrentOp(microOp);
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applyCourseOp',
-        rsargs: [$('#courseName').text(), JSON.stringify(operation)]
+        rsargs: [$('#courseName').text(), JSON.stringify(microOp)]
       }, function ( data ) {
+        console.log(data);
         if (data.success !== true) {
           var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
           $('#saveDiv').after(alert);
@@ -81,15 +76,57 @@ $(function () {
       });
     };
 
-    while( editStack.length > 0 ) {
-      var operation =  editStack.shift();
+    var createTask = function(microOp){
+      return function(next){
+        doTask(microOp, next);
+      }
+    };
+
+    /*function prepareCreateMicroOperations(operation) {
+      var dfd=$.Deferred();
       createMicroOperations(operation, function(microOps){
         for (var i = 0; i < microOps.length; i++) {
-          //console.log(microOps[i]);
+          console.log(microOps[i]);
           $(document).queue('tasks', createTask(microOps[i]));
         }
+        dfd.resolve();
       });
+      return dfd.promise();
+    }
+
+    var promises = [];
+
+    while (editStack.length > 0) {
+      var operation = editStack.shift();
+      promises.push(prepareCreateMicroOperations(operation));
+    }
+
+    $.when.apply($, promises).done(function(){
+      $(document).queue('tasks', createTask({
+        action: 'update',
+        elementsList: JSON.stringify(newSections)
+      }));
+
+      $(document).queue('tasks', createTask({
+          action: 'update-collection'
+      }));
+
+      $(document).queue('tasks', function(){
+        windowManager.closeWindow(progressDialog);
+        //window.location.assign('/' +  $('#courseName').text());
+      });
+
+      dequeue('tasks');
+    });*/
+
+    while( editStack.length > 0) {
+      var operation =  editStack.shift();
+      var microOps = createMicroOperations(operation);
+      for (var i = 0; i < microOps.length; i++) {
+        $(document).queue('tasks', createTask(microOps[i]));
+      }
     };
+
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);

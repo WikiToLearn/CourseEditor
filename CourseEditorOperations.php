@@ -142,47 +142,72 @@ class CourseEditorOperations {
   public static function applyCourseOp($courseName, $operation){
     $value = json_decode($operation);
     switch ($value->action) {
-      case 'rename':
+      case 'rename-move-task':
         $sectionName = $value->elementName;
         $newSectionName = $value->newElementName;
-        $chapters = CourseEditorUtils::getChapters($courseName . '/' .$sectionName);
+        /*$chapters = CourseEditorUtils::getChapters($courseName . '/' .$sectionName);
+        $newSectionText = "";
+        foreach ($chapters as $chapter) {
+          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
+        }*/
+        $pageTitle = $courseName . "/" . $sectionName;
+        $newPageTitle = $courseName . '/' . $newSectionName;
+        $apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
+        //$resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
+        //$apiResult = array($resultMove, $resultEdit);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'rename-update-task':
+        $sectionName = $value->elementName;
+        $newSectionName = $value->newElementName;
+        $chapters = CourseEditorUtils::getChapters($courseName . '/' .$newSectionName);
         $newSectionText = "";
         foreach ($chapters as $chapter) {
           $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
         }
-        $pageTitle = $courseName . "/" . $sectionName;
+        //$pageTitle = $courseName . "/" . $sectionName;
         $newPageTitle = $courseName . '/' . $newSectionName;
-        $resultMove = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
-        $resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
-        $apiResult = array($resultMove, $resultEdit);
-        CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
+        //$apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
+        $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
+        //$apiResult = array($resultMove, $resultEdit);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
-      case 'delete':
+      case 'delete-chapters-task':
         $user = CourseEditorUtils::getRequestContext()->getUser();
         $sectionName = $value->elementName;
         $chapters = CourseEditorUtils::getChapters($courseName . '/' . $sectionName);
         $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
+        $pageTitle = $courseName . '/' . $sectionName;
         if(!$title->userCan('delete', $user, 'secure')){
-          $resultChapters = true;
-          $pageTitle = $courseName . '/' . $sectionName;
           $prependText = "\r\n{{DeleteMe}}";
-          $resultSection = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
+          //$resultSection = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           foreach ($chapters as $chapter) {
             $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
             $prependText = "\r\n{{DeleteMe}}";
-            $resultChapters = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
+            $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           }
         }else {
-          $resultChapters = true;
           foreach ($chapters as $chapter) {
             $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
             $resultChapters = CourseEditorUtils::deleteWrapper($pageTitle);
           }
-          $pageTitle = $courseName . '/' . $sectionName;
-          $resultSection = CourseEditorUtils::deleteWrapper($pageTitle);
+          //$resultSection = CourseEditorUtils::deleteWrapper($pageTitle);
         }
-        $apiResult = array($resultSection, $resultChapters);
-        CourseEditorUtils::setComposedOperationSuccess($value, $apiResult);
+        //$apiResult = array($resultSection, $resultChapters);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'delete-section-task':
+        $user = CourseEditorUtils::getRequestContext()->getUser();
+        $sectionName = $value->elementName;
+        $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
+        $pageTitle = $courseName . '/' . $sectionName;
+        if(!$title->userCan('delete', $user, 'secure')){
+          $prependText = "\r\n{{DeleteMe}}";
+          $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
+        }else {
+          $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
+        }
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'add':
         $sectionName = $value->elementName;
@@ -211,7 +236,7 @@ class CourseEditorOperations {
       $apiResult = CourseEditorUtils::updateCollection($courseName);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
-      case 'fix-link':
+      /*case 'fix-link':
         $targetPage = $value->elementName;
         $linkToReplace = $value->linkToReplace;
         list($course, $section, $chapter) = explode('/', $linkToReplace);
@@ -220,10 +245,11 @@ class CourseEditorOperations {
         $page = WikiPage::factory( $title );
         $content = $page->getContent( Revision::RAW );
         $text = ContentHandler::getContentText( $content );
-        str_replace($linkToReplace, $replacement, $text);
-        $apiResult = CourseEditorUtils::editWrapper($targetPage, $text, null, null);
+        $newText = str_replace(str_replace(' ', '_', $linkToReplace), $replacement, $text);
+        $apiResult = CourseEditorUtils::editWrapper($targetPage, $newText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
-        break;
+        $value->text = $newText;
+      break;*/
     }
     return json_encode($value);
   }

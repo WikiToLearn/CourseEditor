@@ -268,7 +268,7 @@ class CourseEditorUtils {
             'action'     => 'move',
             'from'      => $from,
             'to' => $to,
-            'noredirect' => true,
+            //'noredirect' => true,
             'movetalk' => true,
             'movesubpages' => true,
             'token'      => $token
@@ -282,5 +282,9 @@ class CourseEditorUtils {
     } catch(UsageException $e){
       return $e->getMessage();
     }
+  }
+
+  public static function getBacklinksWrapper($title){
+
   }
 }
