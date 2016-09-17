@@ -161,6 +161,8 @@ class ManageMetadataTemplate extends QuickTemplate {
       $metadataResult = $this->data['metadataResult'];
     }
     ?>
+    <div><p><?php echo wfMessage( 'courseeditor-managemetata-description' ) ?></p></div>
+    <br>
     <form>
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
@@ -173,6 +175,18 @@ class ManageMetadataTemplate extends QuickTemplate {
       <div class="form-group">
         <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
         <textarea row="3" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>"><?php echo $metadataResult['description'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseBibliography"><?php echo wfMessage( 'courseeditor-input-bibliography-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseBibliography" placeholder="<?php echo wfMessage( 'courseeditor-input-bibliography-placeholder' ) ?>"><?php echo $metadataResult['bibliography'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseExercises"><?php echo wfMessage( 'courseeditor-input-exercises-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseExercises" placeholder="<?php echo wfMessage( 'courseeditor-input-exercises-placeholder' ) ?>"><?php echo $metadataResult['exercises'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseBooks"><?php echo wfMessage( 'courseeditor-input-books-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseBooks" placeholder="<?php echo wfMessage( 'courseeditor-input-books-placeholder' ) ?>"><?php echo $metadataResult['books'] ?></textarea>
       </div>
       <div class="form-group">
         <label for="courseExternalReferences"><?php echo wfMessage( 'courseeditor-input-externalreferences-label' ) ?></label>

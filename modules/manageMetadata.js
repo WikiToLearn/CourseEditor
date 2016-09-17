@@ -18,13 +18,22 @@ $(function () {
     e.preventDefault();
     $('#alert').hide();
     var courseName = $('#courseName').val().trim();
-    var courseTopic, courseDescription, courseExternalReferences,
+    var courseTopic, courseDescription, courseBibliography, courseExercises, courseBooks, courseExternalReferences,
       isImported = false, originalAuthors = "", isReviewed = false, reviewedOn = "";
     if($('#courseTopic').val().trim().length !== 0){
       courseTopic = $('#courseTopic').val().trim();
     }
     if($('#courseDescription').val().trim().length !== 0){
       courseDescription = $('#courseDescription').val().trim();
+    }
+    if($('#courseBibliography').val().trim().length !== 0){
+      courseBibliography = $('#courseBibliography').val().trim();
+    }
+    if($('#courseExercises').val().trim().length !== 0){
+      courseExercises = $('#courseExercises').val().trim();
+    }
+    if($('#courseBooks').val().trim().length !== 0){
+      courseBooks = $('#courseBooks').val().trim();
     }
     if($('#courseExternalReferences').val().trim().length !== 0){
       courseExternalReferences = $('#courseExternalReferences').val().trim();
@@ -43,6 +52,9 @@ $(function () {
         courseName,
         courseTopic,
         courseDescription,
+        courseBibliography,
+        courseExercises,
+        courseBooks,
         courseExternalReferences,
         isImported,
         originalAuthors,

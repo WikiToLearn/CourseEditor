@@ -26,16 +26,28 @@ class CourseEditorOperations {
     $title = $params[0];
     $topic = $params[1];
     $description = $params[2];
-    $externalReferences = $params[3];
-    $isImported = $params[4];
-    $originalAuthors =  $params[5];
-    $isReviewed = $params[6];
-    $reviewedOn =  $params[7];
+    $bibliography = $params[3];
+    $exercises = $params[4];
+    $books = $params[5];
+    $externalReferences = $params[6];
+    $isImported = $params[7];
+    $originalAuthors = $params[8];
+    $isReviewed = $params[9];
+    $reviewedOn =  $params[10];
 
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
+    }
+    if($bibliography !== '' && $bibliography !== null){
+      $metadata .= "<section begin=bibliography />" . $bibliography . "<section end=bibliography />\r\n";
+    }
+    if($exercises !== '' && $exercises !== null){
+      $metadata .= "<section begin=exercises />" . $exercises . "<section end=exercises />\r\n";
+    }
+    if($books !== '' && $books !== null){
+      $metadata .= "<section begin=books />" . $books . "<section end=books />\r\n";
     }
     if($externalReferences !== '' && $externalReferences !== null){
       $metadata .= "<section begin=externalreferences />" . $externalReferences . "<section end=externalreferences />\r\n";
