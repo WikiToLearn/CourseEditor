@@ -21,14 +21,6 @@ class SectionEditorTemplate extends QuickTemplate {
     <div class="row">
       <div class="col-md-8">
         <div id="chaptersList"></div>
-        <br>
-        <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
-          <div id="coursesList"></div>
-        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -47,6 +39,12 @@ class SectionEditorTemplate extends QuickTemplate {
     <div id="saveDiv" class="text-center">
       <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
     </div>
+    <br><br>
+    <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     <?php
   }
 }
@@ -64,14 +62,6 @@ class CourseEditorTemplate extends QuickTemplate {
     <div class="row">
       <div class="col-md-8">
         <div id="sectionsList"></div>
-        <br>
-        <div class="alert alert-warning alert-danger" id="alert" role="alert"  style="display:none;">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
-          <div id="coursesList"></div>
-        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -89,6 +79,12 @@ class CourseEditorTemplate extends QuickTemplate {
     <br>
     <div id="saveDiv" class="text-center">
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
+    </div>
+    <br><br>
+    <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
     </div>
     <?php
   }
@@ -146,6 +142,13 @@ class CourseCreatorTemplate extends QuickTemplate {
         </label>
       </div>
       <button class="btn btn-primary btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
+      <br><br>
+      <div class="alert alert-danger alert-dismissible" id="alertError" role="alert"  style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php echo wfMessage( 'courseeditor-error-operation' ) ?>
+      </div>
     </form>
 <?php
   }

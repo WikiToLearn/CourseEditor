@@ -22,7 +22,7 @@ $(function () {
               var pages = data.query.pages;
               if (!pages['-1']) {
                 for (var pageId in pages) {
-                  if (pages.hasOwnProperty(pagesId)) {
+                  if (pages.hasOwnProperty(pageId)) {
                     $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
                   }
                 }
@@ -88,8 +88,13 @@ $(function () {
       action: 'ajax',
       rs: 'CourseEditorOperations::createCourseOp',
       rsargs: [JSON.stringify(operationRequested)]
-    }, function ( data ) {
-      //window.location.assign('/' +  courseTopic);
+    }, function ( result ) {
+      var resultObj = JSON.parse(result);
+      if(resultObj.success !== true){
+        $('#alertError').show();
+      }else {
+        window.location.assign('/' +  resultObj.courseTitle);
+      }
     });
   });
 })

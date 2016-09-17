@@ -325,7 +325,6 @@ var editElement = function(draggableWidget, elementName, editStack){
 
 /******** OO.UI OBJECTS ********/
 
-//var progressBar = new OO.ui.ProgressBarWidget();
 function ProgressDialog( config ) {
   ProgressDialog.parent.call( this, config );
 };

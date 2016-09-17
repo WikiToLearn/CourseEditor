@@ -120,10 +120,13 @@ class CourseEditorUtils {
   * MediaWiki ApiResult object is not "standard" but if an error/exception
   * occurs the result variable is a string.
   */
-  public static function setComposedOperationSuccess(&$operation, $result){
+  public static function setComposedOperationSuccess(&$operation, $resultsArray){
     $isSuccess = true;
-    if (is_string($result[0]) || is_string($result[1])) {
-      $isSuccess = false;
+    foreach ($resultsArray as $result) {
+      if (is_string($result)) {
+        $isSuccess = false;
+        break;
+      }
     }
     $operation->success = $isSuccess;
   }
