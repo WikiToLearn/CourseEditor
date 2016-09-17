@@ -40,10 +40,8 @@ class SectionEditorTemplate extends QuickTemplate {
       <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
     </div>
     <br><br>
-    <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }
@@ -81,10 +79,8 @@ class CourseEditorTemplate extends QuickTemplate {
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
     </div>
     <br><br>
-    <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-        <span aria-hidden="true">&times;</span>
-      </button>
+    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }

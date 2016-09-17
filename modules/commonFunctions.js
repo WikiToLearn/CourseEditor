@@ -136,6 +136,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
     textInputWidget.setValue('');
   });
   $('#addElement').keypress(function(keypressed) {
+    $('#alert').hide();
     if(keypressed.which === 13) {
       addElement(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');
@@ -351,6 +352,7 @@ ProgressDialog.prototype.updateProgress =  function(unitaryIncrement){
 };
 ProgressDialog.prototype.setCurrentOp = function(operation){
   var labelToSet = OO.ui.msg('courseeditor-operation-action-' + operation.action);
+  console.log(labelToSet);
   if(operation.elementName){
     labelToSet += " " + operation.elementName;
   }
@@ -437,26 +439,30 @@ EditDialog.prototype.getActionProcess = function ( action ) {
         return new OO.ui.Process( function () {
             var newElementName = dialog.textInputWidget.getValue();
             var items = dialog.draggableWidget.getItems();
-            items.filter(function(element) {
-              if(element.data === dialog.elementName){
-                element.setData(newElementName);
-                element.setLabel(newElementName);
-                var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
-                var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
-                element.$label.append(iconDelete, iconEdit);
-                $(iconDelete).click(function(){
-                  deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                });
-                $(iconEdit).click(function(){
-                  editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                });
-                dialog.editStack.push({
-                  action: 'rename',
-                  elementName: dialog.elementName,
-                  newElementName: newElementName
-                })
-              }
-            });
+            if(elementExist(dialog.draggableWidget, newElementName)) {
+              $('#alert').show();
+            }else {
+              items.filter(function(element) {
+                if(element.data === dialog.elementName){
+                  element.setData(newElementName);
+                  element.setLabel(newElementName);
+                  var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+                  var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+                  element.$label.append(iconDelete, iconEdit);
+                  $(iconDelete).click(function(){
+                    deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                  });
+                  $(iconEdit).click(function(){
+                    editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                  });
+                  dialog.editStack.push({
+                    action: 'rename',
+                    elementName: dialog.elementName,
+                    newElementName: newElementName
+                  })
+                }
+              });
+            }
             dialog.close( { action: action } );
         } );
     }
