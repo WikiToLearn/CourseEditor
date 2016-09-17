@@ -53,7 +53,7 @@ $(function () {
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applyCourseOp',
-        rsargs: [$('#courseName').text(), JSON.stringify(microOp)]
+        rsargs: [$('#parentName').text(), JSON.stringify(microOp)]
       }, function ( data ) {
         if (data.success !== true){
           $('#alert').html(OO.ui.deferMsg('courseeditor-error-operation'));
@@ -128,7 +128,7 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      window.location.assign('/' +  $('#courseName').text());
+      window.location.assign('/' +  $('#parentName').text());
     });
 
     dequeue('tasks');

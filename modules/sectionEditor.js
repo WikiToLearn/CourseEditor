@@ -64,7 +64,7 @@ $(function () {
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applySectionOp',
-        rsargs: [$('#sectionName').text(), JSON.stringify(operation)]
+        rsargs: [$('#parentName').text(), JSON.stringify(operation)]
       }, function ( data ) {
         if (data.success !== true) {
           $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
@@ -92,7 +92,7 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      window.location.assign('/' +  $('#sectionName').text());
+      window.location.assign('/' +  $('#parentName').text());
     });
 
     dequeue('tasks')

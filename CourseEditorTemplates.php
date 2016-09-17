@@ -17,7 +17,7 @@ class SectionEditorTemplate extends QuickTemplate {
     $section = $this->data['section'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
-    <h2 id="sectionName"><?php echo htmlspecialchars($section) ?></h2>
+    <h2 id="parentName"><?php echo htmlspecialchars($section) ?></h2>
     <div class="row">
       <div class="col-md-8">
         <div id="chaptersList"></div>
@@ -56,7 +56,7 @@ class CourseEditorTemplate extends QuickTemplate {
     $courseName = $this->data['course'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
-    <h2 id="courseName"><?php echo htmlspecialchars($courseName) ?></h2>
+    <h2 id="parentName"><?php echo htmlspecialchars($courseName) ?></h2>
     <div class="row">
       <div class="col-md-8">
         <div id="sectionsList"></div>

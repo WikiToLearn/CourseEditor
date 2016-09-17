@@ -167,7 +167,7 @@ var elementExist = function(draggableWidget, elementName, callback) {
   var api = new mw.Api();
   api.get({
     action : 'query',
-    titles : $('#sectionName').text() + '/' + elementName
+    titles : $('#parentName').text() + '/' + elementName
   }).done( function ( data ) {
     var pages = data.query.pages;
     if (!pages['-1']) {
