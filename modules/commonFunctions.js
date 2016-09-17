@@ -163,14 +163,26 @@ var findIndexOfDeletedElement = function(editStack, elementName) {
  * @param {DraggableWidget} [draggableWidget]
  * @return boolean
  */
-var elementExist = function(draggableWidget, elementName) {
-  var items = draggableWidget.getItems();
-  for (var item in items) {
-    if (items[item].data === elementName) {
-      return true;
+var elementExist = function(draggableWidget, elementName, callback) {
+  var api = new mw.Api();
+  api.get({
+    action : 'query',
+    titles : $('#sectionName').text() + '/' + elementName
+  }).done( function ( data ) {
+    var pages = data.query.pages;
+    if (!pages['-1']) {
+      callback(true);
+      return;
     }
-  }
-  return false;
+    var items = draggableWidget.getItems();
+    for (var item in items) {
+      if (items[item].data === elementName) {
+        callback(true);
+        return;
+      }
+    }
+    callback(false);
+  } );
 };
 
 /**
@@ -272,43 +284,45 @@ var restoreElement = function(draggableWidget, elementName, editStack){
  */
 var addElement = function(draggableWidget, elementName, editStack){
   if($.trim(elementName).length !== 0){
-    if(findIndexOfDeletedElement(editStack, elementName) !== null){
-      var messageDialog = new OO.ui.MessageDialog();
-      windowManager.addWindows( [ messageDialog ] );
-      windowManager.openWindow( messageDialog, {
-        title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
-        message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
-        actions: [
-          { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
-          { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
-          {
-            action: 'confirm',
-            label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
-            flags: [ 'primary', 'constructive' ]
-          }
-        ]
-      } ).then( function ( opened ) {
-        opened.then( function ( closing, data ) {
-          if ( data && data.action === 'restore' ) {
-            restoreElement(draggableWidget, elementName, editStack);
-          } else if(data && data.action === 'confirm') {
-            createDragItem(draggableWidget, elementName, editStack);
-            editStack.push({
-              action: 'add',
-              elementName: elementName
-            });
-          }
+    elementExist(draggableWidget, elementName, function(result){
+      if(result ===  true){
+        $('#alert').show();
+      }else if (findIndexOfDeletedElement(editStack, elementName) !== null){
+        var messageDialog = new OO.ui.MessageDialog();
+        windowManager.addWindows( [ messageDialog ] );
+        windowManager.openWindow( messageDialog, {
+          title: OO.ui.deferMsg('courseeditor-message-dialog-title'),
+          message: OO.ui.deferMsg('courseeditor-message-dialog-message'),
+          actions: [
+            { action: 'reject', label: OO.ui.deferMsg('courseeditor-message-dialog-cancel'), flags: 'safe' },
+            { action: 'restore', label: OO.ui.deferMsg('courseeditor-message-dialog-restore') },
+            {
+              action: 'confirm',
+              label: OO.ui.deferMsg('courseeditor-message-dialog-create-new'),
+              flags: [ 'primary', 'constructive' ]
+            }
+          ]
+        } ).then( function ( opened ) {
+          opened.then( function ( closing, data ) {
+            if ( data && data.action === 'restore' ) {
+              restoreElement(draggableWidget, elementName, editStack);
+            } else if(data && data.action === 'confirm') {
+              createDragItem(draggableWidget, elementName, editStack);
+              editStack.push({
+                action: 'add',
+                elementName: elementName
+              });
+            }
+          } );
         } );
-      } );
-    }else if (elementExist(draggableWidget, elementName)) {
-      $('#alert').show();
-    }else {
-      createDragItem(draggableWidget, elementName, editStack);
-      editStack.push({
-        action: 'add',
-        elementName: elementName
-      });
-    }
+      }else {
+        createDragItem(draggableWidget, elementName, editStack);
+        editStack.push({
+          action: 'add',
+          elementName: elementName
+        });
+      }
+    });
   }
 };
 
@@ -439,30 +453,32 @@ EditDialog.prototype.getActionProcess = function ( action ) {
         return new OO.ui.Process( function () {
             var newElementName = dialog.textInputWidget.getValue();
             var items = dialog.draggableWidget.getItems();
-            if(elementExist(dialog.draggableWidget, newElementName)) {
-              $('#alert').show();
-            }else {
-              items.filter(function(element) {
-                if(element.data === dialog.elementName){
-                  element.setData(newElementName);
-                  element.setLabel(newElementName);
-                  var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
-                  var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
-                  element.$label.append(iconDelete, iconEdit);
-                  $(iconDelete).click(function(){
-                    deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                  });
-                  $(iconEdit).click(function(){
-                    editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                  });
-                  dialog.editStack.push({
-                    action: 'rename',
-                    elementName: dialog.elementName,
-                    newElementName: newElementName
-                  })
-                }
-              });
-            }
+            elementExist(dialog.draggableWidget, newElementName, function(result){
+              if(result === true){
+                $('#alert').show();
+              }else {
+                items.filter(function(element) {
+                  if(element.data === dialog.elementName){
+                    element.setData(newElementName);
+                    element.setLabel(newElementName);
+                    var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+                    var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+                    element.$label.append(iconDelete, iconEdit);
+                    $(iconDelete).click(function(){
+                      deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                    });
+                    $(iconEdit).click(function(){
+                      editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                    });
+                    dialog.editStack.push({
+                      action: 'rename',
+                      elementName: dialog.elementName,
+                      newElementName: newElementName
+                    })
+                  }
+                });
+              }
+            });
             dialog.close( { action: action } );
         } );
     }
