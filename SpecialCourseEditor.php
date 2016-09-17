@@ -41,9 +41,12 @@ class SpecialCourseEditor extends SpecialPage {
         }
         return;
       case 'managemetadata':
+        if ( ! ( $user->isAllowed( 'undelete' ) ) ) {
+          throw new PermissionsError( 'undelete' );
+        }
         $courseName = $request->getVal('pagename');
         $this->manageMetadata($courseName);
-      break;
+        return;
       default:
         $this->renderCreditsAndInfo();
       return;
