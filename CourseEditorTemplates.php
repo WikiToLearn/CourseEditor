@@ -129,16 +129,16 @@ class CourseCreatorTemplate extends QuickTemplate {
         <input type="text" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>">
       </div>
       <label for="courseNamespace"><?php echo wfMessage('courseeditor-radiobutton-namespace') ?></label>
-      <div class="radio" id="radioButtons">
-        <label>
-          <input type="radio" name="courseNamespace" value="NS_COURSE" checked>
-          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
-        </label>
-      </div>
       <div class="radio">
         <label>
-          <input type="radio" name="courseNamespace" value="NS_USER">
+          <input type="radio" name="courseNamespace" value="NS_USER" checked>
           <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
+        </label>
+      </div>
+      <div class="radio" id="radioButtons">
+        <label>
+          <input type="radio" name="courseNamespace" value="NS_COURSE">
+          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
         </label>
       </div>
       <button class="btn btn-primary btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
