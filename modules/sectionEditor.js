@@ -92,7 +92,9 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      window.location.assign('/' +  $('#parentName').text());
+      var sectionName = $('#parentName').text();
+      var courseName = sectionName.substr(0, sectionName.indexOf('/'));
+      window.location.assign('/' +  courseName);
     });
 
     dequeue('tasks')
