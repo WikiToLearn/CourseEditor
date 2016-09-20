@@ -179,6 +179,66 @@ class CourseEditorUtils {
     return $matches[1];
   }
 
+  public static function getPreviousAndNext($pageTitle){
+    $subElements = self::getSubCourseElements($pageTitle);
+    if($subElements['error']){
+      return $subElements;
+    }else {
+      return self::buildPreviousAndNext($pageTitle, $subElements);
+    }
+  }
+
+  private function getSubCourseElements($pageTitle) {
+    $namespace = $pageTitle->getNamespace();
+    $levels = substr_count($pageTitle->getText(), "/");
+    $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
+    if($namespace === NS_COURSE){
+      if($levels === 1){
+        $subElements = self::getSections($basePage);
+      }elseif ($levels === 2) {
+        $subElements = self::getChapters($basePage);
+      }else {
+        return array('error' => "Page levels not valid." );
+      }
+    }elseif ($namespace === NS_USER) {
+      if($levels === 2){
+        $subElements = self::getSections($basePage);
+      }elseif ($levels === 3) {
+        $subElements = self::getChapters($basePage);
+      }else {
+        return array('error' => "Page levels not valid." );
+      }
+    }else {
+      return array('error' => "Namespace not valid." );
+    }
+
+    return $subElements;
+  }
+
+  private function buildPreviousAndNext($pageTitle, $subElements){
+    $namespace = $pageTitle->getNamespace();
+    $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
+    $lastPage = $pageTitle->getSubpageText();
+    $previous = null;
+    $next = null;
+    $previousAndNext = array('previous' => $previous, 'next' => $next);
+
+    if(sizeof($subElements) < 2){
+      return $previousAndNext;
+    }else {
+      $key = array_search($lastPage, $subElements);
+      if($key === sizeof($subElements) - 1){
+        $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
+      }else if($key === 0){
+        $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
+      }else {
+        $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
+        $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
+      }
+      return $previousAndNext;
+    }
+  }
+
   public static function deleteWrapper($title){
     $context = self::getRequestContext();
     try {
@@ -282,9 +342,5 @@ class CourseEditorUtils {
     } catch(UsageException $e){
       return $e->getMessage();
     }
-  }
-
-  public static function getBacklinksWrapper($title){
-
   }
 }
