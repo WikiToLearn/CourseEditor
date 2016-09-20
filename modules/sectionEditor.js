@@ -48,6 +48,8 @@ $(function () {
     var progressDialog = new ProgressDialog( {
       size: 'medium'
     } );
+    var unitaryIncrement = 100/editStack.length;
+
     windowManager.addWindows( [ progressDialog ] );
     windowManager.openWindow( progressDialog );
 
@@ -58,25 +60,26 @@ $(function () {
     };
 
     var doTask = function(operation, next){
+      progressDialog.setCurrentOp(operation);
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applySectionOp',
-        rsargs: [$('#sectionName').text(), JSON.stringify(operation)]
+        rsargs: [$('#parentName').text(), JSON.stringify(operation)]
       }, function ( data ) {
         if (data.success !== true) {
-          var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
-          $('#saveDiv').after(alert);
           $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
-          $('#alert').append(OO.ui.msg('courseeditor-error-operation-action-' + data.action));
+          $('#alert').append(OO.ui.msg('courseeditor-operation-action-' + data.action));
           if(data.elementName){
             var localizedMsg = " " + data.elementName + OO.ui.msg('courseeditor-error-operation-fail');
             $('#alert').append(localizedMsg);
           }else {
             $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
           }
+          $('#alert').show();
           windowManager.closeWindow(progressDialog);
           $(document).clearQueue('tasks');
         }else{
+          progressDialog.updateProgress(unitaryIncrement);
           next();
         }
       });
@@ -89,7 +92,9 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      window.location.assign('/' +  $('#sectionName').text());
+      var sectionName = $('#parentName').text();
+      var courseName = sectionName.substr(0, sectionName.indexOf('/'));
+      window.location.assign('/' +  courseName);
     });
 
     dequeue('tasks')

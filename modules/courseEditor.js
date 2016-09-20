@@ -53,12 +53,9 @@ $(function () {
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applyCourseOp',
-        rsargs: [$('#courseName').text(), JSON.stringify(microOp)]
+        rsargs: [$('#parentName').text(), JSON.stringify(microOp)]
       }, function ( data ) {
-        console.log(data);
-        if (data.success !== true) {
-          var alert = '<br><div class="alert alert-danger" id="alert" role="alert"></div>';
-          $('#saveDiv').after(alert);
+        if (data.success !== true){
           $('#alert').html(OO.ui.deferMsg('courseeditor-error-operation'));
           $('#alert').append(OO.ui.deferMsg('courseeditor-operation-action-' + data.action));
           if(data.elementName){
@@ -67,6 +64,7 @@ $(function () {
           }else {
             $('#alert').append(OO.ui.deferMsg('courseeditor-error-operation-fail'));
           }
+          $('#alert').show();
           windowManager.closeWindow(progressDialog);
           $(document).clearQueue('tasks');
         }else {
@@ -130,7 +128,7 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      window.location.assign('/' +  $('#courseName').text());
+      window.location.assign('/' +  $('#parentName').text());
     });
 
     dequeue('tasks');

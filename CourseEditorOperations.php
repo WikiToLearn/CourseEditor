@@ -9,14 +9,15 @@ class CourseEditorOperations {
     $operation = json_decode($operationRequested);
     switch ($operation->type) {
       case 'fromTopic':
-        self::createNewCourseFromTopic($operation->params);
+        $result = self::createNewCourseFromTopic($operation);
+        CourseEditorUtils::setComposedOperationSuccess($operation, $result);
       break;
       case 'fromDepartment':
-        self::createNewCourseFromDepartment($operation->params);
+        $result = self::createNewCourseFromDepartment($operation);
+        CourseEditorUtils::setComposedOperationSuccess($operation, $result);
       break;
     }
-    //FIXME Must be a serius return object and error handling
-    return "ok";
+    return json_encode($operation);
   }
 
   public static function manageCourseMetadataOp($operationRequested){
@@ -25,16 +26,28 @@ class CourseEditorOperations {
     $title = $params[0];
     $topic = $params[1];
     $description = $params[2];
-    $externalReferences = $params[3];
-    $isImported = $params[4];
-    $originalAuthors =  $params[5];
-    $isReviewed = $params[6];
-    $reviewedOn =  $params[7];
+    $bibliography = $params[3];
+    $exercises = $params[4];
+    $books = $params[5];
+    $externalReferences = $params[6];
+    $isImported = $params[7];
+    $originalAuthors = $params[8];
+    $isReviewed = $params[9];
+    $reviewedOn =  $params[10];
 
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
+    }
+    if($bibliography !== '' && $bibliography !== null){
+      $metadata .= "<section begin=bibliography />" . $bibliography . "<section end=bibliography />\r\n";
+    }
+    if($exercises !== '' && $exercises !== null){
+      $metadata .= "<section begin=exercises />" . $exercises . "<section end=exercises />\r\n";
+    }
+    if($books !== '' && $books !== null){
+      $metadata .= "<section begin=books />" . $books . "<section end=books />\r\n";
     }
     if($externalReferences !== '' && $externalReferences !== null){
       $metadata .= "<section begin=externalreferences />" . $externalReferences . "<section end=externalreferences />\r\n";
@@ -53,7 +66,6 @@ class CourseEditorOperations {
     $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
     CourseEditorUtils::setSingleOperationSuccess($operation, $resultCreateMetadataPage);
     return json_encode($operation);
-    //FIXME Return an object with results in order to display error to the user
   }
 
   private function createBasicCourseMetadata($topic, $title, $description){
@@ -63,11 +75,12 @@ class CourseEditorOperations {
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
     }
-    $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
-    //FIXME Return an object with results in order to display error to the user
+    $apiResult = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
+    return $apiResult;
   }
 
-  private function createNewCourseFromDepartment($params){
+  private function createNewCourseFromDepartment(&$operation){
+    $params = $operation->params;
     $department = $params[0];
     $title = $params[1];
     $description = $params[2];
@@ -78,14 +91,21 @@ class CourseEditorOperations {
       $namespaceCostant = ($compareResult == 0 ? NS_COURSE : NS_USER);
       $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
       if($namespaceCostant == NS_USER){
-        self::createPrivateCourse($pageTitle, null, $title, $description);
+        $result = self::createPrivateCourse($pageTitle, $topic, $title, $description);
+        $user = CourseEditorUtils::getRequestContext()->getUser();
+        $userPage = $pageTitle . $user->getName();
+        $operation->courseTitle = $userPage . '/' . $title;
       }else{
-        self::createPublicCourseFromDepartment($pageTitle, $department, $title, $description);
+        $result = self::createPublicCourseFromDepartment($pageTitle, $department, $title, $description);
+        $operation->courseTitle = $pageTitle . $title;
       }
     }
+
+    return $result;
   }
 
-  private function createNewCourseFromTopic($params){
+  private function createNewCourseFromTopic(&$operation){
+    $params = $operation->params;
     $topic = $params[0];
     $title = $params[1];
     $description = $params[2];
@@ -95,11 +115,16 @@ class CourseEditorOperations {
       $namespaceCostant = ($compareResult === 0 ? NS_COURSE : NS_USER);
       $pageTitle = MWNamespace::getCanonicalName($namespaceCostant) . ':';
       if($namespaceCostant == NS_USER){
-        self::createPrivateCourse($pageTitle, $topic, $title, $description);
+        $result = self::createPrivateCourse($pageTitle, $topic, $title, $description);
+        $user = CourseEditorUtils::getRequestContext()->getUser();
+        $userPage = $pageTitle . $user->getName();
+        $operation->courseTitle = $userPage . '/' . $title;
       }else{
-        self::createPublicCourseFromTopic($pageTitle, $topic, $title, $description);
+        $result = self::createPublicCourseFromTopic($pageTitle, $topic, $title, $description);
+        $operation->courseTitle = $pageTitle . $title;
       }
     }
+    return $result;
   }
 
   private function createPrivateCourse($pageTitle, $topic, $title, $description){
@@ -112,7 +137,8 @@ class CourseEditorOperations {
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $titleWithUser, $description);
     $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
-    //FIXME Return an object with results in order to display error to the user
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultPrependToUserPage);
+
   }
 
   private function createPublicCourseFromTopic($pageTitle, $topic, $title, $description){
@@ -122,8 +148,7 @@ class CourseEditorOperations {
     $text = $topicCourses . "{{Course|" . $title . "}}}}";
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
-    //FIXME Return an object with results in order to display error to the user
-
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic);
   }
 
   private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
@@ -134,8 +159,7 @@ class CourseEditorOperations {
     $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
     $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
-    //FIXME Return an object with results in order to display error to the user
-
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment);
   }
 
 
@@ -145,16 +169,9 @@ class CourseEditorOperations {
       case 'rename-move-task':
         $sectionName = $value->elementName;
         $newSectionName = $value->newElementName;
-        /*$chapters = CourseEditorUtils::getChapters($courseName . '/' .$sectionName);
-        $newSectionText = "";
-        foreach ($chapters as $chapter) {
-          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
-        }*/
         $pageTitle = $courseName . "/" . $sectionName;
         $newPageTitle = $courseName . '/' . $newSectionName;
         $apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
-        //$resultEdit = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
-        //$apiResult = array($resultMove, $resultEdit);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'rename-update-task':
@@ -165,11 +182,8 @@ class CourseEditorOperations {
         foreach ($chapters as $chapter) {
           $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
         }
-        //$pageTitle = $courseName . "/" . $sectionName;
         $newPageTitle = $courseName . '/' . $newSectionName;
-        //$apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
         $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
-        //$apiResult = array($resultMove, $resultEdit);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'delete-chapters-task':
@@ -180,7 +194,6 @@ class CourseEditorOperations {
         $pageTitle = $courseName . '/' . $sectionName;
         if(!$title->userCan('delete', $user, 'secure')){
           $prependText = "\r\n{{DeleteMe}}";
-          //$resultSection = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           foreach ($chapters as $chapter) {
             $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
             $prependText = "\r\n{{DeleteMe}}";
@@ -189,11 +202,9 @@ class CourseEditorOperations {
         }else {
           foreach ($chapters as $chapter) {
             $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
-            $resultChapters = CourseEditorUtils::deleteWrapper($pageTitle);
+            $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
           }
-          //$resultSection = CourseEditorUtils::deleteWrapper($pageTitle);
         }
-        //$apiResult = array($resultSection, $resultChapters);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'delete-section-task':

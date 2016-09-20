@@ -17,18 +17,10 @@ class SectionEditorTemplate extends QuickTemplate {
     $section = $this->data['section'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
-    <h2 id="sectionName"><?php echo htmlspecialchars($section) ?></h2>
+    <h2 id="parentName"><?php echo htmlspecialchars($section) ?></h2>
     <div class="row">
       <div class="col-md-8">
         <div id="chaptersList"></div>
-        <br>
-        <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
-          <div id="coursesList"></div>
-        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -47,6 +39,10 @@ class SectionEditorTemplate extends QuickTemplate {
     <div id="saveDiv" class="text-center">
       <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
     </div>
+    <br><br>
+    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+    </div>
     <?php
   }
 }
@@ -60,18 +56,10 @@ class CourseEditorTemplate extends QuickTemplate {
     $courseName = $this->data['course'];
     ?>
     <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
-    <h2 id="courseName"><?php echo htmlspecialchars($courseName) ?></h2>
+    <h2 id="parentName"><?php echo htmlspecialchars($courseName) ?></h2>
     <div class="row">
       <div class="col-md-8">
         <div id="sectionsList"></div>
-        <br>
-        <div class="alert alert-warning alert-danger" id="alert" role="alert"  style="display:none;">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
-            <span aria-hidden="true">&times;</span>
-          </button>
-          <?php echo wfMessage( 'courseeditor-alert-message-existing-element' ) ?>
-          <div id="coursesList"></div>
-        </div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -89,6 +77,10 @@ class CourseEditorTemplate extends QuickTemplate {
     <br>
     <div id="saveDiv" class="text-center">
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
+    </div>
+    <br><br>
+    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }
@@ -133,19 +125,26 @@ class CourseCreatorTemplate extends QuickTemplate {
         <input type="text" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>">
       </div>
       <label for="courseNamespace"><?php echo wfMessage('courseeditor-radiobutton-namespace') ?></label>
-      <div class="radio" id="radioButtons">
-        <label>
-          <input type="radio" name="courseNamespace" value="NS_COURSE" checked>
-          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
-        </label>
-      </div>
       <div class="radio">
         <label>
-          <input type="radio" name="courseNamespace" value="NS_USER">
+          <input type="radio" name="courseNamespace" value="NS_USER" checked>
           <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
         </label>
       </div>
+      <div class="radio" id="radioButtons">
+        <label>
+          <input type="radio" name="courseNamespace" value="NS_COURSE">
+          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
+        </label>
+      </div>
       <button class="btn btn-primary btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
+      <br><br>
+      <div class="alert alert-danger alert-dismissible" id="alertError" role="alert"  style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php echo wfMessage( 'courseeditor-error-operation' ) ?>
+      </div>
     </form>
 <?php
   }
@@ -158,6 +157,8 @@ class ManageMetadataTemplate extends QuickTemplate {
       $metadataResult = $this->data['metadataResult'];
     }
     ?>
+    <div><p><?php echo wfMessage( 'courseeditor-managemetata-description' ) ?></p></div>
+    <br>
     <form>
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
@@ -170,6 +171,18 @@ class ManageMetadataTemplate extends QuickTemplate {
       <div class="form-group">
         <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
         <textarea row="3" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>"><?php echo $metadataResult['description'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseBibliography"><?php echo wfMessage( 'courseeditor-input-bibliography-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseBibliography" placeholder="<?php echo wfMessage( 'courseeditor-input-bibliography-placeholder' ) ?>"><?php echo $metadataResult['bibliography'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseExercises"><?php echo wfMessage( 'courseeditor-input-exercises-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseExercises" placeholder="<?php echo wfMessage( 'courseeditor-input-exercises-placeholder' ) ?>"><?php echo $metadataResult['exercises'] ?></textarea>
+      </div>
+      <div class="form-group">
+        <label for="courseBooks"><?php echo wfMessage( 'courseeditor-input-books-label' ) ?></label>
+        <textarea class="form-control" rows="3" id="courseBooks" placeholder="<?php echo wfMessage( 'courseeditor-input-books-placeholder' ) ?>"><?php echo $metadataResult['books'] ?></textarea>
       </div>
       <div class="form-group">
         <label for="courseExternalReferences"><?php echo wfMessage( 'courseeditor-input-externalreferences-label' ) ?></label>
