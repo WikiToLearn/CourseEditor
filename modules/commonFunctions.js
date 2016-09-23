@@ -371,7 +371,6 @@ ProgressDialog.prototype.updateProgress =  function(unitaryIncrement){
 };
 ProgressDialog.prototype.setCurrentOp = function(operation){
   var labelToSet = OO.ui.msg('courseeditor-operation-action-' + operation.action);
-  console.log(labelToSet);
   if(operation.elementName){
     labelToSet += " " + operation.elementName;
   }

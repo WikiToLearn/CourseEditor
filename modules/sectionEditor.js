@@ -95,7 +95,13 @@ $(function () {
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
       var sectionName = $('#parentName').text();
-      var courseName = sectionName.substr(0, sectionName.indexOf('/'));
+      var splitted = sectionName.split('/');
+      var courseName;
+      if(splitted.length > 2){
+        courseName = splitted[0] + '/' + splitted[1];
+      }else {
+        courseName = splitted[0];
+      }
       window.location.assign('/' +  courseName);
     });
 
