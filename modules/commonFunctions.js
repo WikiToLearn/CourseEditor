@@ -129,13 +129,18 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   $('.editElementIcon').click(function(){
     editElement(draggableWidget, $(this).parent().text(), editStack);
   });
-  $('.oo-ui-inputWidget-input').attr('id', 'addElement');
-  $('#addElement').blur(function(){
+  $('#addElementButton').click(function(){
     $('#alert').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
   });
-  $('#addElement').keypress(function(keypressed) {
+  $('.oo-ui-inputWidget-input').attr('id', 'addElementInput');
+  $('#addElementInput').blur(function(){
+    $('#alert').hide();
+    addElement(draggableWidget, textInputWidget.getValue(), editStack);
+    textInputWidget.setValue('');
+  });
+  $('#addElementInput').keypress(function(keypressed) {
     $('#alert').hide();
     if(keypressed.which === 13) {
       addElement(draggableWidget, textInputWidget.getValue(), editStack);

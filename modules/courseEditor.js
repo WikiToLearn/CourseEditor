@@ -20,7 +20,9 @@ $(function () {
 
   //Create a textInputWidget for new sections
   var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-section' ) } );
-  var fieldInput = 	new OO.ui.FieldLayout( textInputWidget);
+  var addButton = new OO.ui.ButtonWidget({id: 'addElementButton', label: ''});
+  addButton.$label.append("<i class='fa fa-plus fa-lg'></i>");
+  var fieldInput = 	new OO.ui.ActionFieldLayout( textInputWidget, addButton);
 
   //Append all created elements to DOM
   $('#sectionsList').append(fieldDrag.$element, fieldInput.$element);
