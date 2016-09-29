@@ -37,7 +37,17 @@
           "scripts":["modules/manageMetadata.js"]
         },
         "ext.courseEditor.create": {
-          "scripts":["modules/createCourse.js"]
+          "scripts":[
+            "modules/commonFunctions.js",
+            "modules/createCourse.js"
+          ],
+          "dependencies": [
+             "oojs-ui",
+             "mediawiki.util"
+          ],
+          "messages": [
+              "courseeditor-progressdialog-wait"
+          ]
         },
         "ext.courseEditor.section": {
            "scripts":[

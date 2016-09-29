@@ -63,6 +63,7 @@
   "courseeditor-operation-action-update" : "Actualiza",
   "courseeditor-operation-action-update-collection" : "Actualiza libro",
   "courseeditor-error-operation-fail" : "Fallo!",
+  "courseeditor-progressdialog-wait" : "Espere creación en curso...",
   "courseeditor-collection-book-category": "Libros",
   "courseeditor-collection-savedbook-template": "Libro_guardado"
 }

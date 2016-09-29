@@ -64,5 +64,6 @@
   "courseeditor-operation-action-update-collection" : "Update book",
   "courseeditor-error-operation-fail" : " fails!",
   "courseeditor-collection-book-category": "Books",
+  "courseeditor-progressdialog-wait": "Wait creation in progress...",
   "courseeditor-collection-savedbook-template": "saved_book"
 }

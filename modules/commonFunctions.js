@@ -344,6 +344,25 @@ var editElement = function(draggableWidget, elementName, editStack){
 };
 
 /******** OO.UI OBJECTS ********/
+function ProgressDialogIndeterminate( config ) {
+  ProgressDialogIndeterminate.parent.call( this, config );
+};
+OO.inheritClass( ProgressDialogIndeterminate, OO.ui.Dialog );
+ProgressDialogIndeterminate.static.escapable = false;
+ProgressDialogIndeterminate.prototype.initialize = function () {
+  ProgressDialogIndeterminate.parent.prototype.initialize.call( this );
+  this.progressBar = new OO.ui.ProgressBarWidget();
+  this.currentOp = new OO.ui.LabelWidget( {
+    label: OO.ui.msg('courseeditor-progressdialog-wait')
+  } );
+  this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+  this.content.$element.append(this.progressBar.$element, this.currentOp.$element);
+  this.$body.append( this.content.$element );
+};
+ProgressDialogIndeterminate.prototype.getBodyHeight = function () {
+  return this.content.$element.outerHeight( true );
+};
+
 
 function ProgressDialog( config ) {
   ProgressDialog.parent.call( this, config );

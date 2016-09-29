@@ -84,6 +84,14 @@ $(function () {
         ]
       };
     }
+
+    var progressDialog = new ProgressDialogIndeterminate( {
+      size: 'medium'
+    } );
+
+    windowManager.addWindows( [ progressDialog ] );
+    windowManager.openWindow( progressDialog );
+
     $.post( mw.util.wikiScript(), {
       action: 'ajax',
       rs: 'CourseEditorOperations::createCourseOp',
@@ -91,8 +99,10 @@ $(function () {
     }, function ( result ) {
       var resultObj = JSON.parse(result);
       if(resultObj.success !== true){
+        windowManager.closeWindow(progressDialog);
         $('#alertError').show();
       }else {
+        windowManager.closeWindow(progressDialog);
         window.location.assign('/' +  resultObj.courseTitle);
       }
     });

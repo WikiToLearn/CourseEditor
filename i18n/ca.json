@@ -63,6 +63,7 @@
   "courseeditor-operation-action-update" : "Actualització",
   "courseeditor-operation-action-update-collection" : " Actualització llibre",
   "courseeditor-error-operation-fail" : "Error!",
+  "courseeditor-progressdialog-wait" : "Esperi creació en curs...",
   "courseeditor-collection-book-category": "Llibres",
   "courseeditor-collection-savedbook-template": "llibre_guardat"
 }
