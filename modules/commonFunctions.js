@@ -129,6 +129,9 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   $('.editElementIcon').click(function(){
     editElement(draggableWidget, $(this).parent().text(), editStack);
   });
+  $('.moveElementIcon').click(function(){
+    moveElement(draggableWidget, $(this).parent().text(), editStack);
+  });
   $('#addElementButton').click(function(){
     $('#alert').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
@@ -205,10 +208,11 @@ var createDragItem = function(draggableWidget, elementName, editStack){
     label: elementName
   } );
   var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+  var iconMove = $("<i class='fa fa-reply fa-lg moveElementIcon pull-right'></i>");
   var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
 
   //Append icons and add the item to draggableWidget
-  dragItem.$label.append(iconDelete, iconEdit);
+  dragItem.$label.append(iconDelete, iconMove, iconEdit);
   draggableWidget.addItems([dragItem]);
 
   //Create handlers
@@ -217,6 +221,9 @@ var createDragItem = function(draggableWidget, elementName, editStack){
   });
   $(iconEdit).click(function(){
     editElement(draggableWidget, $(this).parent().text(), editStack);
+  });
+  $(iconMove).click(function(){
+    moveElement(draggableWidget, $(this).parent().text(), editStack);
   });
 };
 
@@ -247,6 +254,18 @@ var createRecycleBinItem = function(draggableWidget, elementName, editStack){
 
 var dequeue = function(queueName){
   $(document).dequeue(queueName);
+};
+
+/**
+ * Rename a element
+ * @param {DraggableGroupWidget} [draggableWidget]
+ * @param {String} [elementName]
+ * @param {Array} [editStack]
+ */
+var moveElement = function(draggableWidget, elementName, editStack){
+  var dialog = new MoveDialog(draggableWidget, elementName, editStack);
+  windowManager.addWindows( [ dialog ] );
+  windowManager.openWindow( dialog );
 };
 
 /**
@@ -507,3 +526,104 @@ EditDialog.prototype.getActionProcess = function ( action ) {
     }
     return EditDialog.parent.prototype.getActionProcess.call( this, action );
 };
+
+/****** Move Dialog ******/
+
+/* Create a dialog */
+function MoveDialog(draggableWidget, elementName, editStack, config ) {
+    MoveDialog.parent.call( this, config );
+    this.draggableWidget = draggableWidget;
+    this.elementName = elementName;
+    this.editStack = editStack;
+    this.dropdownWidget = new OO.ui.DropdownWidget({
+      label: 'Seleziona una sezione',
+      menu: {
+        items: []
+      }
+    } );
+};
+
+/* Inheritance */
+OO.inheritClass( MoveDialog, OO.ui.ProcessDialog );
+
+/* Static Properties */
+MoveDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog' );
+MoveDialog.static.actions = [
+    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename' ), flags: 'primary' },
+    { label: OO.ui.deferMsg( 'courseeditor-cancel' ), flags: 'safe' }
+];
+
+/* Initialize the dialog elements */
+MoveDialog.prototype.initialize = function () {
+    MoveDialog.parent.prototype.initialize.apply( this, arguments );
+    this.populateDropdown();
+    this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+    this.content.$element.append(this.dropdownWidget.$element, "<br><br>" );
+    this.$body.append( this.content.$element );
+};
+
+MoveDialog.prototype.populateDropdown = function(config) {
+  var sectionName = $('#parentName').text();
+  var splitted = sectionName.split('/');
+  var courseName;
+  if(splitted.length > 2){
+    courseName = splitted[0] + '/' + splitted[1];
+  }else {
+    courseName = splitted[0];
+  }
+  var dialog = this;
+  $.getJSON( mw.util.wikiScript(), {
+    action: 'ajax',
+    rs: 'CourseEditorUtils::getSectionsJson',
+    rsargs: [courseName]
+  }, function ( data ) {
+    var items = [];
+    $.each(data, function(key, value){
+      items.push(new OO.ui.MenuOptionWidget( {
+          data: value,
+          label: value,
+      } ));
+    });
+    dialog.dropdownWidget.getMenu().addItems(items);
+  });
+};
+
+
+/* Define actions
+MoveDialog.prototype.getActionProcess = function ( action ) {
+    var dialog = this;
+    if ( action === 'save' ) {
+        return new OO.ui.Process( function () {
+            var newElementName = dialog.textInputWidget.getValue();
+            var items = dialog.draggableWidget.getItems();
+            elementExist(dialog.draggableWidget, newElementName, function(result){
+              if(result === true){
+                $('#alert').show();
+              }else {
+                items.filter(function(element) {
+                  if(element.data === dialog.elementName){
+                    element.setData(newElementName);
+                    element.setLabel(newElementName);
+                    var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+                    var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+                    element.$label.append(iconDelete, iconEdit);
+                    $(iconDelete).click(function(){
+                      deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                    });
+                    $(iconEdit).click(function(){
+                      editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                    });
+                    dialog.editStack.push({
+                      action: 'rename',
+                      elementName: dialog.elementName,
+                      newElementName: newElementName
+                    })
+                  }
+                });
+              }
+            });
+            dialog.close( { action: action } );
+        } );
+    }
+    return MoveDialog.parent.prototype.getActionProcess.call( this, action );
+};*/

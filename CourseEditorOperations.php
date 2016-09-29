@@ -269,6 +269,17 @@ class CourseEditorOperations {
     $context = CourseEditorUtils::getRequestContext();
     $value = json_decode($operation);
     switch ($value->action) {
+      case 'move':
+        $chapterName = $value->elementName;
+        $newSectionName = $value->newElementName;
+        $from = $sectionName . '/' . $chapterName;
+        $to = $newSectionName . '/' . $chapterName;
+        $apiResult = CourseEditorUtils::moveWrapper($from, $to);
+        $explodedString = explode("/", $sectionName);
+        $courseName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
+        $textToAppend = "* [[" .$courseName . "/" . $newSectionName. "/" . $chapterName ."|". $chapterName ."]]\r\n";
+        CourseEditorUtils::editWrapper($courseName . '/' . $newSectionName, null, null, $textToAppend);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       case 'rename':
         $chapterName = $value->elementName;
         $newChapterName = $value->newElementName;

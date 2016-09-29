@@ -182,6 +182,10 @@ class CourseEditorUtils {
     return $matches[1];
   }
 
+  public static function getSectionsJson($courseName){
+    return json_encode(self::getSections($courseName));
+  }
+
   public static function getPreviousAndNext($pageTitle){
     $subElements = self::getSubCourseElements($pageTitle);
     if($subElements['error']){

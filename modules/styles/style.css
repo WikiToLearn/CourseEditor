@@ -16,6 +16,14 @@
   display: inline-block;
 }
 
+.oo-ui-draggableElement .moveElementIcon{
+  display: none;
+  margin-top: 4px;
+}
+.oo-ui-draggableElement:hover .moveElementIcon{
+  display: inline-block;
+}
+
 .list-group-item .undoDeleteIcon{
   display: none;
   cursor: pointer;
@@ -38,5 +46,3 @@ body > .oo-ui-windowManager-modal{
  {
   white-space: pre-wrap;
 }
-
-

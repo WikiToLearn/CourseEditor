@@ -150,7 +150,8 @@
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
         "CourseEditorOperations::applySectionOp",
-        "CourseEditorOperations::applyCourseOp"
+        "CourseEditorOperations::applyCourseOp",
+        "CourseEditorUtils::getSectionsJson"
   		]
 },
     "SpecialPages": {

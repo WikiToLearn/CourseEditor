@@ -8,6 +8,7 @@ $(function () {
       label: value
     } );
     dragItem.$label.append("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>",
+    "<i class='fa fa-reply moveElementIcon fa-lg pull-right'></i>",
     "<i class='fa fa-pencil editElementIcon fa-lg pull-right'></i>");
     dragElements.push(dragItem);
   });
