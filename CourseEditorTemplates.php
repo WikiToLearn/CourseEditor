@@ -216,7 +216,7 @@ class ManageMetadataTemplate extends QuickTemplate {
         <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
         <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
       </div>
-      <button class="btn btn-successs btn-lg" id="manageMetadataButton"><?php echo wfMessage('courseeditor-save-button') ?></button>
+      <button class="btn btn-success btn-lg" id="manageMetadataButton"><?php echo wfMessage('courseeditor-save-button') ?></button>
       <br><br>
       <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">

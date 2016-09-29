@@ -135,11 +135,11 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
     textInputWidget.setValue('');
   });
   $('.oo-ui-inputWidget-input').attr('id', 'addElementInput');
-  $('#addElementInput').blur(function(){
+  /*$('#addElementInput').blur(function(){
     $('#alert').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
-  });
+  });*/
   $('#addElementInput').keypress(function(keypressed) {
     $('#alert').hide();
     if(keypressed.which === 13) {

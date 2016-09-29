@@ -1,5 +1,8 @@
 {
   "courseeditor" : "Editor de cursos",
+  "courseeditor-createcourse-pagetitle": "Crear curso",
+  "courseeditor-editcourse-pagetitle" : "Modificar curso",
+  "courseeditor-editsection-pagetitle" : "Modificar sección",
   "courseeditor-managemetata-pagetitle": "Gestión de metadatos",
   "courseeditor-managemetata-description": "Gracias a esta página se pueden gestionar los metadatos del curso. <br> <i> Puede utilizar la sintaxis wiki (wikitexto) dentro del área de texto para añadir enlaces, viñetas, etc...</i>",
   "courseeditor-credits-info": "Editor curso es una extensión para crear y organizar cursos.",

@@ -58,7 +58,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out->enableOOUI();
     $sections = CourseEditorUtils::getSections($courseName);
     $this->setHeaders();
-    $out->setPageTitle("Course Editor");
+    $out->setPageTitle(wfMessage('courseeditor-editcourse-pagetitle'));
     $out->addInlineScript(" var sections = " . json_encode($sections) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor.course' );
     $template = new CourseEditorTemplate();
@@ -73,7 +73,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out->enableOOUI();
     $chapters = CourseEditorUtils::getChapters($sectionName);
     $this->setHeaders();
-    $out->setPageTitle("Section Editor");
+    $out->setPageTitle(wfMessage('courseeditor-editsection-pagetitle'));
     $out->addInlineScript(" var chapters = " . json_encode($chapters) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor.section' );
     $template = new SectionEditorTemplate();
@@ -110,7 +110,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->addModules('ext.courseEditor.create');
-    $out->setPageTitle("Create course");
+    $out->setPageTitle(wfMessage('courseeditor-createcourse-pagetitle'));
     $template = new CourseCreatorTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
@@ -122,7 +122,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->addModules('ext.courseEditor.create');
-    $out->setPageTitle("Create course");
+    $out->setPageTitle(wfMessage('courseeditor-createcourse-pagetitle'));
     $template = new CourseCreatorTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());

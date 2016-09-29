@@ -1,5 +1,8 @@
 {
   "courseeditor" : "Course editor",
+  "courseeditor-createcourse-pagetitle": "Create course",
+  "courseeditor-editcourse-pagetitle" : "Edit course",
+  "courseeditor-editsection-pagetitle" : "Edit section",
   "courseeditor-managemetata-pagetitle": "Metadata management",
   "courseeditor-managemetata-description": "With this page you can manage course's metadata<br> <i>You can use the wiki syntax (wikitext) within textarea to add links, bullet lists etc...</i>",
   "courseeditor-credits-info": "CourseEditor is an extension to create and manage courses.",

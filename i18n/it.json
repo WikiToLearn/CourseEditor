@@ -1,5 +1,8 @@
 {
   "courseeditor" : "Editor di corsi",
+  "courseeditor-createcourse-pagetitle": "Crea corso",
+  "courseeditor-editcourse-pagetitle" : "Modifica corso",
+  "courseeditor-editsection-pagetitle" : "Modifica sezione",
   "courseeditor-managemetata-pagetitle": "Gestione metadati",
   "courseeditor-managemetata-description": "Grazie a questa pagina puoi gestire i metadati del corso.<br> <i>Puoi usare la sintassi wiki (wikitesto) all'interno delle textarea per aggiungere links, elenchi puntati ecc...</i>",
   "courseeditor-credits-info": "CourseEditor è una estensione per creare ed organizzare corsi.",
@@ -12,7 +15,7 @@
   "courseeditor-rename" : "Rinomina",
   "courseeditor-organize-chapters" : "Qui puoi organizzare, aggiungere e rimuovere capitoli",
   "courseeditor-organize-sections" : "Qui puoi organizzare, aggiungere e rimuovere sezioni",
-  "courseeditor-input-department-label" : "Dipartmento:",
+  "courseeditor-input-department-label" : "Dipartimento:",
   "courseeditor-input-department-placeholder" : "Inserisci il dipartimento del corso",
   "courseeditor-input-topic-label" : "Argomento:",
   "courseeditor-input-topic-placeholder" : "Inserisci l'argomento del corso",

@@ -1,5 +1,8 @@
 {
   "courseeditor" : "Editor de cursos",
+  "courseeditor-createcourse-pagetitle": "Crear curso",
+  "courseeditor-editcourse-pagetitle" : "Canviar curso",
+  "courseeditor-editsection-pagetitle" : "Canviar sessió",
   "courseeditor-managemetata-pagetitle": "Gestió de metadades",
   "courseeditor-managemetata-description": "Gràcies a aquesta pàgina es poden gestionar les metadades del curs. <br> <i> Podeu utilitzar la sintaxi wiki (wikitexto) dins de l'àrea de text per afegir enllaços, vinyetes, etc...</i>",
   "courseeditor-credits-info": "Editor curs és una extensió per crear i organitzar cursos.",
