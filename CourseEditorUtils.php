@@ -319,6 +319,61 @@ class CourseEditorUtils {
     }
   }
 
+  public static function editSectionWrapper($title, $text, $textToPrepend, $textToAppend){
+    $context = self::getRequestContext();
+    try {
+      $user = $context->getUser();
+      $token = $user->getEditToken();
+      $sectionExist = self::checkNewCoursesSectionExist($title);
+      if(!$sectionExist){
+        $api = new ApiMain(
+          new DerivativeRequest(
+            $context->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $title,
+              'text' => $text,
+              'section' => 'new',
+              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              // automatically override text
+              'prependtext' => $textToPrepend,
+              // automatically override text
+              'appendtext' => $textToAppend,
+              'notminor'   => true,
+              'token'      => $token
+            ),
+            true
+          ),
+          true
+        );
+      }else {
+        $api = new ApiMain(
+          new DerivativeRequest(
+            $context->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $title,
+              'text' => $text,
+              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              // automatically override text
+              'prependtext' => $textToPrepend,
+              // automatically override text
+              'appendtext' => $textToAppend,
+              'notminor'   => true,
+              'token'      => $token
+            ),
+            true
+          ),
+          true
+        );
+      }
+      $api->execute();
+      return $api->getResult()->getResultData(null, array('Strip' => 'all'));
+    } catch(UsageException $e){
+      return $e->getMessage();
+    }
+  }
+
   public static function moveWrapper($from, $to){
     $context = self::getRequestContext();
     try {
@@ -345,5 +400,22 @@ class CourseEditorUtils {
     } catch(UsageException $e){
       return $e->getMessage();
     }
+  }
+
+  private function checkNewCoursesSectionExist($department) {
+    $title = Title::newFromText( $department);
+    $page = WikiPage::factory( $title);
+    $context = self::getRequestContext();
+    $parserOptions = ParserOptions::newFromContext($context);
+    $sections = $page->getParserOutput($parserOptions)->getSections();
+    $newCoursesSection = wfMessage('courseeditor-newcourses-section-title')->text();
+    if(!is_array($sections)){
+      return false;
+    }else {
+      foreach($sections as $element) {
+        $ret = in_array($newCoursesSection, $element);
+      }
+    }
+    return $ret;
   }
 }

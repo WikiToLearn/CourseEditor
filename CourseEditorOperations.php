@@ -158,7 +158,7 @@ class CourseEditorOperations {
     $listElementText =  "\r\n* [[" . $title . "]]";
     $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
-    $resultAppendToDepartment = CourseEditorUtils::editWrapper($department, null, null, $listElementText);
+    $resultAppendToDepartment = CourseEditorUtils::editSectionWrapper($department, null, null, $listElementText);
     return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment);
   }
 

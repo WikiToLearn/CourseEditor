@@ -41,7 +41,7 @@
   "courseeditor-create-button" : "Create!",
   "courseeditor-alert-message" :  "Hey, there is a course with the same title yet! <br> Choose another title or start to contribute immediately to the existing course.",
   "courseeditor-validate-form" : "Please, insert a topic and a name",
-  "courseeditor-radiobutton-namespace" : "Do you want to creatre a private course in your personal page or a public one?",
+  "courseeditor-radiobutton-namespace" : "Do you want to create a private course in your personal page or a public one?",
   "courseeditor-radiobutton-namespace-private" :  "Private",
   "courseeditor-radiobutton-namespace-public" : "Public",
   "courseeditor-message-dialog-title" : "Oops...",
@@ -65,5 +65,6 @@
   "courseeditor-error-operation-fail" : " fails!",
   "courseeditor-collection-book-category": "Books",
   "courseeditor-progressdialog-wait": "Wait creation in progress...",
-  "courseeditor-collection-savedbook-template": "saved_book"
+  "courseeditor-collection-savedbook-template": "saved_book",
+  "courseeditor-newcourses-section-title" : "New courses"
 }

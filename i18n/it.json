@@ -65,5 +65,6 @@
   "courseeditor-error-operation-fail" : " fallito!",
   "courseeditor-progressdialog-wait" : "Attendere creazione in corso...",
   "courseeditor-collection-book-category": "Libri",
-  "courseeditor-collection-savedbook-template": "libro_salvato"
+  "courseeditor-collection-savedbook-template": "libro_salvato",
+  "courseeditor-newcourses-section-title" : "Nuovi corsi"
 }

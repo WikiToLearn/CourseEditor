@@ -65,5 +65,6 @@
   "courseeditor-error-operation-fail" : "Error!",
   "courseeditor-progressdialog-wait" : "Esperi creació en curs...",
   "courseeditor-collection-book-category": "Llibres",
-  "courseeditor-collection-savedbook-template": "llibre_guardat"
+  "courseeditor-collection-savedbook-template": "llibre_guardat",
+  "courseeditor-newcourses-section-title" : "Nous cursos"
 }
