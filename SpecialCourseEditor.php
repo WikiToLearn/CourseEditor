@@ -41,9 +41,6 @@ class SpecialCourseEditor extends SpecialPage {
         }
         return;
       case 'managemetadata':
-        if ( ! ( $user->isAllowed( 'undelete' ) ) ) {
-          throw new PermissionsError( 'undelete' );
-        }
         $courseName = $request->getVal('pagename');
         $this->manageMetadata($courseName);
         return;
@@ -139,6 +136,7 @@ class SpecialCourseEditor extends SpecialPage {
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
     $template->set('course', $courseName);
+    $template->set('user', $this->getUser());
     $metadataResult = CourseEditorUtils::getMetadata($courseName);
     if($metadataResult !== null){
       $template->set('metadataResult', $metadataResult);

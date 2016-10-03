@@ -72,10 +72,14 @@ $(function () {
       if(dataObj.success !== true){
         $('#alert').show();
       }else {
-        /*FIXME: courseTopic is valid only if the course is public, otherwise user should
-        * be redirected to userpage
-        */
-        window.location.assign('/' +  courseTopic);
+        var splitted = courseName.split('/');
+        var redirect;
+        if(splitted.length > 1){
+          redirect = 'User:' + splitted[0] + '/' + splitted[1];
+        }else {
+          redirect = 'Course:' + splitted[0];
+        }
+        window.location.assign('/' + redirect);
       }
     });
   });

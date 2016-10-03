@@ -153,6 +153,7 @@ class CourseCreatorTemplate extends QuickTemplate {
 class ManageMetadataTemplate extends QuickTemplate {
   public function execute(){
     $courseName = $this->data['course'];
+    $user = $this->data['user'];
     if($this->data['metadataResult']){
       $metadataResult = $this->data['metadataResult'];
     }
@@ -188,34 +189,36 @@ class ManageMetadataTemplate extends QuickTemplate {
         <label for="courseExternalReferences"><?php echo wfMessage( 'courseeditor-input-externalreferences-label' ) ?></label>
         <textarea class="form-control" rows="3" id="courseExternalReferences" placeholder="<?php echo wfMessage( 'courseeditor-input-externalreferences-placeholder' ) ?>"><?php echo $metadataResult['externalreferences'] ?></textarea>
       </div>
-      <div class="checkbox">
-        <label for="importedCourse">
-          <?php if(array_key_exists('isimported', $metadataResult)){ ?>
-          <input type="checkbox" name="isImported" id="isImported" checked="true">
-          <?php }else {
-            ?>
-            <input type="checkbox" name="isImported" id="isImported">
-          <?php } echo wfMessage( 'courseeditor-input-imported-label' ) ?>
-        </label>
-      </div>
-      <div class="form-group" id="courseOriginalAuthorsDiv" style="display:none;">
-        <label for="courseOriginalAuthors"><?php echo wfMessage( 'courseeditor-input-originalauthors-label' ) ?></label>
-        <input type="text" class="form-control" id="courseOriginalAuthors" placeholder="<?php echo wfMessage( 'courseeditor-input-originalauthors-placeholder' ) ?>"  value="<?php echo $metadataResult['originalauthors'] ?>" />
-      </div>
-      <div class="checkbox">
-        <label for="reviewedCourse">
-          <?php if(array_key_exists('isreviewed', $metadataResult)){ ?>
-          <input type="checkbox"  name="isReviewed" id="isReviewed" checked="true">
-          <?php }else {
-            ?>
-            <input type="checkbox" name="isReviewed" id="isReviewed">
-          <?php } echo wfMessage( 'courseeditor-input-reviewed-label' ) ?>
-        </label>
-      </div>
-      <div class="form-group" id="courseReviewedOnDiv" style="display:none;">
-        <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
-        <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
-      </div>
+      <?php if ($user->isAllowed( 'undelete' )) { ?>
+        <div class="checkbox">
+          <label for="importedCourse">
+            <?php if(array_key_exists('isimported', $metadataResult)){ ?>
+            <input type="checkbox" name="isImported" id="isImported" checked="true">
+            <?php }else {
+              ?>
+              <input type="checkbox" name="isImported" id="isImported">
+            <?php } echo wfMessage( 'courseeditor-input-imported-label' ) ?>
+          </label>
+        </div>
+        <div class="form-group" id="courseOriginalAuthorsDiv" style="display:none;">
+          <label for="courseOriginalAuthors"><?php echo wfMessage( 'courseeditor-input-originalauthors-label' ) ?></label>
+          <input type="text" class="form-control" id="courseOriginalAuthors" placeholder="<?php echo wfMessage( 'courseeditor-input-originalauthors-placeholder' ) ?>"  value="<?php echo $metadataResult['originalauthors'] ?>" />
+        </div>
+        <div class="checkbox">
+          <label for="reviewedCourse">
+            <?php if(array_key_exists('isreviewed', $metadataResult)){ ?>
+            <input type="checkbox"  name="isReviewed" id="isReviewed" checked="true">
+            <?php }else {
+              ?>
+              <input type="checkbox" name="isReviewed" id="isReviewed">
+            <?php } echo wfMessage( 'courseeditor-input-reviewed-label' ) ?>
+          </label>
+        </div>
+        <div class="form-group" id="courseReviewedOnDiv" style="display:none;">
+          <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
+          <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
+        </div>
+      <?php } ?>
       <button class="btn btn-success btn-lg" id="manageMetadataButton"><?php echo wfMessage('courseeditor-save-button') ?></button>
       <br><br>
       <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">
