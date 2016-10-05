@@ -37,14 +37,14 @@ class LevelTwoEditorTemplate extends QuickTemplate {
     <br>
     <br>
     <div id="saveDiv" class="text-center">
+      <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+      </div>
+      <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+      </div>
+      <br><br>
       <button type="button" class="btn btn-lg btn-success" id="saveLevelTwoButton"><?php echo wfMessage('courseeditor-save-levelTwo') ?></button>
-    </div>
-    <br><br>
-    <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
-    </div>
-    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }
@@ -79,14 +79,14 @@ class CourseEditorTemplate extends QuickTemplate {
     <br>
     <br>
     <div id="saveDiv" class="text-center">
+      <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+      </div>
+      <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+      </div>
+      <br><br>
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
-    </div>
-    <br><br>
-    <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
-    </div>
-    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }
@@ -143,14 +143,14 @@ class CourseCreatorTemplate extends QuickTemplate {
           <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
         </label>
       </div>
-      <button class="btn btn-success btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
-      <br><br>
       <div class="alert alert-danger alert-dismissible" id="alertError" role="alert"  style="display:none;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
         <?php echo wfMessage( 'courseeditor-error-operation' ) ?>
       </div>
+      <br><br>
+      <button class="btn btn-success btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
     </form>
 <?php
   }
