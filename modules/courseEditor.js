@@ -20,7 +20,6 @@ $(function () {
 
   //Create a textInputWidget for new levelsTwo
   var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-levelTwo' ) } );
-  $('.oo-ui-inputWidget-input').attr('id', 'addElementInput');
   var addButton = new OO.ui.ButtonWidget({id: 'addElementButton', label: ''});
   addButton.$label.append("<i class='fa fa-plus fa-lg'></i>");
   var fieldInput = 	new OO.ui.ActionFieldLayout( textInputWidget, addButton);
