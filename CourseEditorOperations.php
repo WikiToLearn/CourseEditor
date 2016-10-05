@@ -167,51 +167,51 @@ class CourseEditorOperations {
     $value = json_decode($operation);
     switch ($value->action) {
       case 'rename-move-task':
-        $sectionName = $value->elementName;
-        $newSectionName = $value->newElementName;
-        $pageTitle = $courseName . "/" . $sectionName;
-        $newPageTitle = $courseName . '/' . $newSectionName;
+        $levelTwoName = $value->elementName;
+        $newLevelTwoName = $value->newElementName;
+        $pageTitle = $courseName . "/" . $levelTwoName;
+        $newPageTitle = $courseName . '/' . $newLevelTwoName;
         $apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'rename-update-task':
-        $sectionName = $value->elementName;
-        $newSectionName = $value->newElementName;
-        $chapters = CourseEditorUtils::getChapters($courseName . '/' .$newSectionName);
-        $newSectionText = "";
-        foreach ($chapters as $chapter) {
-          $newSectionText .= "* [[" . $courseName . "/" . $newSectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
+        $levelTwoName = $value->elementName;
+        $newLevelTwoName = $value->newElementName;
+        $levelsThree = CourseEditorUtils::getLevelsThree($courseName . '/' .$newLevelTwoName);
+        $newLevelTwoText = "";
+        foreach ($levelsThree as $levelThree) {
+          $newLevelTwoText .= "* [[" . $courseName . "/" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
-        $newPageTitle = $courseName . '/' . $newSectionName;
-        $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newSectionText, null, null);
+        $newPageTitle = $courseName . '/' . $newLevelTwoName;
+        $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newLevelTwoText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
-      case 'delete-chapters-task':
+      case 'delete-levelsThree-task':
         $user = CourseEditorUtils::getRequestContext()->getUser();
-        $sectionName = $value->elementName;
-        $chapters = CourseEditorUtils::getChapters($courseName . '/' . $sectionName);
-        $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
-        $pageTitle = $courseName . '/' . $sectionName;
+        $levelTwoName = $value->elementName;
+        $levelsThree = CourseEditorUtils::getLevelsThree($courseName . '/' . $levelTwoName);
+        $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
+        $pageTitle = $courseName . '/' . $levelTwoName;
         if(!$title->userCan('delete', $user, 'secure')){
           $prependText = "\r\n{{DeleteMe}}";
-          foreach ($chapters as $chapter) {
-            $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
+          foreach ($levelsThree as $levelThree) {
+            $pageTitle = $courseName . '/' . $levelTwoName . '/' . $levelThree;
             $prependText = "\r\n{{DeleteMe}}";
             $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           }
         }else {
-          foreach ($chapters as $chapter) {
-            $pageTitle = $courseName . '/' . $sectionName . '/' . $chapter;
+          foreach ($levelsThree as $levelThree) {
+            $pageTitle = $courseName . '/' . $levelTwoName . '/' . $levelThree;
             $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
           }
         }
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
-      case 'delete-section-task':
+      case 'delete-levelTwo-task':
         $user = CourseEditorUtils::getRequestContext()->getUser();
-        $sectionName = $value->elementName;
-        $title = Title::newFromText( $courseName . '/' . $sectionName, $defaultNamespace=NS_MAIN );
-        $pageTitle = $courseName . '/' . $sectionName;
+        $levelTwoName = $value->elementName;
+        $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
+        $pageTitle = $courseName . '/' . $levelTwoName;
         if(!$title->userCan('delete', $user, 'secure')){
           $prependText = "\r\n{{DeleteMe}}";
           $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
@@ -221,17 +221,17 @@ class CourseEditorOperations {
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'add':
-        $sectionName = $value->elementName;
-        $pageTitle = $courseName . '/' . $sectionName;
+        $levelTwoName = $value->elementName;
+        $pageTitle = $courseName . '/' . $levelTwoName;
         $text =  "";
         $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
         $newCourseText = "{{CCourse|\r\n";
-        $newSectionsArray = json_decode($value->elementsList);
-        foreach ($newSectionsArray as $section) {
-          $newCourseText .= "{{SSection|" . $section ."}}\r\n";
+        $newLevelsTwoArray = json_decode($value->elementsList);
+        foreach ($newLevelsTwoArray as $levelTwo) {
+          $newCourseText .= "{{SSection|" . $levelTwo ."}}\r\n";
         }
         $newCourseText .= "}}";
         $categories = CourseEditorUtils::getCategories($courseName);
@@ -250,8 +250,8 @@ class CourseEditorOperations {
       /*case 'fix-link':
         $targetPage = $value->elementName;
         $linkToReplace = $value->linkToReplace;
-        list($course, $section, $chapter) = explode('/', $linkToReplace);
-        $replacement = $course . '/' . $value->replacement . '/' . $chapter;
+        list($course, $levelTwo, $levelThree) = explode('/', $linkToReplace);
+        $replacement = $course . '/' . $value->replacement . '/' . $levelThree;
         $title = Title::newFromText($targetPage);
         $page = WikiPage::factory( $title );
         $content = $page->getContent( Revision::RAW );
@@ -265,56 +265,56 @@ class CourseEditorOperations {
     return json_encode($value);
   }
 
-  public static function applySectionOp($sectionName, $operation){
+  public static function applyLevelTwoOp($levelTwoName, $operation){
     $context = CourseEditorUtils::getRequestContext();
     $value = json_decode($operation);
     switch ($value->action) {
       case 'rename':
-        $chapterName = $value->elementName;
-        $newChapterName = $value->newElementName;
-        $from = $sectionName . '/' . $chapterName;
-        $to = $sectionName . '/' . $newChapterName;
+        $levelThreeName = $value->elementName;
+        $newLevelThreeName = $value->newElementName;
+        $from = $levelTwoName . '/' . $levelThreeName;
+        $to = $levelTwoName . '/' . $newLevelThreeName;
         $apiResult = CourseEditorUtils::moveWrapper($from, $to);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'delete':
         $user = $context->getUser();
-        $chapterName = $value->elementName;
-        $title = Title::newFromText($sectionName . '/' . $chapterName, $defaultNamespace=NS_MAIN);
+        $levelThreeName = $value->elementName;
+        $title = Title::newFromText($levelTwoName . '/' . $levelThreeName, $defaultNamespace=NS_MAIN);
         if(!$title->userCan('delete', $user, 'secure')){
-          $pageTitle = $sectionName . '/' . $chapterName;
+          $pageTitle = $levelTwoName . '/' . $levelThreeName;
           $prependText = "\r\n{{DeleteMe}}";
           $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
         }else {
-          $pageTitle = $sectionName . '/' . $chapterName;
+          $pageTitle = $levelTwoName . '/' . $levelThreeName;
           $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
         }
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'add':
-        $chapterName = $value->elementName;
-        $pageTitle = $sectionName . '/' . $chapterName;
+        $levelThreeName = $value->elementName;
+        $pageTitle = $levelTwoName . '/' . $levelThreeName;
         $text =  "";
         $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
-        $newSectionText = "";
-        $newChaptersArray = json_decode($value->elementsList);
-        foreach ($newChaptersArray as $chapter) {
-          $newSectionText .= "* [[" . $sectionName . "/" . $chapter ."|". $chapter ."]]\r\n";
+        $newLevelTwoText = "";
+        $newLevelsThreeArray = json_decode($value->elementsList);
+        foreach ($newLevelsThreeArray as $levelThree) {
+          $newLevelTwoText .= "* [[" . $levelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
-        $apiResult = CourseEditorUtils::editWrapper($sectionName, $newSectionText);
+        $apiResult = CourseEditorUtils::editWrapper($levelTwoName, $newLevelTwoText);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'purge':
-        $explodedString = explode("/", $sectionName);
+        $explodedString = explode("/", $levelTwoName);
         $pageToBePurged = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
         $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update-collection':
-      $explodedString = explode("/", $sectionName);
+      $explodedString = explode("/", $levelTwoName);
       $courseName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
       $apiResult = CourseEditorUtils::updateCollection($courseName);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);

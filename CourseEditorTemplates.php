@@ -12,15 +12,15 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 * HTML template for Special:CourseEditor
 * @ingroup Templates
 */
-class SectionEditorTemplate extends QuickTemplate {
+class LevelTwoEditorTemplate extends QuickTemplate {
   public function execute() {
-    $section = $this->data['section'];
+    $levelTwo = $this->data['levelTwo'];
     ?>
-    <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
-    <h2 id="parentName"><?php echo htmlspecialchars($section) ?></h2>
+    <p><?php echo wfMessage( 'courseeditor-organize-levelsThree' ); ?></p>
+    <h2 id="parentName"><?php echo htmlspecialchars($levelTwo) ?></h2>
     <div class="row">
       <div class="col-md-8">
-        <div id="chaptersList"></div>
+        <div id="levelsThreeList"></div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -37,7 +37,7 @@ class SectionEditorTemplate extends QuickTemplate {
     <br>
     <br>
     <div id="saveDiv" class="text-center">
-      <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
+      <button type="button" class="btn btn-lg btn-success" id="saveLevelTwoButton"><?php echo wfMessage('courseeditor-save-levelTwo') ?></button>
     </div>
     <br><br>
     <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
@@ -55,11 +55,11 @@ class CourseEditorTemplate extends QuickTemplate {
   public function execute() {
     $courseName = $this->data['course'];
     ?>
-    <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
+    <p><?php echo wfMessage( 'courseeditor-organize-levelsTwo' ); ?></p>
     <h2 id="parentName"><?php echo htmlspecialchars($courseName) ?></h2>
     <div class="row">
       <div class="col-md-8">
-        <div id="sectionsList"></div>
+        <div id="levelsTwoList"></div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">

@@ -41,11 +41,11 @@ var createRenameMicroOperations = function(operation) {
 var createDeleteMicroOperations = function(operation) {
   var microOps = [];
   microOps.push({
-    action: 'delete-chapters-task',
+    action: 'delete-levelsThree-task',
     elementName: operation.elementName
   });
   microOps.push({
-    action: 'delete-section-task',
+    action: 'delete-levelTwo-task',
     elementName: operation.elementName
   });
   return microOps;

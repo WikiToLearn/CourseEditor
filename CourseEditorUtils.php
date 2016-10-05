@@ -21,12 +21,12 @@ class CourseEditorUtils {
         \n| setting-columns = 1
         \n| setting-footer = yes\n}}\n";
       $collectionText .= "== " . str_replace('_', ' ', $name) . " ==\r\n";
-      $sections = self::getSections($courseName);
-      foreach ($sections as $section) {
-        $chapters = self::getChapters($courseName . '/' .$section);
-        $collectionText .= ";" . $section . "\r\n";
-        foreach ($chapters as $chapter) {
-          $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+      $levelsTwo = self::getLevelsTwo($courseName);
+      foreach ($levelsTwo as $levelTwo) {
+        $levelsThree = self::getLevelsThree($courseName . '/' .$levelTwo);
+        $collectionText .= ";" . $levelTwo . "\r\n";
+        foreach ($levelsThree as $levelThree) {
+          $collectionText .= ":[[" . $courseName . "/" . $levelTwo . "/" . $levelThree . "]]\r\n";
         }
       }
       $categoryName = wfMessage('courseeditor-collection-book-category');
@@ -52,12 +52,12 @@ class CourseEditorUtils {
       \n| setting-columns = 1
       \n| setting-footer = yes\n}}\n";
     $collectionText .= "== " . str_replace('_', ' ', $title). " ==\r\n";
-    $sections = self::getSections($courseName);
-    foreach ($sections as $section) {
-      $chapters = self::getChapters($courseName . '/' .$section);
-      $collectionText .= ";" . $section . "\r\n";
-      foreach ($chapters as $chapter) {
-        $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+    $levelsTwo = self::getLevelsTwo($courseName);
+    foreach ($levelsTwo as $levelTwo) {
+      $levelsThree = self::getLevelsThree($courseName . '/' .$levelTwo);
+      $collectionText .= ";" . $levelTwo . "\r\n";
+      foreach ($levelsThree as $levelThree) {
+        $collectionText .= ":[[" . $courseName . "/" . $levelTwo . "/" . $levelThree . "]]\r\n";
       }
     }
     $categoryName = wfMessage('courseeditor-collection-book-category');
@@ -162,8 +162,8 @@ class CourseEditorUtils {
     }
   }
 
-  public static function getChapters($sectionName){
-    $title = Title::newFromText($sectionName, $defaultNamespace=NS_MAIN );
+  public static function getLevelsThree($levelTwoName){
+    $title = Title::newFromText($levelTwoName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
@@ -172,7 +172,7 @@ class CourseEditorUtils {
     return $matches[2];
   }
 
-  public static function getSections($courseName){
+  public static function getLevelsTwo($courseName){
     $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
@@ -197,17 +197,17 @@ class CourseEditorUtils {
     $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
     if($namespace === NS_COURSE){
       if($levels === 1){
-        $subElements = self::getSections($basePage);
+        $subElements = self::getLevelsTwo($basePage);
       }elseif ($levels === 2) {
-        $subElements = self::getChapters($basePage);
+        $subElements = self::getLevelsThree($basePage);
       }else {
         return array('error' => "Page levels not valid." );
       }
     }elseif ($namespace === NS_USER) {
       if($levels === 2){
-        $subElements = self::getSections($basePage);
+        $subElements = self::getLevelsTwo($basePage);
       }elseif ($levels === 3) {
-        $subElements = self::getChapters($basePage);
+        $subElements = self::getLevelsThree($basePage);
       }else {
         return array('error' => "Page levels not valid." );
       }
@@ -324,8 +324,8 @@ class CourseEditorUtils {
     try {
       $user = $context->getUser();
       $token = $user->getEditToken();
-      $sectionExist = self::checkNewCoursesSectionExist($title);
-      if(!$sectionExist){
+      $levelTwoExist = self::checkNewCoursesSectionExist($title);
+      if(!$levelTwoExist){
         $api = new ApiMain(
           new DerivativeRequest(
             $context->getRequest(),
@@ -407,12 +407,12 @@ class CourseEditorUtils {
     $page = WikiPage::factory( $title);
     $context = self::getRequestContext();
     $parserOptions = ParserOptions::newFromContext($context);
-    $sections = $page->getParserOutput($parserOptions)->getSections();
+    $levelsTwo = $page->getParserOutput($parserOptions)->getSections();
     $newCoursesSection = wfMessage('courseeditor-newcourses-section-title')->text();
-    if(!is_array($sections)){
+    if(!is_array($levelsTwo)){
       return false;
     }else {
-      foreach($sections as $element) {
+      foreach($levelsTwo as $element) {
         $ret = in_array($newCoursesSection, $element);
       }
     }
