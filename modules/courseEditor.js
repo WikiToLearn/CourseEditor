@@ -20,6 +20,7 @@ $(function () {
 
   //Create a textInputWidget for new levelsTwo
   var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-levelTwo' ) } );
+  $('.oo-ui-inputWidget-input').attr('id', 'addElementInput');
   var addButton = new OO.ui.ButtonWidget({id: 'addElementButton', label: ''});
   addButton.$label.append("<i class='fa fa-plus fa-lg'></i>");
   var fieldInput = 	new OO.ui.ActionFieldLayout( textInputWidget, addButton);
@@ -30,6 +31,11 @@ $(function () {
   initHandlers(draggableWidget, textInputWidget, editStack);
 
   $('#saveCourseButton').click(function(){
+    var inputWidgetContent = textInputWidget.getValue();
+    if ($.trim(inputWidgetContent).length !== 0) {
+      $('#alertInputNotEmpty').show();
+      return;
+    }
     var newLevelsTwo = [];
     $.each(draggableWidget.getItems(), function(key, value){
       newLevelsTwo.push(value.data);

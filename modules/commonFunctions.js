@@ -131,6 +131,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });
   $('#addElementButton').click(function(){
     $('#alert').hide();
+    $('#alertInputNotEmpty').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
   });
@@ -142,6 +143,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });*/
   $('#addElementInput').keypress(function(keypressed) {
     $('#alert').hide();
+    $('#alertInputNotEmpty').hide();
     if(keypressed.which === 13) {
       addElement(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');

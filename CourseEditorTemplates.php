@@ -40,6 +40,9 @@ class LevelTwoEditorTemplate extends QuickTemplate {
       <button type="button" class="btn btn-lg btn-success" id="saveLevelTwoButton"><?php echo wfMessage('courseeditor-save-levelTwo') ?></button>
     </div>
     <br><br>
+    <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+    </div>
     <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
       <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
@@ -79,6 +82,9 @@ class CourseEditorTemplate extends QuickTemplate {
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
     </div>
     <br><br>
+    <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+      <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+    </div>
     <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
       <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
