@@ -430,4 +430,14 @@ class CourseEditorUtils {
     $url = "/Special:CourseEditor?actiontype=editleveltwo&pagename=" . $titleText;
     return array('href' => $url, 'text' => wfMessage('courseeditor-editlevelTwo-pagetitle')->text());
   }
+
+  public static function makeDownloadCourseUrl($title){
+    if($title->getNamespace() === NS_USER){
+      $user = $title->getRootText();
+      $collection = $title->getNstext() . ":" . $user . "/" . wfMessage('courseeditor-collection-book-category')->text() . "/" . $title->getSubpageText();
+    }else {
+      $collection = "Project:" . wfMessage('courseeditor-collection-book-category')->text() . "/" . $title->getRootText();
+    }
+    return $url = "/Special:Collection?bookcmd=render_collection&writer=rdf2latex&colltitle=" . $collection;
+  }
 }
