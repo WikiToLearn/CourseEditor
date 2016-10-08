@@ -419,18 +419,37 @@ class CourseEditorUtils {
     return $ret;
   }
 
+  /**
+  * Generate the url to edit the root level of a course
+  * @param Title $title the title of the course page
+  * @return Array $result an array with the 'href' to CourseEditor SpecialPage and
+  *         the localised title for the actiontype
+  */
   public static function makeEditCourseUrl($title){
     $titleText = $title->getNsText() . ":" . $title->getText();
     $url = "/Special:CourseEditor?actiontype=editcourse&pagename=" . $titleText;
-    return array('href' => $url, 'text' => wfMessage('courseeditor-editcourse-pagetitle')->text());
+    $result = array('href' => $url, 'text' => wfMessage('courseeditor-editcourse-pagetitle')->text());
+    return $result;
   }
 
+  /**
+  * Generate the url to edit the second level of a course
+  * @param Title $title the title of the course page
+  * @return Array $result an array with the 'href' to CourseEditor SpecialPage and
+  *         the localised title for the actiontype
+  */
   public static function makeEditLevelTwoUrl($title){
     $titleText = $title->getNsText() . ":" . $title->getText();
     $url = "/Special:CourseEditor?actiontype=editleveltwo&pagename=" . $titleText;
-    return array('href' => $url, 'text' => wfMessage('courseeditor-editlevelTwo-pagetitle')->text());
+    $result = array('href' => $url, 'text' => wfMessage('courseeditor-editlevelTwo-pagetitle')->text());
+    return $result;
   }
 
+  /**
+  * Generate the url to download a whole course through Collection extension
+  * @param Title $title the title of the course page
+  * @return string $url the url to Collection SpecialPage
+  */
   public static function makeDownloadCourseUrl($title){
     if($title->getNamespace() === NS_USER){
       $user = $title->getRootText();
@@ -438,6 +457,8 @@ class CourseEditorUtils {
     }else {
       $collection = "Project:" . wfMessage('courseeditor-collection-book-category')->text() . "/" . $title->getRootText();
     }
+    //Return only the url instead of an array with 'href' and 'title'.
+    //The title is created within the skin using the titles of the Collection tools
     return $url = "/Special:Collection?bookcmd=render_collection&writer=rdf2latex&colltitle=" . $collection;
   }
 }

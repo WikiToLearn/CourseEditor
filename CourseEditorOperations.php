@@ -133,7 +133,8 @@ class CourseEditorOperations {
     $userPage = $pageTitle . $user->getName();
     $titleWithUser = $user->getName() . '/' . $title;
     $pageTitle = $userPage . "/" . $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
+    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $titleWithUser, $description);
     $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
@@ -143,7 +144,8 @@ class CourseEditorOperations {
 
   private function createPublicCourseFromTopic($pageTitle, $topic, $title, $description){
     $pageTitle .= $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
+    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
     $text = $topicCourses . "{{Course|" . $title . "}}}}";
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $title, $description);
@@ -153,7 +155,8 @@ class CourseEditorOperations {
 
   private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
     $pageTitle .= $title;
-    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, "{{CCourse|}}", null, null);
+    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
     $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
     $listElementText =  "\r\n* [[" . $title . "]]";
     $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
