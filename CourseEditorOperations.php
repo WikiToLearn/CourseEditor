@@ -182,6 +182,7 @@ class CourseEditorOperations {
         foreach ($levelsThree as $levelThree) {
           $newLevelTwoText .= "* [[" . $courseName . "/" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
+        $newLevelTwoText .= "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
         $newPageTitle = $courseName . '/' . $newLevelTwoName;
         $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newLevelTwoText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
@@ -223,7 +224,7 @@ class CourseEditorOperations {
       case 'add':
         $levelTwoName = $value->elementName;
         $pageTitle = $courseName . '/' . $levelTwoName;
-        $text =  "";
+        $text =  "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
@@ -240,6 +241,7 @@ class CourseEditorOperations {
             $newCourseText .= "\r\n[[" . $category['title'] . "]]";
           }
         }
+        $newCourseText .= "\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
@@ -304,6 +306,7 @@ class CourseEditorOperations {
         foreach ($newLevelsThreeArray as $levelThree) {
           $newLevelTwoText .= "* [[" . $levelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
+        $newLevelTwoText .= "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($levelTwoName, $newLevelTwoText);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;

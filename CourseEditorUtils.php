@@ -418,4 +418,16 @@ class CourseEditorUtils {
     }
     return $ret;
   }
+
+  public static function makeEditCourseUrl($title){
+    $titleText = $title->getNsText() . ":" . $title->getText();
+    $url = "/Special:CourseEditor?actiontype=editcourse&pagename=" . $titleText;
+    return array('href' => $url, 'text' => wfMessage('courseeditor-editcourse-pagetitle')->text());
+  }
+
+  public static function makeEditLevelTwoUrl($title){
+    $titleText = $title->getNsText() . ":" . $title->getText();
+    $url = "/Special:CourseEditor?actiontype=editleveltwo&pagename=" . $titleText;
+    return array('href' => $url, 'text' => wfMessage('courseeditor-editlevelTwo-pagetitle')->text());
+  }
 }
