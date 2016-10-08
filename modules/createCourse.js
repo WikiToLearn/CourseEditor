@@ -9,7 +9,8 @@ $(function () {
 
     $('#courseName').keypress(function() {
       delay(function(){
-        $('#alert').hide();
+        $('#alertSame').hide();
+        $('#alertSimilar').hide();
         $('#createCourseButton').removeAttr('disabled');
         if($.trim($('#courseName').val()).length !== 0){
           var api = new mw.Api();
@@ -23,11 +24,11 @@ $(function () {
               if (!pages['-1']) {
                 for (var pageId in pages) {
                   if (pages.hasOwnProperty(pageId)) {
-                    $('#coursesList').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
+                    $('#coursesListSame').html('<a class="alert-link" href="/' + pages[pageId].title + '">' + pages[pageId].title + '</a><br>');
                   }
                 }
                 $('#createCourseButton').attr('disabled', true);
-                $('#alert').show();
+                $('#alertSame').show();
               }
             } );
           }else {
@@ -38,16 +39,19 @@ $(function () {
               psnamespace: '2800',
               psprofile: 'classic'
             }).done( function ( data ) {
-              $('#coursesList').html('');
+              $('#coursesListSimilar').html('');
               var resultsArray = data.query.prefixsearch;
               if (resultsArray.length > 0) {
                 for (var i = 0; i < resultsArray.length; i++){
                   //Exit when the result is a subpage
-                  if(resultsArray[i].title.indexOf('/') >= 0) break;
-                  $('#coursesList').append('<a class="alert-link" href="/' + resultsArray[i].title + '">' +  resultsArray[i].title + '</a><br>');
+                  var resultTitle = resultsArray[i].title;
+                  if(resultTitle.indexOf('/') >= 0) break;
+                  $('#coursesListSimilar').append('<a class="alert-link" href="/' + resultTitle + '">' +  resultTitle + '</a><br>');
+                  if($('#courseName').val().trim() === resultTitle.substring(resultTitle.indexOf(':') + 1, resultTitle.length)){
+                    $('#createCourseButton').attr('disabled', true);
+                  }
                 }
-                $('#createCourseButton').attr('disabled', true);
-                $('#alert').show();
+                $('#alertSimilar').show();
               }
             });
           }

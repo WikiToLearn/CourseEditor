@@ -12,10 +12,17 @@ class SpecialCourseEditor extends SpecialPage {
   public function execute() {
     $request = $this->getRequest();
     $user = $this->getUser();
+    //Redirect user if he is not logged
     if ( ! ( $user->isAllowed( 'move' ) ) ) {
-      // The effect of loading this page is comparable to purge a page.
-      // If desired a dedicated right e.g. "viewmathstatus" could be used instead.
-      throw new PermissionsError( 'move' );
+      global $wgOut;
+      $title = Title::newFromText('Special:UserLogin');
+      $pageName = "Special:" . $this->mName;
+      $params = strstr($request->getRequestURL(), '?');
+      $returnTo = "returnto=" . $pageName;
+      if($params != ""){
+        $returnTo .= "&returntoquery=" . urlencode($params);
+      }
+      $wgOut->redirect($title->getFullURL($returnTo));
     }
     $actionType = $request->getVal('actiontype');
     switch ($actionType){

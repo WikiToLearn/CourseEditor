@@ -119,12 +119,19 @@ class CourseCreatorTemplate extends QuickTemplate {
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
         <input type="text" class="form-control" id="courseName" placeholder="<?php echo wfMessage( 'courseeditor-input-course-placeholder' ) ?>" required>
       </div>
-    <div class="alert alert-warning alert-dismissible" id="alert" role="alert"  style="display:none;">
+    <div class="alert alert-warning alert-dismissible" id="alertSame" role="alert"  style="display:none;">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo wfMessage( 'courseeditor-alert-message' ) ?>
-      <div id="coursesList"></div>
+      <?php echo wfMessage( 'courseeditor-alert-same-title-message' ) ?>
+      <div id="coursesListSame"></div>
+    </div>
+    <div class="alert alert-warning alert-dismissible" id="alertSimilar" role="alert"  style="display:none;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <?php echo wfMessage( 'courseeditor-alert-similar-title-message' ) ?>
+      <div id="coursesListSimilar"></div>
     </div>
       <div class="form-group">
         <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
