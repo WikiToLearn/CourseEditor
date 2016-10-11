@@ -26,7 +26,7 @@ $(function(){
   */
   $('#courseName').keypress(function() {
     delay(function(){
-      //Hide alerts and enable save button.
+      //Hide alerts and enable create button.
       $('#alertSame').hide();
       $('#alertSimilar').hide();
       $('#createCourseButton').removeAttr('disabled');
@@ -40,22 +40,22 @@ $(function(){
             titles : 'Course:' + $('#courseName').val().trim()
           }
         ).done( function ( data ) {
-          var pages = data.query.pages;
-          if (!pages['-1']) {
-            for (var pageId in pages) {
-              if (pages.hasOwnProperty(pageId)) {
-                $('#coursesListSame').html('<a class="alert-link" href="/'
-                  + pages[pageId].title
-                  + '">'
-                  + pages[pageId].title + '</a><br>'
-                );
+            var pages = data.query.pages;
+            if (!pages['-1']) {
+              for (var pageId in pages) {
+                if (pages.hasOwnProperty(pageId)) {
+                  $('#coursesListSame').html('<a class="alert-link" href="/'
+                    + pages[pageId].title
+                    + '">'
+                    + pages[pageId].title + '</a><br>'
+                  );
+                }
               }
+              //Disable create button and show alert
+              $('#createCourseButton').attr('disabled', true);
+              $('#alertSame').show();
             }
-            //Disable create button and show alert
-            $('#createCourseButton').attr('disabled', true);
-            $('#alertSame').show();
-          }
-        } );
+          } );
         }else {
           api.get({
             action : 'query',
@@ -94,7 +94,7 @@ $(function(){
   });
 
   /**
-  * Click handler on '#createCourseButton'.
+  * Click handler binded on '#createCourseButton'.
   * This function build the params for the POST call and send it.
   * In the meanwhile show a progress dialog.
   */
