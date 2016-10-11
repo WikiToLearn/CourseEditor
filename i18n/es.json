@@ -54,7 +54,7 @@
   "courseeditor-alert-message-existing-element" : "Ya existe un elemento con el mismo nombre, o está en espera de ser cancelado. <br> Por favor, introduzca un nombre diferente o se ponga en contacto con un administrador..",
   "courseeditor-recycle-bin" : "Papelera",
   "courseeditor-error-operation" : "Lo siento, algo salió mal! <i class='fa fa-frown-o' aria-hidden=true'></i><br>",
-  "courseeditor-operation-action-add" : "Añadir ",
+  "courseeditor-operation-action-add" : "Añadir",
   "courseeditor-operation-action-rename" : "Renombrar",
   "courseeditor-operation-action-rename-move-task" : "Renombrar",
   "courseeditor-operation-action-rename-update-task" : "Actualiza enlaces",
