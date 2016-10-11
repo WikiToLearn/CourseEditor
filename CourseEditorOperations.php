@@ -5,6 +5,33 @@ if ( !defined( 'MEDIAWIKI' ) ){
 
 class CourseEditorOperations {
 
+  /**
+  * Add a category to the course root page to be checked by a bot and a template
+  * that display a 'Ready to be published' message.
+  * IDEA: should be implemented an Echo notification
+  * @param string $operationRequested JSON object with operation type and all
+  * params used to public the course like the title
+  * @return string $operation JSON object with all the sended params plus
+  * a success field
+  */
+  public static function publishCourseOp($operationRequested){
+    $operation = json_decode($operationRequested);
+    $title = Title::newFromText($operation->courseName);
+    $template = "{{ReadyToBePublished}}";
+    $category = "<noinclude>[[Category:ReadyToBePublished]]</noinclude>";
+    $result = CourseEditorUtils::editWrapper($title, null, $template, $category);
+    CourseEditorUtils::setSingleOperationSuccess($operation, $result);
+    return json_encode($operation);
+  }
+
+  /**
+  * Like a Façade. It's an entrypoint for course create process
+  * independently if the course is private/public etc.
+  * @param string $operationRequested JSON object with operation type and all
+  * params used to create the course (name, topic, ...)
+  * @return string $operation JSON object with all the sended params plus
+  * a success field and the course complete title(with namespace)
+  */
   public static function createCourseOp($operationRequested){
     $operation = json_decode($operationRequested);
     switch ($operation->type) {

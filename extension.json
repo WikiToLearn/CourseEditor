@@ -33,6 +33,9 @@
         "localBasePath": ""
     },
     "ResourceModules": {
+        "ext.courseEditor.publish": {
+          "scripts":["modules/publishCourse.js"]
+        },
         "ext.courseEditor.manageMetadata": {
           "scripts":["modules/manageMetadata.js"]
         },
@@ -150,7 +153,8 @@
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
         "CourseEditorOperations::applyLevelTwoOp",
-        "CourseEditorOperations::applyCourseOp"
+        "CourseEditorOperations::applyCourseOp",
+        "CourseEditorOperations::publishCourseOp"
   		]
 },
     "SpecialPages": {
