@@ -18,10 +18,33 @@ class CourseEditorOperations {
     global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $operation = json_decode($operationRequested);
     $title = Title::newFromText($operation->courseName);
-    $template = "{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}";
-    $category = "<noinclude>[[Category:". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
+    $template = "\r\n{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}\r\n";
+    $category = "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
     $result = CourseEditorUtils::editWrapper($title, null, $template, $category);
     CourseEditorUtils::setSingleOperationSuccess($operation, $result);
+    return json_encode($operation);
+  }
+
+  /**
+  * Remove the publish category and templte from the course root page
+  * @param string $operationRequested JSON object with operation type and all
+  * params used to public the course like the title
+  * @return string $operation JSON object with all the sended params plus
+  * a success field
+  */
+  public static function undoPublishCourseOp($operationRequested){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
+    $operation = json_decode($operationRequested);
+    $title = Title::newFromText($operation->courseName);
+    $page = WikiPage::factory($title);
+    $pageText = $page->getText();
+    $category = "<noinclude>[[Category:". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
+    $template = "{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}";
+    $replacedText = str_replace($category, "", $pageText);
+    $newPageText = str_replace($template, "", $replacedText);
+    $result = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
+    CourseEditorUtils::setSingleOperationSuccess($operation, $result);
+    $operation->newPageText = $newPageText;
     return json_encode($operation);
   }
 

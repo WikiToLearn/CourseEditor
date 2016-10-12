@@ -167,7 +167,8 @@
         "CourseEditorOperations::createCourseOp",
         "CourseEditorOperations::applyLevelTwoOp",
         "CourseEditorOperations::applyCourseOp",
-        "CourseEditorOperations::publishCourseOp"
+        "CourseEditorOperations::publishCourseOp",
+        "CourseEditorOperations::undoPublishCourseOp"
   		]
     },
     "SpecialPages": {
