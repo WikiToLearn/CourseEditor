@@ -149,6 +149,19 @@
   		}
     ],
     "config": {
+      "CourseEditorTemplates":{
+        "Topic" : "Topic",
+        "Course" : "Course",
+        "CourseRoot" : "CCourse",
+        "CourseLevelTwo" : "SSection",
+        "ReadyToBePublished": "ReadyToBePublished",
+        "DeleteMe" : "DeleteMe"
+      },
+      "CourseEditorCategories":{
+        "CourseRoot" : "CourseRoot",
+        "CourseLevelTwo" : "CourseLevelTwo",
+        "ReadyToBePublished": "ReadyToBePublished"
+      },
   		"AjaxExportList": [
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
@@ -156,7 +169,7 @@
         "CourseEditorOperations::applyCourseOp",
         "CourseEditorOperations::publishCourseOp"
   		]
-},
+    },
     "SpecialPages": {
         "CourseEditor": "SpecialCourseEditor"
     },

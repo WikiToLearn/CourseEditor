@@ -15,10 +15,11 @@ class CourseEditorOperations {
   * a success field
   */
   public static function publishCourseOp($operationRequested){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $operation = json_decode($operationRequested);
     $title = Title::newFromText($operation->courseName);
-    $template = "{{ReadyToBePublished}}";
-    $category = "<noinclude>[[Category:ReadyToBePublished]]</noinclude>";
+    $template = "{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}";
+    $category = "<noinclude>[[Category:". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
     $result = CourseEditorUtils::editWrapper($title, null, $template, $category);
     CourseEditorUtils::setSingleOperationSuccess($operation, $result);
     return json_encode($operation);
@@ -155,36 +156,39 @@ class CourseEditorOperations {
   }
 
   private function createPrivateCourse($pageTitle, $topic, $title, $description){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $context = CourseEditorUtils::getRequestContext();
     $user = $context->getUser();
     $userPage = $pageTitle . $user->getName();
     $titleWithUser = $user->getName() . '/' . $title;
     $pageTitle = $userPage . "/" . $title;
-    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $courseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|}}\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseRoot'] ."]]</noinclude>";
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $titleWithUser, $description);
-    $textToPrepend = "{{Course|" . $title . "|" . $user->getName() . "}}";
+    $textToPrepend = "{{". $wgCourseEditorTemplates['Course'] ."|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
     return array($resultCreateCourse, $resultCreateMetadataPage, $resultPrependToUserPage);
 
   }
 
   private function createPublicCourseFromTopic($pageTitle, $topic, $title, $description){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $pageTitle .= $title;
-    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $courseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|}}\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseRoot'] ."]]</noinclude>";
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
     $topicCourses = CourseEditorUtils::getTopicCourses($topic);
-    $text = $topicCourses . "{{Course|" . $title . "}}}}";
+    $text = $topicCourses . "{{". $wgCourseEditorTemplates['Course'] ."|" . $title . "}}}}";
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
     return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic);
   }
 
   private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $pageTitle .= $title;
-    $courseText = "{{CCourse|}}\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+    $courseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|}}\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseRoot'] ."]]</noinclude>";
     $resultCreateCourse = CourseEditorUtils::editWrapper($pageTitle, $courseText, null, null);
-    $text = "{{Topic|" . "{{Course|" . $title . "}}}}";
+    $text = "{{". $wgCourseEditorTemplates['Topic'] ."|" . "{{". $wgCourseEditorTemplates['Course'] ."|" . $title . "}}}}";
     $listElementText =  "\r\n* [[" . $title . "]]";
     $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
@@ -194,6 +198,7 @@ class CourseEditorOperations {
 
 
   public static function applyCourseOp($courseName, $operation){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $value = json_decode($operation);
     switch ($value->action) {
       case 'rename-move-task':
@@ -212,7 +217,7 @@ class CourseEditorOperations {
         foreach ($levelsThree as $levelThree) {
           $newLevelTwoText .= "* [[" . $courseName . "/" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
-        $newLevelTwoText .= "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
+        $newLevelTwoText .= "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
         $newPageTitle = $courseName . '/' . $newLevelTwoName;
         $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newLevelTwoText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
@@ -224,10 +229,10 @@ class CourseEditorOperations {
         $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
         $pageTitle = $courseName . '/' . $levelTwoName;
         if(!$title->userCan('delete', $user, 'secure')){
-          $prependText = "\r\n{{DeleteMe}}";
+          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
           foreach ($levelsThree as $levelThree) {
             $pageTitle = $courseName . '/' . $levelTwoName . '/' . $levelThree;
-            $prependText = "\r\n{{DeleteMe}}";
+            $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
             $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
           }
         }else {
@@ -244,7 +249,7 @@ class CourseEditorOperations {
         $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
         $pageTitle = $courseName . '/' . $levelTwoName;
         if(!$title->userCan('delete', $user, 'secure')){
-          $prependText = "\r\n{{DeleteMe}}";
+          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
           $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
         }else {
           $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
@@ -254,15 +259,15 @@ class CourseEditorOperations {
       case 'add':
         $levelTwoName = $value->elementName;
         $pageTitle = $courseName . '/' . $levelTwoName;
-        $text =  "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
+        $text =  "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update':
-        $newCourseText = "{{CCourse|\r\n";
+        $newCourseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|\r\n";
         $newLevelsTwoArray = json_decode($value->elementsList);
         foreach ($newLevelsTwoArray as $levelTwo) {
-          $newCourseText .= "{{SSection|" . $levelTwo ."}}\r\n";
+          $newCourseText .= "{{". $wgCourseEditorTemplates['CourseLevelTwo'] ."|" . $levelTwo ."}}\r\n";
         }
         $newCourseText .= "}}";
         $categories = CourseEditorUtils::getCategories($courseName);
@@ -271,7 +276,7 @@ class CourseEditorOperations {
             $newCourseText .= "\r\n[[" . $category['title'] . "]]";
           }
         }
-        $newCourseText .= "\r\n<noinclude>[[Category:CourseRoot]]</noinclude>";
+        $newCourseText .= "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseRoot']. "]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
@@ -298,6 +303,7 @@ class CourseEditorOperations {
   }
 
   public static function applyLevelTwoOp($levelTwoName, $operation){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories;
     $context = CourseEditorUtils::getRequestContext();
     $value = json_decode($operation);
     switch ($value->action) {
@@ -315,7 +321,7 @@ class CourseEditorOperations {
         $title = Title::newFromText($levelTwoName . '/' . $levelThreeName, $defaultNamespace=NS_MAIN);
         if(!$title->userCan('delete', $user, 'secure')){
           $pageTitle = $levelTwoName . '/' . $levelThreeName;
-          $prependText = "\r\n{{DeleteMe}}";
+          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
           $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
         }else {
           $pageTitle = $levelTwoName . '/' . $levelThreeName;
@@ -336,7 +342,7 @@ class CourseEditorOperations {
         foreach ($newLevelsThreeArray as $levelThree) {
           $newLevelTwoText .= "* [[" . $levelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
         }
-        $newLevelTwoText .= "\r\n<noinclude>[[Category:CourseLevelTwo]]</noinclude>";
+        $newLevelTwoText .= "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
         $apiResult = CourseEditorUtils::editWrapper($levelTwoName, $newLevelTwoText);
         CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
