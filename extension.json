@@ -152,8 +152,8 @@
       "CourseEditorTemplates":{
         "Topic" : "Topic",
         "Course" : "Course",
-        "CourseRoot" : "CCourse",
-        "CourseLevelTwo" : "SSection",
+        "CourseRoot" : "CourseRoot",
+        "CourseLevelTwo" : "CourseLevelTwo",
         "ReadyToBePublished": "ReadyToBePublished",
         "DeleteMe" : "DeleteMe"
       },
