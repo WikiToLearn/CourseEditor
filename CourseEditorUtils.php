@@ -173,11 +173,12 @@ class CourseEditorUtils {
   }
 
   public static function getLevelsTwo($courseName){
+    global $wgCourseEditorTemplates;
     $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
-    $regex = "/\{{2}SSection\|(.*)\}{2}/";
+    $regex = "/\{{2}". $wgCourseEditorTemplates['CourseLevelTwo'] ."\|(.*)\}{2}/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     return $matches[1];
   }
