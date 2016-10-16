@@ -61,7 +61,7 @@
   "courseeditor-operation-action-delete" : "Löchen",
   "courseeditor-operation-action-delete-levelsTwo-task" : "Löchen Kapitel von",
   "courseeditor-operation-action-delete-levelThree-task" : "Löchen",
-  "courseeditor-operation-action-purge" : "Entferne",
+  "courseeditor-operation-action-purge" : "Aktualisieren des Indexes",
   "courseeditor-operation-action-update" : "Aktualisiere",
   "courseeditor-operation-action-update-collection" : "Buch aktualisiere",
   "courseeditor-error-operation-fail" : " fehlgeschlagen!",

@@ -61,7 +61,7 @@
   "courseeditor-operation-action-delete" : "éliminer",
   "courseeditor-operation-action-delete-levelsTwo-task" : "Éliminer chapitres de",
   "courseeditor-operation-action-delete-levelThree-task" : "Éliminer",
-  "courseeditor-operation-action-purge" : "Purga",
+  "courseeditor-operation-action-purge" : "Actualiser l'index",
   "courseeditor-operation-action-update" : "Actualiser",
   "courseeditor-operation-action-update-collection" : "Actualiser livre",
   "courseeditor-progressdialog-wait" : "Attendre la création en cours",

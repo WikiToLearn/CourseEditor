@@ -61,7 +61,7 @@
   "courseeditor-operation-action-delete" : "Eliminar",
   "courseeditor-operation-action-delete-levelsTwo-task" : "Elimina capítulo de",
   "courseeditor-operation-action-delete-levelThree-task" : "Eliminar",
-  "courseeditor-operation-action-purge" : "Purga",
+  "courseeditor-operation-action-purge" : "Actualiza índice",
   "courseeditor-operation-action-update" : "Actualiza",
   "courseeditor-operation-action-update-collection" : "Actualiza libro",
   "courseeditor-error-operation-fail" : "Fallo!",

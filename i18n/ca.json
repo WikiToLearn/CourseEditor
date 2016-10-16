@@ -61,7 +61,7 @@
   "courseeditor-operation-action-delete" : "Eliminar",
   "courseeditor-operation-action-delete-levelsTwo-task" : "Eliminar els capítols ",
   "courseeditor-operation-action-delete-levelThree-task" : "Eliminar",
-  "courseeditor-operation-action-purge" : "Purga",
+  "courseeditor-operation-action-purge" : "Actualització índex",
   "courseeditor-operation-action-update" : "Actualització",
   "courseeditor-operation-action-update-collection" : " Actualització llibre",
   "courseeditor-progressdialog-wait" : "Espere la creació de curs...",
