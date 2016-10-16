@@ -297,8 +297,8 @@ class CourseEditorOperations {
           $newCourseText .= "{{". $wgCourseEditorTemplates['CourseLevelTwo'] ."|" . $levelTwo ."}}\r\n";
         }
         $newCourseText .= "}}";
-        $categories = CourseEditorUtils::getCategories($courseName);
-        /*if(sizeof($categories) > 0){
+        /*$categories = CourseEditorUtils::getCategories($courseName);
+        if(sizeof($categories) > 0){
           foreach ($categories as $category) {
             //Remode ReadyToBePublished category if user edit the course structure
             $readyToBePublishedCategory = $wgContLang->getNsText( NS_CATEGORY ) . ":" . $wgCourseEditorCategories['ReadyToBePublished'];
