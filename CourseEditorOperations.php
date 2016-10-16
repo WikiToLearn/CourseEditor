@@ -296,7 +296,11 @@ class CourseEditorOperations {
         $categories = CourseEditorUtils::getCategories($courseName);
         if(sizeof($categories) > 0){
           foreach ($categories as $category) {
-            $newCourseText .= "\r\n[[" . $category['title'] . "]]";
+            //Remode ReadyToBePublished category if user edit the course structure
+            $readyToBePublishedCategory = $wgContLang->getNsText( NS_CATEGORY ) . ":" . $wgCourseEditorCategories['ReadyToBePublished'];
+            if (strcmp($category['title'], $readyToBePublishedCategory) != 0) {
+              $newCourseText .= "\r\n<noinclude>[[[" . $category['title'] . "]]</noinclude>";
+            }
           }
         }
         $newCourseText .= "\r\n<noinclude>[[Category:". $wgCourseEditorCategories['CourseRoot']. "]]</noinclude>";
