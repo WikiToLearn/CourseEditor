@@ -408,6 +408,35 @@ class CourseEditorUtils {
     }
   }
 
+  public static function getReadyToBePublishedCourses(){
+    global $wgCourseEditorCategories;
+    $context = self::getRequestContext();
+    try {
+      $user = $context->getUser();
+      $token = $user->getEditToken();
+      $api = new ApiMain(
+        new DerivativeRequest(
+          $context->getRequest(),
+          array(
+            'action'     => 'query',
+            'list'      => 'categorymembers',
+            'cmtitle' => 'Category:' . $wgCourseEditorCategories['ReadyToBePublished']
+          )
+        )
+      );
+      $api->execute();
+      $apiResult = $api->getResult()->getResultData(null, array('Strip' => 'all'));
+      $readyCoursesDirtyArray = $apiResult['query']['categorymembers'];
+      $readyCourses = [];
+      foreach ($readyCoursesDirtyArray as $course) {
+        array_push($readyCourses, $course['title']);
+      }
+      return $readyCourses;
+    } catch(UsageException $e){
+      return $e->getMessage();
+    }
+  }
+
   private function checkNewCoursesSectionExist($department) {
     $title = Title::newFromText( $department);
     $page = WikiPage::factory( $title);

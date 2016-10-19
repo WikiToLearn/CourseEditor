@@ -34,9 +34,8 @@ class SpecialCourseEditor extends SpecialPage {
         $courseName = $request->getVal('pagename');
         $this->editCourse($courseName);
         return;
-      case 'movecourse':
-        $courseName = $request->getVal('pagename');
-        $this->moveCourse($courseName);
+      case 'publishcourse':
+        $this->readyToBePublishedCourses();
         return;
       case 'createcourse':
         if($request->getVal('department')){
@@ -87,8 +86,8 @@ class SpecialCourseEditor extends SpecialPage {
     $out->addTemplate( $template );
   }
 
-  private function moveCourse($courseName){
-    $regex = "/\/(.*)/";
+  private function readyToBePublishedCourses(){
+    /*$regex = "/\/(.*)/";
     $resultStatus = preg_match($regex, $courseName, $matches);
     if ($resultStatus === 0 ||  $resultStatus === false) {
       $courseNameWithoutNamespace = $courseName;
@@ -107,7 +106,16 @@ class SpecialCourseEditor extends SpecialPage {
       $pageTitle = $to . "/" . $levelTwoName;
       CourseEditorUtils::editWrapper($pageTitle, $newLevelTwoText, null, null);
     }
-    CourseEditorUtils::purgeWrapper($to);
+    CourseEditorUtils::purgeWrapper($to);*/
+    $readyCourses = CourseEditorUtils::getReadyToBePublishedCourses();
+    $out = $this->getOutput();
+    $out->enableOOUI();
+    $out->setPageTitle('Pubblicazione corsi');
+    $template = new PublishCourseTemplate();
+    $template->setRef('courseEditor', $this);
+    $template->set('context', $this->getContext());
+    $template->set('readyCourses', $readyCourses);
+    $out->addTemplate( $template );
   }
 
   private function createNewCourseFromDepartment($department){

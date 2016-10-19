@@ -244,3 +244,38 @@ class ManageMetadataTemplate extends QuickTemplate {
 <?php
   }
 }
+
+/**
+ * Template of publish course CourseEditor feature for admin only.
+ * This page is shown only to admins in order to move from NS_USER to NS_COURSE
+ * a course declared "ReadyToBePublished" by the user.
+ */
+class PublishCourseTemplate extends QuickTemplate {
+  public function execute() {
+    $readyCourses = $this->data['readyCourses'];
+    ?>
+    <div class="row">
+      <div class="col-md-8 text-center">
+        <h3>Corsi in attesa</h3>
+        <hr>
+        <?php foreach ($readyCourses as $course) {
+          echo '<div class="form-check">';
+          echo '<label class="form-check-label">';
+          echo '<input class="form-check-input" type="radio" name="readyCourses" value="'. $course .'">';
+          echo '&nbsp;' . $course;
+          echo '</label></div>';
+        } ?>
+        <br>
+        <br>
+        <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+          <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+        </div>
+        <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+          <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+        </div>
+        <br><br>
+        <button type="button" class="btn btn-lg btn-success" id="confirmPublishCourseButton">Pubblica!</button>
+      </div>
+    <?php
+  }
+}
