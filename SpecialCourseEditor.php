@@ -35,8 +35,11 @@ class SpecialCourseEditor extends SpecialPage {
         $this->editCourse($courseName);
         return;
       case 'publishcourse':
-        $this->readyToBePublishedCourses();
-        return;
+        if (!$user->isAllowed( 'undelete' )){
+          throw new PermissionsError( 'undelete' );  
+        }
+          $this->readyToBePublishedCourses();
+          return;
       case 'createcourse':
         if($request->getVal('department')){
           $department = $request->getVal('department');
