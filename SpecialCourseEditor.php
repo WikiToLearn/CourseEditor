@@ -12,16 +12,23 @@ class SpecialCourseEditor extends SpecialPage {
   public function execute() {
     $request = $this->getRequest();
     $user = $this->getUser();
+    //Redirect user if he is not logged
     if ( ! ( $user->isAllowed( 'move' ) ) ) {
-      // The effect of loading this page is comparable to purge a page.
-      // If desired a dedicated right e.g. "viewmathstatus" could be used instead.
-      throw new PermissionsError( 'move' );
+      global $wgOut;
+      $title = Title::newFromText('Special:UserLogin');
+      $pageName = "Special:" . $this->mName;
+      $params = strstr($request->getRequestURL(), '?');
+      $returnTo = "returnto=" . $pageName;
+      if($params != ""){
+        $returnTo .= "&returntoquery=" . urlencode($params);
+      }
+      $wgOut->redirect($title->getFullURL($returnTo));
     }
     $actionType = $request->getVal('actiontype');
     switch ($actionType){
-      case 'editsection':
-        $sectionName = $request->getVal('pagename');
-        $this->editSection($sectionName);
+      case 'editleveltwo':
+        $levelTwoName = $request->getVal('pagename');
+        $this->editLevelTwo($levelTwoName);
         return;
       case 'editcourse':
         $courseName = $request->getVal('pagename');
@@ -41,9 +48,6 @@ class SpecialCourseEditor extends SpecialPage {
         }
         return;
       case 'managemetadata':
-        if ( ! ( $user->isAllowed( 'undelete' ) ) ) {
-          throw new PermissionsError( 'undelete' );
-        }
         $courseName = $request->getVal('pagename');
         $this->manageMetadata($courseName);
         return;
@@ -56,10 +60,10 @@ class SpecialCourseEditor extends SpecialPage {
   private function editCourse($courseName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $sections = CourseEditorUtils::getSections($courseName);
+    $levelsTwo = CourseEditorUtils::getLevelsTwo($courseName);
     $this->setHeaders();
     $out->setPageTitle(wfMessage('courseeditor-editcourse-pagetitle'));
-    $out->addInlineScript(" var sections = " . json_encode($sections) . ", editStack = [];");
+    $out->addInlineScript(" var levelsTwo = " . json_encode($levelsTwo) . ", editStack = [];");
     $out->addModules( 'ext.courseEditor.course' );
     $template = new CourseEditorTemplate();
     $template->setRef('courseEditor', $this);
@@ -68,18 +72,18 @@ class SpecialCourseEditor extends SpecialPage {
     $out->addTemplate( $template );
   }
 
-  private function editSection($sectionName){
+  private function editLevelTwo($levelTwoName){
     $out = $this->getOutput();
     $out->enableOOUI();
-    $chapters = CourseEditorUtils::getChapters($sectionName);
+    $levelsThree = CourseEditorUtils::getLevelsThree($levelTwoName);
     $this->setHeaders();
-    $out->setPageTitle(wfMessage('courseeditor-editsection-pagetitle'));
-    $out->addInlineScript(" var chapters = " . json_encode($chapters) . ", editStack = [];");
-    $out->addModules( 'ext.courseEditor.section' );
-    $template = new SectionEditorTemplate();
+    $out->setPageTitle(wfMessage('courseeditor-editlevelTwo-pagetitle'));
+    $out->addInlineScript(" var levelsThree = " . json_encode($levelsThree) . ", editStack = [];");
+    $out->addModules( 'ext.courseEditor.levelTwo' );
+    $template = new LevelTwoEditorTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
-    $template->set('section', $sectionName);
+    $template->set('levelTwo', $levelTwoName);
     $out->addTemplate( $template );
   }
 
@@ -93,15 +97,15 @@ class SpecialCourseEditor extends SpecialPage {
     }
     $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
     CourseEditorUtils::moveWrapper($courseName, $to);
-    $sections = CourseEditorUtils::getSections($to);
-    foreach ($sections as $sectionName) {
-      $chapters = CourseEditorUtils::getChapters($to . '/' . $sectionName);
-      $newSectionText = "";
-      foreach ($chapters as $chapterName) {
-        $newSectionText .= "* [[" . $to . "/" . $sectionName . "/" . $chapterName ."|". $chapterName ."]]\r\n";
+    $levelsTwo = CourseEditorUtils::getLevelsTwo($to);
+    foreach ($levelsTwo as $levelTwoName) {
+      $levelsThree = CourseEditorUtils::getLevelsThree($to . '/' . $levelTwoName);
+      $newLevelTwoText = "";
+      foreach ($levelsThree as $levelThreeName) {
+        $newLevelTwoText .= "* [[" . $to . "/" . $levelTwoName . "/" . $levelThreeName ."|". $levelThreeName ."]]\r\n";
       }
-      $pageTitle = $to . "/" . $sectionName;
-      CourseEditorUtils::editWrapper($pageTitle, $newSectionText, null, null);
+      $pageTitle = $to . "/" . $levelTwoName;
+      CourseEditorUtils::editWrapper($pageTitle, $newLevelTwoText, null, null);
     }
     CourseEditorUtils::purgeWrapper($to);
   }
@@ -139,6 +143,7 @@ class SpecialCourseEditor extends SpecialPage {
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
     $template->set('course', $courseName);
+    $template->set('user', $this->getUser());
     $metadataResult = CourseEditorUtils::getMetadata($courseName);
     if($metadataResult !== null){
       $template->set('metadataResult', $metadataResult);

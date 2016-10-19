@@ -1,7 +1,7 @@
 $(function () {
   var dragElements = [];
-  //Add all existing chapters to the dragElements array
-  $.each(chapters, function(key, value){
+  //Add all existing levelsThree to the dragElements array
+  $.each(levelsThree, function(key, value){
     var dragItem = new DraggableHandledItemWidget( {
       data: value,
       icon: 'menu',
@@ -19,27 +19,32 @@ $(function () {
   } );
   var fieldDrag = new OO.ui.FieldLayout(draggableWidget);
 
-  //Create a textInputWidget for new chapters
-  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-chapter' ) } );
+  //Create a textInputWidget for new levelsThree
+  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-levelThree' ) } );
   var addButton = new OO.ui.ButtonWidget({id: 'addElementButton', label: ''});
   addButton.$label.append("<i class='fa fa-plus fa-lg'></i>");
   var fieldInput = 	new OO.ui.ActionFieldLayout( textInputWidget, addButton);
 
   //Append all created elements to DOM
-  $('#chaptersList').append(fieldDrag.$element, fieldInput.$element);
+  $('#levelsThreeList').append(fieldDrag.$element, fieldInput.$element);
 
   //Init Handlers
   initHandlers(draggableWidget, textInputWidget, editStack);
 
-  $('#saveSectionButton').click(function(){
-    var newChapters = [];
+  $('#saveLevelTwoButton').click(function(){
+    var inputWidgetContent = textInputWidget.getValue();
+    if ($.trim(inputWidgetContent).length !== 0) {
+      $('#alertInputNotEmpty').show();
+      return;
+    }
+    var newLevelsThree = [];
     $.each(draggableWidget.getItems(), function(key, value){
-      newChapters.push(value.data);
+      newLevelsThree.push(value.data);
     });
 
     editStack.push({
       action: 'update',
-      elementsList: JSON.stringify(newChapters)
+      elementsList: JSON.stringify(newLevelsThree)
     });
     editStack.push({
       action: 'purge'
@@ -66,7 +71,7 @@ $(function () {
       progressDialog.setCurrentOp(operation);
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
-        rs: 'CourseEditorOperations::applySectionOp',
+        rs: 'CourseEditorOperations::applyLevelTwoOp',
         rsargs: [$('#parentName').text(), JSON.stringify(operation)]
       }, function ( data ) {
         if (data.success !== true) {
@@ -95,8 +100,8 @@ $(function () {
 
     $(document).queue('tasks', function(){
       windowManager.closeWindow(progressDialog);
-      var sectionName = $('#parentName').text();
-      var splitted = sectionName.split('/');
+      var levelTwoName = $('#parentName').text();
+      var splitted = levelTwoName.split('/');
       var courseName;
       if(splitted.length > 2){
         courseName = splitted[0] + '/' + splitted[1];

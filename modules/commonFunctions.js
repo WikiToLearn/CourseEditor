@@ -41,11 +41,11 @@ var createRenameMicroOperations = function(operation) {
 var createDeleteMicroOperations = function(operation) {
   var microOps = [];
   microOps.push({
-    action: 'delete-chapters-task',
+    action: 'delete-levelsThree-task',
     elementName: operation.elementName
   });
   microOps.push({
-    action: 'delete-section-task',
+    action: 'delete-levelTwo-task',
     elementName: operation.elementName
   });
   return microOps;
@@ -134,6 +134,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });
   $('#addElementButton').click(function(){
     $('#alert').hide();
+    $('#alertInputNotEmpty').hide();
     addElement(draggableWidget, textInputWidget.getValue(), editStack);
     textInputWidget.setValue('');
   });
@@ -145,6 +146,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });*/
   $('#addElementInput').keypress(function(keypressed) {
     $('#alert').hide();
+    $('#alertInputNotEmpty').hide();
     if(keypressed.which === 13) {
       addElement(draggableWidget, textInputWidget.getValue(), editStack);
       textInputWidget.setValue('');
@@ -535,34 +537,50 @@ function MoveDialog(draggableWidget, elementName, editStack, config ) {
     this.draggableWidget = draggableWidget;
     this.elementName = elementName;
     this.editStack = editStack;
-    this.dropdownWidget = new OO.ui.DropdownWidget({
-      label: 'Seleziona una sezione',
-      menu: {
-        items: []
-      }
-    } );
 };
 
 /* Inheritance */
 OO.inheritClass( MoveDialog, OO.ui.ProcessDialog );
 
 /* Static Properties */
-MoveDialog.static.title = OO.ui.deferMsg( 'courseeditor-edit-dialog' );
+MoveDialog.static.title = 'Sposta sezione';
+MoveDialog.static.size = 'large';
 MoveDialog.static.actions = [
-    { action: 'save', label: OO.ui.deferMsg( 'courseeditor-rename' ), flags: 'primary' },
-    { label: OO.ui.deferMsg( 'courseeditor-cancel' ), flags: 'safe' }
+    { action: 'move', label: 'Conferma', flags: ['primary', 'constructive'], icon: 'check' },
+    {
+      'label': 'Annulla',
+      'flags': 'safe',
+      'modes': 'intro',
+      'icon': 'close'
+    }
 ];
+
+/* Set the body height */
+MoveDialog.prototype.getBodyHeight = function() {
+  return 250;
+};
 
 /* Initialize the dialog elements */
 MoveDialog.prototype.initialize = function () {
     MoveDialog.parent.prototype.initialize.apply( this, arguments );
-    this.populateDropdown();
+    var dialog = this;
+    this.dropdownWidget = new OO.ui.DropdownWidget({
+      label: 'Seleziona un capitolo di destinazione'
+    });
+    this.populateDropdown(function(items){
+      dialog.dropdownWidget.getMenu().addItems(items);
+    });
+    this.layoutSelectLevelTwo =  new OO.ui.FieldLayout(this.dropdownWidget,{
+      align: 'top',
+      label: 'Capitolo'
+    });
     this.content = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-    this.content.$element.append(this.dropdownWidget.$element, "<br><br>" );
+    this.content.$element.append(this.layoutSelectLevelTwo.$element);
     this.$body.append( this.content.$element );
+    this.updateSize();
 };
 
-MoveDialog.prototype.populateDropdown = function(config) {
+MoveDialog.prototype.populateDropdown = function(callback) {
   var sectionName = $('#parentName').text();
   var splitted = sectionName.split('/');
   var courseName;
@@ -574,7 +592,7 @@ MoveDialog.prototype.populateDropdown = function(config) {
   var dialog = this;
   $.getJSON( mw.util.wikiScript(), {
     action: 'ajax',
-    rs: 'CourseEditorUtils::getSectionsJson',
+    rs: 'CourseEditorUtils::getLevelsTwoJson',
     rsargs: [courseName]
   }, function ( data ) {
     var items = [];
@@ -584,7 +602,8 @@ MoveDialog.prototype.populateDropdown = function(config) {
           label: value,
       } ));
     });
-    dialog.dropdownWidget.getMenu().addItems(items);
+    //dialog.dropdownWidget.getMenu().addItems(items);
+    callback(items);
   });
 };
 

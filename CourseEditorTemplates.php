@@ -12,15 +12,15 @@ if ( !defined( 'MEDIAWIKI' ) ) {
 * HTML template for Special:CourseEditor
 * @ingroup Templates
 */
-class SectionEditorTemplate extends QuickTemplate {
+class LevelTwoEditorTemplate extends QuickTemplate {
   public function execute() {
-    $section = $this->data['section'];
+    $levelTwo = $this->data['levelTwo'];
     ?>
-    <p><?php echo wfMessage( 'courseeditor-organize-chapters' ); ?></p>
-    <h2 id="parentName"><?php echo htmlspecialchars($section) ?></h2>
+    <p><?php echo wfMessage( 'courseeditor-organize-levelsThree' ); ?></p>
+    <h2 id="parentName"><?php echo htmlspecialchars($levelTwo) ?></h2>
     <div class="row">
       <div class="col-md-8">
-        <div id="chaptersList"></div>
+        <div id="levelsThreeList"></div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -37,11 +37,14 @@ class SectionEditorTemplate extends QuickTemplate {
     <br>
     <br>
     <div id="saveDiv" class="text-center">
-      <button type="button" class="btn btn-lg btn-success" id="saveSectionButton"><?php echo wfMessage('courseeditor-save-section') ?></button>
-    </div>
-    <br><br>
-    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+      <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+      </div>
+      <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+      </div>
+      <br><br>
+      <button type="button" class="btn btn-lg btn-success" id="saveLevelTwoButton"><?php echo wfMessage('courseeditor-save-levelTwo') ?></button>
     </div>
     <?php
   }
@@ -55,11 +58,11 @@ class CourseEditorTemplate extends QuickTemplate {
   public function execute() {
     $courseName = $this->data['course'];
     ?>
-    <p><?php echo wfMessage( 'courseeditor-organize-sections' ); ?></p>
+    <p><?php echo wfMessage( 'courseeditor-organize-levelsTwo' ); ?></p>
     <h2 id="parentName"><?php echo htmlspecialchars($courseName) ?></h2>
     <div class="row">
       <div class="col-md-8">
-        <div id="sectionsList"></div>
+        <div id="levelsTwoList"></div>
       </div>
       <div class="col-md-4">
         <div id="undoStack">
@@ -76,11 +79,14 @@ class CourseEditorTemplate extends QuickTemplate {
     <br>
     <br>
     <div id="saveDiv" class="text-center">
+      <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
+      </div>
+      <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
+        <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+      </div>
+      <br><br>
       <button type="button" class="btn btn-lg btn-success" id="saveCourseButton"><?php echo wfMessage('courseeditor-save-course') ?></button>
-    </div>
-    <br><br>
-    <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
-      <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
     </div>
     <?php
   }
@@ -113,12 +119,19 @@ class CourseCreatorTemplate extends QuickTemplate {
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
         <input type="text" class="form-control" id="courseName" placeholder="<?php echo wfMessage( 'courseeditor-input-course-placeholder' ) ?>" required>
       </div>
-    <div class="alert alert-warning alert-dismissible" id="alert" role="alert"  style="display:none;">
+    <div class="alert alert-warning alert-dismissible" id="alertSame" role="alert"  style="display:none;">
       <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
       </button>
-      <?php echo wfMessage( 'courseeditor-alert-message' ) ?>
-      <div id="coursesList"></div>
+      <?php echo wfMessage( 'courseeditor-alert-same-title-message' ) ?>
+      <div id="coursesListSame"></div>
+    </div>
+    <div class="alert alert-warning alert-dismissible" id="alertSimilar" role="alert"  style="display:none;">
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+      <?php echo wfMessage( 'courseeditor-alert-similar-title-message' ) ?>
+      <div id="coursesListSimilar"></div>
     </div>
       <div class="form-group">
         <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
@@ -137,14 +150,14 @@ class CourseCreatorTemplate extends QuickTemplate {
           <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
         </label>
       </div>
-      <button class="btn btn-success btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
-      <br><br>
       <div class="alert alert-danger alert-dismissible" id="alertError" role="alert"  style="display:none;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
         </button>
         <?php echo wfMessage( 'courseeditor-error-operation' ) ?>
       </div>
+      <br><br>
+      <button class="btn btn-success btn-lg" id="createCourseButton"><?php echo wfMessage('courseeditor-create-button') ?></button>
     </form>
 <?php
   }
@@ -153,6 +166,7 @@ class CourseCreatorTemplate extends QuickTemplate {
 class ManageMetadataTemplate extends QuickTemplate {
   public function execute(){
     $courseName = $this->data['course'];
+    $user = $this->data['user'];
     if($this->data['metadataResult']){
       $metadataResult = $this->data['metadataResult'];
     }
@@ -188,34 +202,36 @@ class ManageMetadataTemplate extends QuickTemplate {
         <label for="courseExternalReferences"><?php echo wfMessage( 'courseeditor-input-externalreferences-label' ) ?></label>
         <textarea class="form-control" rows="3" id="courseExternalReferences" placeholder="<?php echo wfMessage( 'courseeditor-input-externalreferences-placeholder' ) ?>"><?php echo $metadataResult['externalreferences'] ?></textarea>
       </div>
-      <div class="checkbox">
-        <label for="importedCourse">
-          <?php if(array_key_exists('isimported', $metadataResult)){ ?>
-          <input type="checkbox" name="isImported" id="isImported" checked="true">
-          <?php }else {
-            ?>
-            <input type="checkbox" name="isImported" id="isImported">
-          <?php } echo wfMessage( 'courseeditor-input-imported-label' ) ?>
-        </label>
-      </div>
-      <div class="form-group" id="courseOriginalAuthorsDiv" style="display:none;">
-        <label for="courseOriginalAuthors"><?php echo wfMessage( 'courseeditor-input-originalauthors-label' ) ?></label>
-        <input type="text" class="form-control" id="courseOriginalAuthors" placeholder="<?php echo wfMessage( 'courseeditor-input-originalauthors-placeholder' ) ?>"  value="<?php echo $metadataResult['originalauthors'] ?>" />
-      </div>
-      <div class="checkbox">
-        <label for="reviewedCourse">
-          <?php if(array_key_exists('isreviewed', $metadataResult)){ ?>
-          <input type="checkbox"  name="isReviewed" id="isReviewed" checked="true">
-          <?php }else {
-            ?>
-            <input type="checkbox" name="isReviewed" id="isReviewed">
-          <?php } echo wfMessage( 'courseeditor-input-reviewed-label' ) ?>
-        </label>
-      </div>
-      <div class="form-group" id="courseReviewedOnDiv" style="display:none;">
-        <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
-        <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
-      </div>
+      <?php if ($user->isAllowed( 'undelete' )) { ?>
+        <div class="checkbox">
+          <label for="importedCourse">
+            <?php if(array_key_exists('isimported', $metadataResult)){ ?>
+            <input type="checkbox" name="isImported" id="isImported" checked="true">
+            <?php }else {
+              ?>
+              <input type="checkbox" name="isImported" id="isImported">
+            <?php } echo wfMessage( 'courseeditor-input-imported-label' ) ?>
+          </label>
+        </div>
+        <div class="form-group" id="courseOriginalAuthorsDiv" style="display:none;">
+          <label for="courseOriginalAuthors"><?php echo wfMessage( 'courseeditor-input-originalauthors-label' ) ?></label>
+          <input type="text" class="form-control" id="courseOriginalAuthors" placeholder="<?php echo wfMessage( 'courseeditor-input-originalauthors-placeholder' ) ?>"  value="<?php echo $metadataResult['originalauthors'] ?>" />
+        </div>
+        <div class="checkbox">
+          <label for="reviewedCourse">
+            <?php if(array_key_exists('isreviewed', $metadataResult)){ ?>
+            <input type="checkbox"  name="isReviewed" id="isReviewed" checked="true">
+            <?php }else {
+              ?>
+              <input type="checkbox" name="isReviewed" id="isReviewed">
+            <?php } echo wfMessage( 'courseeditor-input-reviewed-label' ) ?>
+          </label>
+        </div>
+        <div class="form-group" id="courseReviewedOnDiv" style="display:none;">
+          <label for="courseReviewedOn"><?php echo wfMessage( 'courseeditor-input-reviewedon-label' ) ?></label>
+          <input type="text" class="form-control" id="courseReviewedOn" placeholder="<?php echo wfMessage( 'courseeditor-input-reviewedon-placeholder' ) ?>"  value="<?php echo $metadataResult['reviewedon'] ?>" />
+        </div>
+      <?php } ?>
       <button class="btn btn-success btn-lg" id="manageMetadataButton"><?php echo wfMessage('courseeditor-save-button') ?></button>
       <br><br>
       <div class="alert alert-danger alert-dismissible" id="alert" role="alert"  style="display:none;">

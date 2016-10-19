@@ -1,7 +1,7 @@
 $(function () {
   var dragElements = [];
-  //Add all existing sections to the dragSections array
-  $.each(sections, function(key, value){
+  //Add all existing levelsTwo to the dragLevelsTwo array
+  $.each(levelsTwo, function(key, value){
     var dragItem = new DraggableHandledItemWidget( {
       data: value,
       icon: 'menu',
@@ -12,31 +12,36 @@ $(function () {
     dragElements.push(dragItem);
   });
 
-  //Create a draggableWidget with the items in the dragSections array
+  //Create a draggableWidget with the items in the dragLevelsTwo array
   var draggableWidget = new DraggableGroupWidget( {
     items: dragElements
   } );
   var fieldDrag = new OO.ui.FieldLayout(draggableWidget);
 
-  //Create a textInputWidget for new sections
-  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-section' ) } );
+  //Create a textInputWidget for new levelsTwo
+  var textInputWidget = new OO.ui.TextInputWidget( { placeholder: OO.ui.deferMsg( 'courseeditor-add-new-levelTwo' ) } );
   var addButton = new OO.ui.ButtonWidget({id: 'addElementButton', label: ''});
   addButton.$label.append("<i class='fa fa-plus fa-lg'></i>");
   var fieldInput = 	new OO.ui.ActionFieldLayout( textInputWidget, addButton);
 
   //Append all created elements to DOM
-  $('#sectionsList').append(fieldDrag.$element, fieldInput.$element);
+  $('#levelsTwoList').append(fieldDrag.$element, fieldInput.$element);
 
   initHandlers(draggableWidget, textInputWidget, editStack);
 
   $('#saveCourseButton').click(function(){
-    var newSections = [];
+    var inputWidgetContent = textInputWidget.getValue();
+    if ($.trim(inputWidgetContent).length !== 0) {
+      $('#alertInputNotEmpty').show();
+      return;
+    }
+    var newLevelsTwo = [];
     $.each(draggableWidget.getItems(), function(key, value){
-      newSections.push(value.data);
+      newLevelsTwo.push(value.data);
     });
     editStack.push({
       action: 'update',
-      elementsList: JSON.stringify(newSections)
+      elementsList: JSON.stringify(newLevelsTwo)
     });
     editStack.push({
       action: 'update-collection'
@@ -104,7 +109,7 @@ $(function () {
     $.when.apply($, promises).done(function(){
       $(document).queue('tasks', createTask({
         action: 'update',
-        elementsList: JSON.stringify(newSections)
+        elementsList: JSON.stringify(newLevelsTwo)
       }));
 
       $(document).queue('tasks', createTask({

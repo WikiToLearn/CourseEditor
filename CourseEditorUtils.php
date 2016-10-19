@@ -21,12 +21,12 @@ class CourseEditorUtils {
         \n| setting-columns = 1
         \n| setting-footer = yes\n}}\n";
       $collectionText .= "== " . str_replace('_', ' ', $name) . " ==\r\n";
-      $sections = self::getSections($courseName);
-      foreach ($sections as $section) {
-        $chapters = self::getChapters($courseName . '/' .$section);
-        $collectionText .= ";" . $section . "\r\n";
-        foreach ($chapters as $chapter) {
-          $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+      $levelsTwo = self::getLevelsTwo($courseName);
+      foreach ($levelsTwo as $levelTwo) {
+        $levelsThree = self::getLevelsThree($courseName . '/' .$levelTwo);
+        $collectionText .= ";" . $levelTwo . "\r\n";
+        foreach ($levelsThree as $levelThree) {
+          $collectionText .= ":[[" . $courseName . "/" . $levelTwo . "/" . $levelThree . "]]\r\n";
         }
       }
       $categoryName = wfMessage('courseeditor-collection-book-category');
@@ -52,12 +52,12 @@ class CourseEditorUtils {
       \n| setting-columns = 1
       \n| setting-footer = yes\n}}\n";
     $collectionText .= "== " . str_replace('_', ' ', $title). " ==\r\n";
-    $sections = self::getSections($courseName);
-    foreach ($sections as $section) {
-      $chapters = self::getChapters($courseName . '/' .$section);
-      $collectionText .= ";" . $section . "\r\n";
-      foreach ($chapters as $chapter) {
-        $collectionText .= ":[[" . $courseName . "/" . $section . "/" . $chapter . "]]\r\n";
+    $levelsTwo = self::getLevelsTwo($courseName);
+    foreach ($levelsTwo as $levelTwo) {
+      $levelsThree = self::getLevelsThree($courseName . '/' .$levelTwo);
+      $collectionText .= ";" . $levelTwo . "\r\n";
+      foreach ($levelsThree as $levelThree) {
+        $collectionText .= ":[[" . $courseName . "/" . $levelTwo . "/" . $levelThree . "]]\r\n";
       }
     }
     $categoryName = wfMessage('courseeditor-collection-book-category');
@@ -92,12 +92,13 @@ class CourseEditorUtils {
   }
 
   public static function getTopicCourses($topic){
+    global $wgCourseEditorTemplates;
     $title = Title::newFromText($topic, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
     $textNoNewLines = trim(preg_replace('/\n+/', '', $text));
-    $regex = "/({{Topic|.+)}}.*$/";
+    $regex = "/({{" . $wgCourseEditorTemplates['Topic'] . "|.+)}}.*$/";
     preg_match_all($regex, $textNoNewLines, $matches, PREG_PATTERN_ORDER);
     return $matches[1][0];
   }
@@ -162,8 +163,8 @@ class CourseEditorUtils {
     }
   }
 
-  public static function getChapters($sectionName){
-    $title = Title::newFromText($sectionName, $defaultNamespace=NS_MAIN );
+  public static function getLevelsThree($levelTwoName){
+    $title = Title::newFromText($levelTwoName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
@@ -172,18 +173,19 @@ class CourseEditorUtils {
     return $matches[2];
   }
 
-  public static function getSections($courseName){
+  public static function getLevelsTwo($courseName){
+    global $wgCourseEditorTemplates;
     $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
-    $regex = "/\{{2}SSection\|(.*)\}{2}/";
+    $regex = "/\{{2}". $wgCourseEditorTemplates['CourseLevelTwo'] ."\|(.*)\}{2}/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     return $matches[1];
   }
 
-  public static function getSectionsJson($courseName){
-    return json_encode(self::getSections($courseName));
+  public static function getLevelsTwoJson($courseName){
+    return json_encode(self::getLevelsTwo($courseName));
   }
 
   public static function getPreviousAndNext($pageTitle){
@@ -201,17 +203,17 @@ class CourseEditorUtils {
     $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
     if($namespace === NS_COURSE){
       if($levels === 1){
-        $subElements = self::getSections($basePage);
+        $subElements = self::getLevelsTwo($basePage);
       }elseif ($levels === 2) {
-        $subElements = self::getChapters($basePage);
+        $subElements = self::getLevelsThree($basePage);
       }else {
         return array('error' => "Page levels not valid." );
       }
     }elseif ($namespace === NS_USER) {
       if($levels === 2){
-        $subElements = self::getSections($basePage);
+        $subElements = self::getLevelsTwo($basePage);
       }elseif ($levels === 3) {
-        $subElements = self::getChapters($basePage);
+        $subElements = self::getLevelsThree($basePage);
       }else {
         return array('error' => "Page levels not valid." );
       }
@@ -323,6 +325,61 @@ class CourseEditorUtils {
     }
   }
 
+  public static function editSectionWrapper($title, $text, $textToPrepend, $textToAppend){
+    $context = self::getRequestContext();
+    try {
+      $user = $context->getUser();
+      $token = $user->getEditToken();
+      $levelTwoExist = self::checkNewCoursesSectionExist($title);
+      if(!$levelTwoExist){
+        $api = new ApiMain(
+          new DerivativeRequest(
+            $context->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $title,
+              'text' => $text,
+              'section' => 'new',
+              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              // automatically override text
+              'prependtext' => $textToPrepend,
+              // automatically override text
+              'appendtext' => $textToAppend,
+              'notminor'   => true,
+              'token'      => $token
+            ),
+            true
+          ),
+          true
+        );
+      }else {
+        $api = new ApiMain(
+          new DerivativeRequest(
+            $context->getRequest(),
+            array(
+              'action'     => 'edit',
+              'title'      => $title,
+              'text' => $text,
+              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              // automatically override text
+              'prependtext' => $textToPrepend,
+              // automatically override text
+              'appendtext' => $textToAppend,
+              'notminor'   => true,
+              'token'      => $token
+            ),
+            true
+          ),
+          true
+        );
+      }
+      $api->execute();
+      return $api->getResult()->getResultData(null, array('Strip' => 'all'));
+    } catch(UsageException $e){
+      return $e->getMessage();
+    }
+  }
+
   public static function moveWrapper($from, $to){
     $context = self::getRequestContext();
     try {
@@ -349,5 +406,65 @@ class CourseEditorUtils {
     } catch(UsageException $e){
       return $e->getMessage();
     }
+  }
+
+  private function checkNewCoursesSectionExist($department) {
+    $title = Title::newFromText( $department);
+    $page = WikiPage::factory( $title);
+    $context = self::getRequestContext();
+    $parserOptions = ParserOptions::newFromContext($context);
+    $levelsTwo = $page->getParserOutput($parserOptions)->getSections();
+    $newCoursesSection = wfMessage('courseeditor-newcourses-section-title')->text();
+    if(!is_array($levelsTwo)){
+      return false;
+    }else {
+      foreach($levelsTwo as $element) {
+        $ret = in_array($newCoursesSection, $element);
+      }
+    }
+    return $ret;
+  }
+
+  /**
+  * Generate the url to edit the root level of a course
+  * @param Title $title the title of the course page
+  * @return Array $result an array with the 'href' to CourseEditor SpecialPage and
+  *         the localised title for the actiontype
+  */
+  public static function makeEditCourseUrl($title){
+    $titleText = $title->getNsText() . ":" . $title->getText();
+    $url = "/Special:CourseEditor?actiontype=editcourse&pagename=" . $titleText;
+    $result = array('href' => $url, 'text' => wfMessage('courseeditor-editcourse-pagetitle')->text());
+    return $result;
+  }
+
+  /**
+  * Generate the url to edit the second level of a course
+  * @param Title $title the title of the course page
+  * @return Array $result an array with the 'href' to CourseEditor SpecialPage and
+  *         the localised title for the actiontype
+  */
+  public static function makeEditLevelTwoUrl($title){
+    $titleText = $title->getNsText() . ":" . $title->getText();
+    $url = "/Special:CourseEditor?actiontype=editleveltwo&pagename=" . $titleText;
+    $result = array('href' => $url, 'text' => wfMessage('courseeditor-editlevelTwo-pagetitle')->text());
+    return $result;
+  }
+
+  /**
+  * Generate the url to download a whole course through Collection extension
+  * @param Title $title the title of the course page
+  * @return string $url the url to Collection SpecialPage
+  */
+  public static function makeDownloadCourseUrl($title){
+    if($title->getNamespace() === NS_USER){
+      $user = $title->getRootText();
+      $collection = $title->getNstext() . ":" . $user . "/" . wfMessage('courseeditor-collection-book-category')->text() . "/" . $title->getSubpageText();
+    }else {
+      $collection = "Project:" . wfMessage('courseeditor-collection-book-category')->text() . "/" . $title->getRootText();
+    }
+    //Return only the url instead of an array with 'href' and 'title'.
+    //The title is created within the skin using the titles of the Collection tools
+    return $url = "/Special:Collection?bookcmd=render_collection&writer=rdf2latex&colltitle=" . $collection;
   }
 }

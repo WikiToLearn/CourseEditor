@@ -14,7 +14,7 @@
         "CourseEditor":"CourseEditor.php",
         "CourseEditorOperations":"CourseEditorOperations.php",
         "CourseEditorUtils":"CourseEditorUtils.php",
-        "SectionEditorTemplate":"CourseEditorTemplates.php",
+        "LevelTwoEditorTemplate":"CourseEditorTemplates.php",
         "CourseEditorTemplate" : "CourseEditorTemplates.php",
         "CourseCreatorTemplate" : "CourseEditorTemplates.php",
         "ManageMetadataTemplate" : "CourseEditorTemplates.php",
@@ -33,6 +33,9 @@
         "localBasePath": ""
     },
     "ResourceModules": {
+        "ext.courseEditor.publish": {
+          "scripts":["modules/publishCourse.js"]
+        },
         "ext.courseEditor.manageMetadata": {
           "scripts":["modules/manageMetadata.js"]
         },
@@ -49,10 +52,10 @@
               "courseeditor-progressdialog-wait"
           ]
         },
-        "ext.courseEditor.section": {
+        "ext.courseEditor.levelTwo": {
            "scripts":[
              "modules/commonFunctions.js",
-             "modules/sectionEditor.js"
+             "modules/levelTwoEditor.js"
            ],
             "dependencies": [
                 "oojs-ui",
@@ -63,8 +66,8 @@
             ],
             "messages": [
                 "courseeditor",
-                "courseeditor-add-new-chapter",
-                "courseeditor-save-section",
+                "courseeditor-add-new-levelThree",
+                "courseeditor-save-levelTwo",
                 "courseeditor-cancel",
                 "courseeditor-rename",
                 "courseeditor-edit-dialog",
@@ -76,8 +79,8 @@
                 "courseeditor-error-operation",
                 "courseeditor-operation-action-add",
                 "courseeditor-operation-action-delete",
-                "courseeditor-operation-action-delete-chapters-task",
-                "courseeditor-operation-action-delete-section-task",
+                "courseeditor-operation-action-delete-levelsThree-task",
+                "courseeditor-operation-action-delete-levelTwo-task",
                 "courseeditor-operation-action-rename",
                 "courseeditor-operation-action-rename-move-task",
                 "courseeditor-operation-action-rename-update-task",
@@ -101,7 +104,7 @@
             ],
             "messages": [
                 "courseeditor",
-                "courseeditor-add-new-section",
+                "courseeditor-add-new-levelTwo",
                 "courseeditor-save-course",
                 "courseeditor-cancel",
                 "courseeditor-rename",
@@ -114,8 +117,8 @@
                 "courseeditor-error-operation",
                 "courseeditor-operation-action-add",
                 "courseeditor-operation-action-delete",
-                "courseeditor-operation-action-delete-chapters-task",
-                "courseeditor-operation-action-delete-section-task",
+                "courseeditor-operation-action-delete-levelsThree-task",
+                "courseeditor-operation-action-delete-levelTwo-task",
                 "courseeditor-operation-action-rename",
                 "courseeditor-operation-action-rename-move-task",
                 "courseeditor-operation-action-rename-update-task",
@@ -146,14 +149,29 @@
   		}
     ],
     "config": {
+      "CourseEditorTemplates":{
+        "Topic" : "Topic",
+        "Course" : "Course",
+        "CourseRoot" : "CourseRoot",
+        "CourseLevelTwo" : "CourseLevelTwo",
+        "ReadyToBePublished": "ReadyToBePublished",
+        "DeleteMe" : "DeleteMe"
+      },
+      "CourseEditorCategories":{
+        "CourseRoot" : "CourseRoot",
+        "CourseLevelTwo" : "CourseLevelTwo",
+        "ReadyToBePublished": "ReadyToBePublished"
+      },
   		"AjaxExportList": [
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
-        "CourseEditorOperations::applySectionOp",
+        "CourseEditorUtils::getLevelsTwoJson",
+        "CourseEditorOperations::applyLevelTwoOp",
         "CourseEditorOperations::applyCourseOp",
-        "CourseEditorUtils::getSectionsJson"
+        "CourseEditorOperations::publishCourseOp",
+        "CourseEditorOperations::undoPublishCourseOp"
   		]
-},
+    },
     "SpecialPages": {
         "CourseEditor": "SpecialCourseEditor"
     },
