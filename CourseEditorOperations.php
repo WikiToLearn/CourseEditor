@@ -222,6 +222,58 @@ class CourseEditorOperations {
     return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment);
   }
 
+  public static function applyPublishCourseOp($operation){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
+    $value = json_decode($operation);
+    switch ($value->action) {
+      case 'rename-move-task':
+      $levelTwoName = $value->elementName;
+      $newLevelTwoName = $value->newElementName;
+      $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, true);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'rename-update-task':
+      $levelTwoName = $value->elementName;
+      $newLevelTwoName = $value->newElementName;
+      $levelsThree = CourseEditorUtils::getLevelsThree($newLevelTwoName);
+      $newLevelTwoText = "";
+      foreach ($levelsThree as $levelThree) {
+        $newLevelTwoText .= "* [[" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
+      }
+      $newLevelTwoText .= "\r\n<noinclude>[["
+      . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
+      $apiResult = CourseEditorUtils::editWrapper($newLevelTwoName, $newLevelTwoText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'move-root':
+      $courseName = $value->elementName;
+      $newCourseName = $value->newElementName;
+      $apiResult = CourseEditorUtils::moveWrapper($courseName, $newCourseName, false, true);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'remove-ready-texts':
+      $title = Title::newFromText($value->elementName);
+      $page = WikiPage::factory($title);
+      $pageText = $page->getText();
+      $category = "<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
+      $template = "{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}";
+      $replacedText = str_replace($category, "", $pageText);
+      $newPageText = str_replace($template, "", $replacedText);
+      $result = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
+      break;
+      case 'move-metadata':
+      $metadataPage = $value->elementName;
+      $newMetadataPage = $value->newElementName;
+      $apiResult = CourseEditorUtils::moveWrapper($metadataPage, $newMetadataPage, false, true);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+      case 'update-collection':
+      $apiResult = CourseEditorUtils::updateCollection($value->elementName);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
+    }
+    return json_encode($value);
+  }
 
   public static function applyCourseOp($courseName, $operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;

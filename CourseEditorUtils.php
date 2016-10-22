@@ -380,7 +380,7 @@ class CourseEditorUtils {
     }
   }
 
-  public static function moveWrapper($from, $to){
+  public static function moveWrapper($from, $to, $withSubpages=true, $noRedirect=false){
     $context = self::getRequestContext();
     try {
       $user = $context->getUser();
@@ -392,9 +392,9 @@ class CourseEditorUtils {
             'action'     => 'move',
             'from'      => $from,
             'to' => $to,
-            //'noredirect' => true,
+            'noredirect' => $noRedirect,
             'movetalk' => true,
-            'movesubpages' => true,
+            'movesubpages' => $withSubpages,
             'token'      => $token
           ),
           true

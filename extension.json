@@ -35,7 +35,14 @@
     },
     "ResourceModules": {
         "ext.courseEditor.publish": {
-          "scripts":["modules/publishCourse.js"]
+          "scripts":[
+            "modules/publishCourse.js",
+            "modules/commonFunctions.js"
+          ],
+          "dependencies": [
+             "oojs-ui",
+             "mediawiki.util"
+          ]
         },
         "ext.courseEditor.manageMetadata": {
           "scripts":["modules/manageMetadata.js"]
@@ -163,6 +170,10 @@
         "CourseLevelTwo" : "CourseLevelTwo",
         "ReadyToBePublished": "ReadyToBePublished"
       },
+      "CourseEditorNamespaces":{
+        "Course" : "Course",
+        "CourseMetadata" : "CourseMetadata"
+      },
   		"AjaxExportList": [
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
@@ -170,7 +181,8 @@
         "CourseEditorOperations::applyLevelTwoOp",
         "CourseEditorOperations::applyCourseOp",
         "CourseEditorOperations::publishCourseOp",
-        "CourseEditorOperations::undoPublishCourseOp"
+        "CourseEditorOperations::undoPublishCourseOp",
+        "CourseEditorOperations::applyPublishCourseOp"
   		]
     },
     "SpecialPages": {

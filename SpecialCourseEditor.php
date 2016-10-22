@@ -9,7 +9,7 @@ class SpecialCourseEditor extends SpecialPage {
     parent::__construct( $name );
   }
 
-  public function execute() {
+  public function execute($par) {
     $request = $this->getRequest();
     $user = $this->getUser();
     //Redirect user if he is not logged
@@ -25,6 +25,13 @@ class SpecialCourseEditor extends SpecialPage {
       $wgOut->redirect($title->getFullURL($returnTo));
     }
     $actionType = $request->getVal('actiontype');
+    if($par === 'ReadyCourses'){
+      if (!$user->isAllowed( 'undelete' )){
+        throw new PermissionsError( 'undelete' );
+      }
+        $this->readyToBePublishedCourses();
+        return;
+    }
     switch ($actionType){
       case 'editleveltwo':
         $levelTwoName = $request->getVal('pagename');
@@ -34,9 +41,9 @@ class SpecialCourseEditor extends SpecialPage {
         $courseName = $request->getVal('pagename');
         $this->editCourse($courseName);
         return;
-      case 'publishcourse':
+      case 'readycourses':
         if (!$user->isAllowed( 'undelete' )){
-          throw new PermissionsError( 'undelete' );  
+          throw new PermissionsError( 'undelete' );
         }
           $this->readyToBePublishedCourses();
           return;
@@ -90,6 +97,7 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
   private function readyToBePublishedCourses(){
+    global $wgCourseEditorNamespaces;
     /*$regex = "/\/(.*)/";
     $resultStatus = preg_match($regex, $courseName, $matches);
     if ($resultStatus === 0 ||  $resultStatus === false) {
@@ -114,6 +122,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->setPageTitle('Pubblicazione corsi');
+    $out->addJsConfigVars('wgCourseEditor', $wgCourseEditorNamespaces);
     $template = new PublishCourseTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
