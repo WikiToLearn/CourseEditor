@@ -53,8 +53,7 @@ $(function(){
   $('#confirmPublishCourseButton').click(function(){
 
     var editStack = [];
-    //var courseName = $('input[name=readyCourses]:checked').val();
-    var courseName = 'Utente:Admin/Tekki';
+    var courseName = $('input[name=readyCourses]:checked').val();
     var levelsTwoList,
     courseNameClean = courseName.split('/')[1],
     user = courseName.split('/')[0].split(':')[1];
