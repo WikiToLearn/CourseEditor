@@ -54,7 +54,7 @@ $(function(){
 
     var editStack = [];
     //var courseName = $('input[name=readyCourses]:checked').val();
-    var courseName = 'Utente:Admin/Yollo';
+    var courseName = 'Utente:Admin/Tekki';
     var levelsTwoList,
     courseNameClean = courseName.split('/')[1],
     user = courseName.split('/')[0].split(':')[1];
@@ -69,7 +69,7 @@ $(function(){
       var courseNamespace = mw.config.get( 'wgCourseEditor' ).Course;
       var metadataNamespace = mw.config.get( 'wgCourseEditor' ).CourseMetadata;
       var courseNameInPublic = courseNamespace + ':' + courseNameClean;
-      var metadataPagePublic = metadataNamespace + ':' + user + '/' + courseNameClean;
+      var metadataPagePublic = metadataNamespace + ':' + courseNameClean;
 
       $.each(levelsTwoList, function(key, value){
         editStack.push({
@@ -118,7 +118,6 @@ $(function(){
           rs: 'CourseEditorOperations::applyPublishCourseOp',
           rsargs: [JSON.stringify(operation)]
         }, function ( data ) {
-            console.log(data);
             progressDialog.updateProgress(unitaryIncrement);
             next();
         });
@@ -134,11 +133,10 @@ $(function(){
 
       $(document).queue('tasks', function(){
         windowManager.closeWindow(progressDialog);
-
+        $('#publicCourseLink').html('<a href="/' + courseNameInPublic + '">' + courseNameInPublic +'</a>');
+        $('#alertSuccess').show();
       });
-
       dequeue('tasks')
-
     });
   });
 })

@@ -120,7 +120,10 @@ class CourseEditorOperations {
   }
 
   private function createBasicCourseMetadata($topic, $title, $description){
-    $topic = ($topic ===  null ? $title : $topic);
+    //Remove username from title (if present) to be used as topic if $topic is null
+    $explodedString = explode('/', $title, 2);
+    $titleNoUser = (sizeof($explodedString) === 1) ? $explodedString[0] : $explodedString[1] ;
+    $topic = ($topic ===  null ? $titleNoUser : $topic);
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
@@ -229,7 +232,7 @@ class CourseEditorOperations {
       case 'rename-move-task':
       $levelTwoName = $value->elementName;
       $newLevelTwoName = $value->newElementName;
-      $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, true);
+      $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, false);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'rename-update-task':
@@ -248,7 +251,7 @@ class CourseEditorOperations {
       case 'move-root':
       $courseName = $value->elementName;
       $newCourseName = $value->newElementName;
-      $apiResult = CourseEditorUtils::moveWrapper($courseName, $newCourseName, false, true);
+      $apiResult = CourseEditorUtils::moveWrapper($courseName, $newCourseName, false, false);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'remove-ready-texts':
@@ -264,7 +267,7 @@ class CourseEditorOperations {
       case 'move-metadata':
       $metadataPage = $value->elementName;
       $newMetadataPage = $value->newElementName;
-      $apiResult = CourseEditorUtils::moveWrapper($metadataPage, $newMetadataPage, false, true);
+      $apiResult = CourseEditorUtils::moveWrapper($metadataPage, $newMetadataPage, false, false);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'update-collection':

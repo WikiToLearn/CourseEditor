@@ -267,11 +267,13 @@ class PublishCourseTemplate extends QuickTemplate {
         } ?>
         <br>
         <br>
-        <div class="alert alert-warning" id="alertInputNotEmpty" role="alert"  style="display:none;">
-          <?php echo wfMessage('courseeditor-alert-message-input-notempty') ?>
-        </div>
-        <div class="alert alert-danger" id="alert" role="alert"  style="display:none;">
-          <?php echo wfMessage('courseeditor-alert-message-existing-element') ?>
+        <div class="alert alert-success alert-dismissible" id="alertSuccess" role="alert"  style="display:none;">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">&times;</span>
+          </button>
+          Il corso è ora disponibile qui:
+          <div id="publicCourseLink"></div>
+          Devi ora prevvedere ad aggiungerlo in un topic o dipartimento.
         </div>
         <br><br>
         <button type="button" class="btn btn-lg btn-success" id="confirmPublishCourseButton">Pubblica!</button>

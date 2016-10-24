@@ -382,21 +382,26 @@ class CourseEditorUtils {
 
   public static function moveWrapper($from, $to, $withSubpages=true, $noRedirect=false){
     $context = self::getRequestContext();
+    $params = array(
+      'action' => 'move',
+      'from'      => $from,
+      'to' => $to,
+      'movetalk' => true
+    );
+    if($withSubpages){
+      $params['movesubpages'] = true;
+    }
+    if ($noRedirect) {
+      $params['noredirect'] = true;
+    }
     try {
       $user = $context->getUser();
       $token = $user->getEditToken();
+      $params['token'] = $token;
       $api = new ApiMain(
         new DerivativeRequest(
           $context->getRequest(),
-          array(
-            'action'     => 'move',
-            'from'      => $from,
-            'to' => $to,
-            'noredirect' => $noRedirect,
-            'movetalk' => true,
-            'movesubpages' => $withSubpages,
-            'token'      => $token
-          ),
+          $params,
           true
         ),
         true
