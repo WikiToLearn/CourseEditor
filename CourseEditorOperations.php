@@ -270,6 +270,11 @@ class CourseEditorOperations {
       $apiResult = CourseEditorUtils::moveWrapper($metadataPage, $newMetadataPage, false, false);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
+      case 'purge':
+      $pageToBePurged = $value->elementName;
+      $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      break;
       case 'update-collection':
       $apiResult = CourseEditorUtils::updateCollection($value->elementName);
       CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);

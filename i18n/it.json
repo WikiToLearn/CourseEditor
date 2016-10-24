@@ -65,7 +65,7 @@
   "courseeditor-operation-action-update" : "Aggiorna",
   "courseeditor-operation-action-update-collection" : "Aggiorna libro",
   "courseeditor-operation-action-move-root": "Sposta",
-  "courseeditor-operation-action-move-metadati": "Sposta metadati",
+  "courseeditor-operation-action-move-metadata": "Sposta metadati",
   "courseeditor-operation-action-remove-ready-texts" : "Rimuovi ReadyToBePublished",
   "courseeditor-error-operation-fail" : " fallito!",
   "courseeditor-progressdialog-wait" : "Attendere creazione in corso...",

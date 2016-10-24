@@ -65,7 +65,7 @@
   "courseeditor-operation-action-update" : "Update",
   "courseeditor-operation-action-update-collection" : "Update book",
   "courseeditor-operation-action-move-root": "Move",
-  "courseeditor-operation-action-move-metadati": "Move metadata",
+  "courseeditor-operation-action-move-metadata": "Move metadata",
   "courseeditor-operation-action-remove-ready-texts": "Remove ReadyToBePublished",
   "courseeditor-error-operation-fail" : " fails!",
   "courseeditor-collection-book-category": "Books",

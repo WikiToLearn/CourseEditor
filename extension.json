@@ -66,7 +66,7 @@
             "courseeditor-operation-action-purge",
             "courseeditor-operation-action-update",
             "courseeditor-operation-action-move-root",
-            "courseeditor-operation-action-move-metadati",
+            "courseeditor-operation-action-move-metadata",
             "courseeditor-operation-action-remove-ready-texts",
             "courseeditor-operation-action-update-collection",
             "courseeditor-error-operation-fail"

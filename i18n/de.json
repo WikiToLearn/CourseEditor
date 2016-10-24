@@ -65,7 +65,7 @@
   "courseeditor-operation-action-update" : "Aktualisiere",
   "courseeditor-operation-action-update-collection" : "Buch aktualisiere",
   "courseeditor-operation-action-move-root": "Verschieben",
-  "courseeditor-operation-action-move-metadati": "verschieben von Metadaten",
+  "courseeditor-operation-action-move-metadata": "verschieben von Metadaten",
   "courseeditor-operation-action-remove-ready-texts": "Entfernen ReadyToBePublished",
   "courseeditor-error-operation-fail" : " fehlgeschlagen!",
   "courseeditor-progressdialog-wait" : "Warten Schöpfung läuft...",

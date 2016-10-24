@@ -92,6 +92,10 @@ $(function(){
         newElementName: metadataPagePublic
       });
       editStack.push({
+        action: 'purge',
+        elementName: courseNameInPublic
+      });
+      editStack.push({
         action: 'update-collection',
         elementName: courseNameInPublic
       });
@@ -117,8 +121,22 @@ $(function(){
           rs: 'CourseEditorOperations::applyPublishCourseOp',
           rsargs: [JSON.stringify(operation)]
         }, function ( data ) {
+          if (data.success !== true) {
+            $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
+            $('#alert').append(OO.ui.msg('courseeditor-operation-action-' + data.action));
+            if(data.elementName){
+              var localizedMsg = " " + data.elementName + OO.ui.msg('courseeditor-error-operation-fail');
+              $('#alert').append(localizedMsg);
+            }else {
+              $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
+            }
+            $('#alert').show();
+            windowManager.closeWindow(progressDialog);
+            $(document).clearQueue('tasks');
+          }else{
             progressDialog.updateProgress(unitaryIncrement);
             next();
+          }
         });
       };
 
