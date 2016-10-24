@@ -256,7 +256,7 @@ class PublishCourseTemplate extends QuickTemplate {
     ?>
     <div class="row">
       <div class="col-md-8 text-center">
-        <h3>Corsi in attesa</h3>
+        <h3><?php echo wfMessage('courseeditor-pending-courses') ?></h3>
         <hr>
         <?php foreach ($readyCourses as $course) {
           echo '<div class="form-check">';
@@ -271,9 +271,9 @@ class PublishCourseTemplate extends QuickTemplate {
           <button type="button" class="close" data-dismiss="alert" aria-label="Close">
             <span aria-hidden="true">&times;</span>
           </button>
-          Il corso è ora disponibile qui:
+          <?php echo wfMessage('courseeditor-alert-message-success-publish') ?>
           <div id="publicCourseLink"></div>
-          Devi ora prevvedere ad aggiungerlo in un topic o dipartimento.
+          <?php echo wfMessage('courseeditor-alert-message-success-publish-add-to') ?>
         </div>
         <br><br>
         <button type="button" class="btn btn-lg btn-success" id="confirmPublishCourseButton">Pubblica!</button>

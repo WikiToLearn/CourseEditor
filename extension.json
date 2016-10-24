@@ -42,6 +42,34 @@
           "dependencies": [
              "oojs-ui",
              "mediawiki.util"
+          ],
+          "messages": [
+            "courseeditor",
+            "courseeditor-add-new-levelThree",
+            "courseeditor-save-levelTwo",
+            "courseeditor-cancel",
+            "courseeditor-rename",
+            "courseeditor-edit-dialog",
+            "courseeditor-message-dialog-title",
+            "courseeditor-message-dialog-message",
+            "courseeditor-message-dialog-cancel",
+            "courseeditor-message-dialog-restore",
+            "courseeditor-message-dialog-create-new",
+            "courseeditor-error-operation",
+            "courseeditor-operation-action-add",
+            "courseeditor-operation-action-delete",
+            "courseeditor-operation-action-delete-levelsThree-task",
+            "courseeditor-operation-action-delete-levelTwo-task",
+            "courseeditor-operation-action-rename",
+            "courseeditor-operation-action-rename-move-task",
+            "courseeditor-operation-action-rename-update-task",
+            "courseeditor-operation-action-purge",
+            "courseeditor-operation-action-update",
+            "courseeditor-operation-action-move-root",
+            "courseeditor-operation-action-move-metadati",
+            "courseeditor-operation-action-remove-ready-texts",
+            "courseeditor-operation-action-update-collection",
+            "courseeditor-error-operation-fail"
           ]
         },
         "ext.courseEditor.manageMetadata": {

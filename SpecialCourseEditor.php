@@ -98,30 +98,10 @@ class SpecialCourseEditor extends SpecialPage {
 
   private function readyToBePublishedCourses(){
     global $wgCourseEditorNamespaces;
-    /*$regex = "/\/(.*)/";
-    $resultStatus = preg_match($regex, $courseName, $matches);
-    if ($resultStatus === 0 ||  $resultStatus === false) {
-      $courseNameWithoutNamespace = $courseName;
-    }else {
-      $courseNameWithoutNamespace = $matches[1];
-    }
-    $to = MWNamespace::getCanonicalName(NS_COURSE) . ':' . $courseNameWithoutNamespace;
-    CourseEditorUtils::moveWrapper($courseName, $to);
-    $levelsTwo = CourseEditorUtils::getLevelsTwo($to);
-    foreach ($levelsTwo as $levelTwoName) {
-      $levelsThree = CourseEditorUtils::getLevelsThree($to . '/' . $levelTwoName);
-      $newLevelTwoText = "";
-      foreach ($levelsThree as $levelThreeName) {
-        $newLevelTwoText .= "* [[" . $to . "/" . $levelTwoName . "/" . $levelThreeName ."|". $levelThreeName ."]]\r\n";
-      }
-      $pageTitle = $to . "/" . $levelTwoName;
-      CourseEditorUtils::editWrapper($pageTitle, $newLevelTwoText, null, null);
-    }
-    CourseEditorUtils::purgeWrapper($to);*/
     $readyCourses = CourseEditorUtils::getReadyToBePublishedCourses();
     $out = $this->getOutput();
     $out->enableOOUI();
-    $out->setPageTitle('Pubblicazione corsi');
+    $out->setPageTitle(wfMessage('courseeditor-publish-course-pagetitle'));
     $out->addJsConfigVars('wgCourseEditor', $wgCourseEditorNamespaces);
     $template = new PublishCourseTemplate();
     $template->setRef('courseEditor', $this);

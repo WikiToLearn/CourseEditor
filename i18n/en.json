@@ -64,9 +64,17 @@
   "courseeditor-operation-action-purge" : "Update index",
   "courseeditor-operation-action-update" : "Update",
   "courseeditor-operation-action-update-collection" : "Update book",
+  "courseeditor-operation-action-move-root": "Move",
+  "courseeditor-operation-action-move-metadati": "Move metadata",
+  "courseeditor-operation-action-remove-ready-texts": "Remove ReadyToBePublished",
   "courseeditor-error-operation-fail" : " fails!",
   "courseeditor-collection-book-category": "Books",
   "courseeditor-progressdialog-wait": "Wait creation in progress...",
   "courseeditor-collection-savedbook-template": "saved_book",
-  "courseeditor-newcourses-section-title" : "New courses"
+  "courseeditor-newcourses-section-title" : "New courses",
+  "courseeditor-publish-course-pagetitle" : "Publish courses",
+  "courseeditor-pending-courses": "Pending courses",
+  "courseeditor-alert-message-success-publish" : "The course is now available here:",
+  "courseeditor-alert-message-success-publish-add-to" : "You must add it to a topic and department"
+
 }
