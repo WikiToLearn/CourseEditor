@@ -115,7 +115,8 @@ class CourseEditorOperations {
       }
     }
     $resultCreateMetadataPage = CourseEditorUtils::editWrapper($pageTitle, $metadata , null, null);
-    CourseEditorUtils::setSingleOperationSuccess($operation, $resultCreateMetadataPage);
+    $resultPurgeCourse = CourseEditorUtils::purgeWrapper($pageTitle);
+    CourseEditorUtils::setComposedOperationSuccess($operation, [$resultCreateMetadataPage, $resultPurgeCourse]);
     return json_encode($operation);
   }
 
@@ -194,7 +195,8 @@ class CourseEditorOperations {
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $titleWithUser, $description);
     $textToPrepend = "{{". $wgCourseEditorTemplates['Course'] ."|" . $title . "|" . $user->getName() . "}}";
     $resultPrependToUserPage = CourseEditorUtils::editWrapper($userPage, null, $textToPrepend, null);
-    return array($resultCreateCourse, $resultCreateMetadataPage, $resultPrependToUserPage);
+    $resultPurgeCourse = CourseEditorUtils::purgeWrapper($pageTitle);
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultPrependToUserPage, $resultPurgeCourse);
 
   }
 
@@ -208,7 +210,8 @@ class CourseEditorOperations {
     $text = $topicCourses . "{{". $wgCourseEditorTemplates['Course'] ."|" . $title . "}}}}";
     $resultCreateMetadataPage = self::createBasicCourseMetadata($topic, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($topic, $text, null, null);
-    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic);
+    $resultPurgeCourse = CourseEditorUtils::purgeWrapper($pageTitle);
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultPurgeCourse);
   }
 
   private function createPublicCourseFromDepartment($pageTitle, $department, $title, $description){
@@ -222,7 +225,8 @@ class CourseEditorOperations {
     $resultCreateMetadataPage = self::createBasicCourseMetadata(null, $title, $description);
     $resultAppendToTopic = CourseEditorUtils::editWrapper($title, $text, null, null);
     $resultAppendToDepartment = CourseEditorUtils::editSectionWrapper($department, null, null, $listElementText);
-    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment);
+    $resultPurgeCourse = CourseEditorUtils::purgeWrapper($pageTitle);
+    return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment, $resultPurgeCourse);
   }
 
   public static function applyPublishCourseOp($operation){

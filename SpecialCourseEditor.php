@@ -135,10 +135,12 @@ class SpecialCourseEditor extends SpecialPage {
   }
 
   private function manageMetadata($courseName){
+    global $wgCourseEditorNamespaces;
     $out = $this->getOutput();
     $out->enableOOUI();
     $out->addModules('ext.courseEditor.manageMetadata');
     $out->setPageTitle(wfMessage('courseeditor-managemetata-pagetitle'));
+    $out->addJsConfigVars('wgCourseEditor', $wgCourseEditorNamespaces);
     $template = new ManageMetadataTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
