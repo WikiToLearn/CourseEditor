@@ -129,9 +129,9 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   $('.editElementIcon').click(function(){
     editElement(draggableWidget, $(this).parent().text(), editStack);
   });
-  $('.moveElementIcon').click(function(){
+  /*$('.moveElementIcon').click(function(){
     moveElement(draggableWidget, $(this).parent().text(), editStack);
-  });
+  });*/
   $('#addElementButton').click(function(){
     $('#alert').hide();
     $('#alertInputNotEmpty').hide();
@@ -210,11 +210,12 @@ var createDragItem = function(draggableWidget, elementName, editStack){
     label: elementName
   } );
   var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
-  var iconMove = $("<i class='fa fa-reply fa-lg moveElementIcon pull-right'></i>");
+  //var iconMove = $("<i class='fa fa-reply fa-lg moveElementIcon pull-right'></i>");
   var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
 
   //Append icons and add the item to draggableWidget
-  dragItem.$label.append(iconDelete, iconMove, iconEdit);
+  //dragItem.$label.append(iconDelete, iconMove, iconEdit);
+  dragItem.$label.append(iconDelete, iconEdit);
   draggableWidget.addItems([dragItem]);
 
   //Create handlers
@@ -224,9 +225,9 @@ var createDragItem = function(draggableWidget, elementName, editStack){
   $(iconEdit).click(function(){
     editElement(draggableWidget, $(this).parent().text(), editStack);
   });
-  $(iconMove).click(function(){
+  /*$(iconMove).click(function(){
     moveElement(draggableWidget, $(this).parent().text(), editStack);
-  });
+  });*/
 };
 
 /**

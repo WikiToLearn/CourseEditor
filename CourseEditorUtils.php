@@ -340,7 +340,7 @@ class CourseEditorUtils {
               'title'      => $title,
               'text' => $text,
               'section' => 'new',
-              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              'sectiontitle' => wfMessage('courseeditor-newtopics-section-title'),
               // automatically override text
               'prependtext' => $textToPrepend,
               // automatically override text
@@ -360,7 +360,7 @@ class CourseEditorUtils {
               'action'     => 'edit',
               'title'      => $title,
               'text' => $text,
-              'sectiontitle' => wfMessage('courseeditor-newcourses-section-title'),
+              'sectiontitle' => wfMessage('courseeditor-newtopics-section-title'),
               // automatically override text
               'prependtext' => $textToPrepend,
               // automatically override text
@@ -448,7 +448,7 @@ class CourseEditorUtils {
     $context = self::getRequestContext();
     $parserOptions = ParserOptions::newFromContext($context);
     $levelsTwo = $page->getParserOutput($parserOptions)->getSections();
-    $newCoursesSection = wfMessage('courseeditor-newcourses-section-title')->text();
+    $newCoursesSection = wfMessage('courseeditor-newtopics-section-title')->text();
     if(!is_array($levelsTwo)){
       return false;
     }else {

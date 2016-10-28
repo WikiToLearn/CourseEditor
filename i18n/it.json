@@ -71,7 +71,7 @@
   "courseeditor-progressdialog-wait" : "Attendere creazione in corso...",
   "courseeditor-collection-book-category": "Libri",
   "courseeditor-collection-savedbook-template": "libro_salvato",
-  "courseeditor-newcourses-section-title" : "Nuovi corsi",
+  "courseeditor-newtopics-section-title" : "Nuovi argomenti",
   "courseeditor-pending-courses": "Corsi in attesa",
   "courseeditor-alert-message-success-publish" : "Il corso è ora disponibile qui:",
   "courseeditor-alert-message-success-publish-add-to" : "Devi aggiungerlo ad un topic e un dipartimento"

@@ -73,7 +73,10 @@
           ]
         },
         "ext.courseEditor.manageMetadata": {
-          "scripts":["modules/manageMetadata.js"]
+          "scripts":["modules/manageMetadata.js"],
+          "dependencies": [
+            "mediawiki.util"
+          ]
         },
         "ext.courseEditor.create": {
           "scripts":[
@@ -206,6 +209,7 @@
         "CourseEditorOperations::manageCourseMetadataOp",
         "CourseEditorOperations::createCourseOp",
         "CourseEditorUtils::getLevelsTwoJson",
+        "CourseEditorUtils::purgeWrapper",
         "CourseEditorOperations::applyLevelTwoOp",
         "CourseEditorOperations::applyCourseOp",
         "CourseEditorOperations::publishCourseOp",
