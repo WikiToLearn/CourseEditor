@@ -310,11 +310,12 @@ var restoreElement = function(draggableWidget, elementName, editStack){
  * @param {Array} [editStack]
  */
 var addElement = function(draggableWidget, elementName, editStack){
-  if($.trim(elementName).length !== 0){
-    elementExist(draggableWidget, elementName, function(result){
+  var elementNameTrimmed = $.trim(elementName);
+  if(elementNameTrimmed.length !== 0){
+    elementExist(draggableWidget, elementNameTrimmed, function(result){
       if(result ===  true){
         $('#alert').show();
-      }else if (findIndexOfDeletedElement(editStack, elementName) !== null){
+      }else if (findIndexOfDeletedElement(editStack, elementNameTrimmed) !== null){
         var messageDialog = new OO.ui.MessageDialog();
         windowManager.addWindows( [ messageDialog ] );
         windowManager.openWindow( messageDialog, {
@@ -332,21 +333,21 @@ var addElement = function(draggableWidget, elementName, editStack){
         } ).then( function ( opened ) {
           opened.then( function ( closing, data ) {
             if ( data && data.action === 'restore' ) {
-              restoreElement(draggableWidget, elementName, editStack);
+              restoreElement(draggableWidget, elementNameTrimmed, editStack);
             } else if(data && data.action === 'confirm') {
-              createDragItem(draggableWidget, elementName, editStack);
+              createDragItem(draggableWidget, elementNameTrimmed, editStack);
               editStack.push({
                 action: 'add',
-                elementName: elementName
+                elementName: elementNameTrimmed
               });
             }
           } );
         } );
       }else {
-        createDragItem(draggableWidget, elementName, editStack);
+        createDragItem(draggableWidget, elementNameTrimmed, editStack);
         editStack.push({
           action: 'add',
-          elementName: elementName
+          elementName: elementNameTrimmed
         });
       }
     });
@@ -496,7 +497,7 @@ EditDialog.prototype.getActionProcess = function ( action ) {
     var dialog = this;
     if ( action === 'save' ) {
         return new OO.ui.Process( function () {
-            var newElementName = dialog.textInputWidget.getValue();
+            var newElementName = $.trim(dialog.textInputWidget.getValue());
             var items = dialog.draggableWidget.getItems();
             elementExist(dialog.draggableWidget, newElementName, function(result){
               if(result === true){
