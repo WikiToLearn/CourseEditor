@@ -235,12 +235,20 @@ class CourseEditorUtils {
     if(sizeof($subElements) < 2){
       return $previousAndNext;
     }else {
-      $key = array_search($lastPage, $subElements);
-      if($key === sizeof($subElements) - 1){
+      //$key = array_search($lastPage, $subElements);
+      for ($i=0; $i < sizeof($subElements); $i++) {
+        $safeTitle = Title::newFromText($subElements[$i]);
+        $result = strcmp($lastPage, $safeTitle->getText());
+        if($result === 0){
+          $key = $i;
+          break;
+        }
+      }
+      if($key && $key === sizeof($subElements) - 1){
         $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
-      }else if($key === 0){
+      }else if($key && $key === 0){
         $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
-      }else {
+      }else if($key) {
         $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
         $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
       }
