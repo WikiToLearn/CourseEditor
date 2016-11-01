@@ -246,11 +246,11 @@ class CourseEditorUtils {
           break;
         }
       }
-      if($key && $key === sizeof($subElements) - 1){
+      if($key === sizeof($subElements) - 1){
         $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
-      }else if($key && $key === 0){
+      }else if($key === 0){
         $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
-      }else if($key) {
+      }else{
         $previousAndNext['previous'] = $basePage . "/" . $subElements[$key - 1];
         $previousAndNext['next'] = $basePage . "/" . $subElements[$key + 1];
       }
