@@ -131,6 +131,7 @@ $(function(){
               $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
             }
             $('#alert').show();
+            console.log(data.error);
             windowManager.closeWindow(progressDialog);
             $(document).clearQueue('tasks');
           }else{

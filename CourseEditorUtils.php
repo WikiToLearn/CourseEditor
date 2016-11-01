@@ -112,6 +112,7 @@ class CourseEditorUtils {
     $isSuccess = true;
     if (is_string($result)) {
       $isSuccess = false;
+      $operation->error = $result;
     }
     $operation->success = $isSuccess;
   }
@@ -126,6 +127,7 @@ class CourseEditorUtils {
     foreach ($resultsArray as $result) {
       if (is_string($result)) {
         $isSuccess = false;
+        $operation->error = $result;
         break;
       }
     }
