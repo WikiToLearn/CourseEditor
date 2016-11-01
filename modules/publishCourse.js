@@ -78,11 +78,6 @@ $(function(){
         });
       });
       editStack.push({
-        action: 'move-metadata',
-        elementName: metadataNamespace + ':' + user + '/' + courseNameClean,
-        newElementName: metadataPagePublic
-      });
-      editStack.push({
         action: 'remove-ready-texts',
         elementName: courseName
       });
@@ -90,6 +85,11 @@ $(function(){
         action: 'move-root',
         elementName: courseName,
         newElementName: courseNameInPublic
+      });
+      editStack.push({
+        action: 'move-metadata',
+        elementName: metadataNamespace + ':' + user + '/' + courseNameClean,
+        newElementName: metadataPagePublic
       });
       editStack.push({
         action: 'purge',

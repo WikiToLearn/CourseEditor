@@ -267,6 +267,7 @@ class CourseEditorOperations {
       $replacedText = str_replace($category, "", $pageText);
       $newPageText = str_replace($template, "", $replacedText);
       $result = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
       break;
       case 'move-metadata':
       $metadataPage = $value->elementName;
