@@ -72,24 +72,24 @@ $(function(){
 
       $.each(levelsTwoList, function(key, value){
         editStack.push({
+          action: 'move-root',
+          elementName: courseName,
+          newElementName: courseNameInPublic
+        });
+        editStack.push({
           action: 'rename',
           elementName: courseName + '/' + value,
           newElementName: courseNameInPublic + '/' + value
         });
       });
       editStack.push({
-        action: 'move-root',
-        elementName: courseName,
-        newElementName: courseNameInPublic
+        action: 'move-metadata',
+        elementName: metadataNamespace + ':' + user + '/' + courseNameClean,
+        newElementName: metadataPagePublic
       });
       editStack.push({
         action: 'remove-ready-texts',
         elementName: courseNameInPublic
-      });
-      editStack.push({
-        action: 'move-metadata',
-        elementName: metadataNamespace + ':' + user + '/' + courseNameClean,
-        newElementName: metadataPagePublic
       });
       editStack.push({
         action: 'purge',
