@@ -72,11 +72,6 @@ $(function(){
 
       $.each(levelsTwoList, function(key, value){
         editStack.push({
-          action: 'move-root',
-          elementName: courseName,
-          newElementName: courseNameInPublic
-        });
-        editStack.push({
           action: 'rename',
           elementName: courseName + '/' + value,
           newElementName: courseNameInPublic + '/' + value
@@ -89,7 +84,12 @@ $(function(){
       });
       editStack.push({
         action: 'remove-ready-texts',
-        elementName: courseNameInPublic
+        elementName: courseName
+      });
+      editStack.push({
+        action: 'move-root',
+        elementName: courseName,
+        newElementName: courseNameInPublic
       });
       editStack.push({
         action: 'purge',
