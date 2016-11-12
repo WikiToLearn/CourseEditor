@@ -192,7 +192,7 @@ class CourseEditorUtils {
 
   public static function getPreviousAndNext($pageTitle){
     $subElements = self::getSubCourseElements($pageTitle);
-    if($subElements['error']){
+    if(isset($subElements['error'])){
       return $subElements;
     }else {
       return self::buildPreviousAndNext($pageTitle, $subElements);
