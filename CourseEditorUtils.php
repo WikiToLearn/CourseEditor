@@ -6,6 +6,11 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  /**
+  * Create/update the collection page of a public course
+  * @param String $courseName the name of a course
+  * @return Array $editResult the result of the edit
+  */
   public static function updateCollection($courseName) {
     list($namespace, $name) = explode(':', $courseName, 2);
     $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSE );
@@ -43,6 +48,11 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Create/update the collection page of a private course
+  * @param String $courseName the name of a course
+  * @return Array $editResult the result of the edit
+  */
   private function updateUserCollection($courseName){
     list($namespaceAndUser, $title) = explode('/', $courseName, 2);
     $pageTitle = $namespaceAndUser . "/" . wfMessage('courseeditor-collection-book-category') . "/" . $title;
@@ -72,6 +82,12 @@ class CourseEditorUtils {
     return $editResult;
   }
 
+  /**
+  * Get the metadata of a course
+  * @param String $courseName the name of a course
+  * @return Array $metadataResult the associative array with the metadata keys
+  *  and values
+  */
   public static function getMetadata($courseName){
     $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSEMETADATA );
     $page = WikiPage::factory( $title );
@@ -80,6 +96,10 @@ class CourseEditorUtils {
     if($text === ''){
       return null;
     }
+    /*
+    This regex is used on strings formed like this:
+    '<section begin=metadataKey>metadataValue<section end=metadataKey>'
+    */
     $regex = "/<section begin=(.*?)\s*\/>(.*?)<section end=.*?\/>/s";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     $metadataResult =  array();
@@ -91,6 +111,11 @@ class CourseEditorUtils {
     return $metadataResult;
   }
 
+  /**
+  * Get the courses in a topic page
+  * @param String $topic the name of a topic page
+  * @return Array $matches the courses within a topic page
+  */
   public static function getTopicCourses($topic){
     global $wgCourseEditorTemplates;
     $title = Title::newFromText($topic, $defaultNamespace=NS_MAIN );
@@ -98,6 +123,13 @@ class CourseEditorUtils {
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
     $textNoNewLines = trim(preg_replace('/\n+/', '', $text));
+    /*
+    This regex is used on strings formed like this (space are trimmed):
+    '{{Topic|
+       {{CourseTemplateName|Course}}
+       {{CourseTemplateName|Course}}
+      }}'
+    */
     $regex = "/({{" . $wgCourseEditorTemplates['Topic'] . "|.+)}}.*$/";
     preg_match_all($regex, $textNoNewLines, $matches, PREG_PATTERN_ORDER);
     return $matches[1][0];
@@ -134,15 +166,24 @@ class CourseEditorUtils {
     $operation->success = $isSuccess;
   }
 
+  /**
+  * Utility function that implement the Singleton pattern
+  * to get the instance of the requestContext object
+  */
   public static function getRequestContext(){
-      if(self::$requestContext == null)
-      {
-         $context = new RequestContext();
-         self::$requestContext = $context;
-      }
-      return self::$requestContext;
+    if(self::$requestContext == null)
+    {
+      $context = new RequestContext();
+      self::$requestContext = $context;
+    }
+    return self::$requestContext;
   }
 
+  /**
+  * Utility wrapper to get the category of a page
+  * @param Title $courseName the name of a course
+  * @return Array the array with the category titles
+  */
   public static function getCategories($courseName){
     try {
       $api = new ApiMain(
@@ -165,31 +206,59 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility to get the levelsThree
+  * @param Title $courseName the name of a course
+  * @return Array $matches the levelThree pages
+  */
   public static function getLevelsThree($levelTwoName){
     $title = Title::newFromText($levelTwoName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
+    /*
+    This regex is used on string formed like this:
+    '*[[LinkToLevelThree|LevelThreeName]]'
+    */
     $regex = "/\*\s*\[{2}([^|]*)\|?([^\]]*)\]{2}\s*/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     return $matches[2];
   }
 
+  /**
+  * Utility to get the levelsTwo
+  * @param Title $courseName the name of a course
+  * @return Array $matches the levelTwo pages
+  */
   public static function getLevelsTwo($courseName){
     global $wgCourseEditorTemplates;
     $title = Title::newFromText( $courseName, $defaultNamespace=NS_MAIN );
     $page = WikiPage::factory( $title );
     $content = $page->getContent( Revision::RAW );
     $text = ContentHandler::getContentText( $content );
+    /*
+    This regex is used on string formed like this:
+    '{{LevelTwoTemplateName|LevelTwoName}}'
+    */
     $regex = "/\{{2}". $wgCourseEditorTemplates['CourseLevelTwo'] ."\|(.*)\}{2}/";
     preg_match_all($regex, $text, $matches, PREG_PATTERN_ORDER);
     return $matches[1];
   }
 
+  /**
+  * Utility to get the levelsTwo in JSON
+  * @param Title $courseName the name of a course
+  * @return Array with the levelsTwo
+  */
   public static function getLevelsTwoJson($courseName){
     return json_encode(self::getLevelsTwo($courseName));
   }
 
+  /**
+  * Get the previous and the next pages of a given page
+  * @param Title $pageTitle the name of page
+  * @return Array with the error element or the next and previous pages
+  */
   public static function getPreviousAndNext($pageTitle){
     $subElements = self::getSubCourseElements($pageTitle);
     if(isset($subElements['error'])){
@@ -199,8 +268,14 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility function to get the array with the levelTwo or levelThree pages
+  * @param Title $pageTitle the name of page
+  * @return Array $subElements the levelTwo or levelThree pages
+  */
   private function getSubCourseElements($pageTitle) {
     $namespace = $pageTitle->getNamespace();
+    //Count subpage levels to define what type of subElements should be gotten
     $levels = substr_count($pageTitle->getText(), "/");
     $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
     if($namespace === NS_COURSE){
@@ -226,6 +301,14 @@ class CourseEditorUtils {
     return $subElements;
   }
 
+  /**
+  * Utility function to build the array with the next and the previous
+  * of a given levelTwo or levelThree
+  * @param Title $pageTitle the name of page
+  * @param Array $subElements the levelTwo or levelThree elements
+  * @return Array $previousAndNext the associative array with the next and the
+  * previous page
+  */
   private function buildPreviousAndNext($pageTitle, $subElements){
     $namespace = $pageTitle->getNamespace();
     $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
@@ -234,6 +317,7 @@ class CourseEditorUtils {
     $next = null;
     $previousAndNext = array('previous' => $previous, 'next' => $next);
 
+    //If there are less than 2 subElements it means there is no next/previous
     if(sizeof($subElements) < 2){
       return $previousAndNext;
     }else {
@@ -258,6 +342,11 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility delete wrapper to delete a page
+  * @param String $title the name of page
+  * @return Array the result of the API call
+  */
   public static function deleteWrapper($title){
     $context = self::getRequestContext();
     try {
@@ -282,6 +371,11 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility purge wrapper to purge the cache of a page/s
+  * @param String $titles the title of the page/s
+  * @return Array the result of the API call
+  */
   public static function purgeWrapper($titles){
     $context = self::getRequestContext();
     try {
@@ -304,6 +398,14 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility edit API wrapper to edit or create a page
+  * @param String $title the name of page
+  * @param String $text the text of the section
+  * @param String $textToPrepend the text to prepend to the section
+  * @param String $textToAppend the text to append to the section
+  * @return Array the result of the API call
+  */
   public static function editWrapper($title, $text, $textToPrepend, $textToAppend){
     $context = self::getRequestContext();
     try {
@@ -335,12 +437,21 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility edit section wrapper to edit or create a specific section in a page
+  * @param String $title the name of page
+  * @param String $text the text of the section
+  * @param String $textToPrepend the text to prepend to the section
+  * @param String $textToAppend the text to append to the section
+  * @return Array the result of the API call
+  */
   public static function editSectionWrapper($title, $text, $textToPrepend, $textToAppend){
     $context = self::getRequestContext();
     try {
       $user = $context->getUser();
       $token = $user->getEditToken();
-      $levelTwoExist = self::checkNewCoursesSectionExist($title);
+      $levelTwoExist = self::checkNewTopicsSectionExist($title);
+      //Create the section if not exists, otherwise append to it
       if(!$levelTwoExist){
         $api = new ApiMain(
           new DerivativeRequest(
@@ -390,6 +501,14 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Utility wrapper of the move API.
+  * @param String $from the name of page to be moved
+  * @param String $to the new name of the page
+  * @param boolean $withSubpages (optional) move the subpages also
+  * @param boolean $noRedirect (optional) suppress the redirects
+  * @return Array the result of the API call
+  */
   public static function moveWrapper($from, $to, $withSubpages=true, $noRedirect=false){
     $context = self::getRequestContext();
     $params = array(
@@ -423,6 +542,11 @@ class CourseEditorUtils {
     }
   }
 
+  /**
+  * Get the private courses ready to be published using the categorymembers
+  * API.
+  * @return Array $readyCourses the private courses ready to be published
+  */
   public static function getReadyToBePublishedCourses(){
     global $wgCourseEditorCategories;
     $context = self::getRequestContext();
@@ -443,6 +567,7 @@ class CourseEditorUtils {
       $apiResult = $api->getResult()->getResultData(null, array('Strip' => 'all'));
       $readyCoursesDirtyArray = $apiResult['query']['categorymembers'];
       $readyCourses = [];
+      //Clean the result array and get only the titles
       foreach ($readyCoursesDirtyArray as $course) {
         array_push($readyCourses, $course['title']);
       }
@@ -452,7 +577,12 @@ class CourseEditorUtils {
     }
   }
 
-  private function checkNewCoursesSectionExist($department) {
+  /**
+  * Check if the section where new topics are added is in the department page.
+  * @param String $department the name of the department page
+  * @return boolean $ret true if the there is the section
+  */
+  private function checkNewTopicsSectionExist($department) {
     $title = Title::newFromText( $department);
     $page = WikiPage::factory( $title);
     $context = self::getRequestContext();
