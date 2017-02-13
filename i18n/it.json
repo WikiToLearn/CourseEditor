@@ -75,6 +75,7 @@
   "courseeditor-newtopics-section-title" : "Nuovi argomenti",
   "courseeditor-pending-courses": "Corsi in attesa",
   "courseeditor-alert-message-success-publish" : "Il corso è ora disponibile qui:",
-  "courseeditor-alert-message-success-publish-add-to" : "Devi aggiungerlo ad un topic e un dipartimento"
-
+  "courseeditor-alert-message-success-publish-add-to" : "Devi aggiungerlo ad un topic e un dipartimento",
+  "courseeditor-confirmation-dialog-title" : "Rinomina titolo",
+  "courseeditor-confirmation-dialog-message" : "Sei sicuro di voler rinominare il titolo del corso?"
 }

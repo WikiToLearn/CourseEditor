@@ -176,11 +176,18 @@ class SpecialCourseEditor extends SpecialPage {
     $out->addModules('ext.courseEditor.manageMetadata');
     $out->setPageTitle(wfMessage('courseeditor-managemetata-pagetitle'));
     $out->addJsConfigVars('wgCourseEditor', $wgCourseEditorNamespaces);
+    // Remove username from courseName (in present)
+    $explodedString = explode('/', $courseName, 2);
+    $courseNameNoUser = (sizeof($explodedString) === 1) ? $explodedString[0] : $explodedString[1];
+    $username = (sizeof($explodedString) === 1) ? 'null' : $explodedString[0];
+    $isPrivate =(sizeof($explodedString) === 1) ? false : true;
     $template = new ManageMetadataTemplate();
     $template->setRef('courseEditor', $this);
     $template->set('context', $this->getContext());
-    $template->set('course', $courseName);
-    $template->set('user', $this->getUser());
+    $template->set('course', $courseNameNoUser);
+    $template->set('private', $isPrivate);
+    $template->set('username', $username);
+    $template->set('userObj', $this->getUser());
     $metadataResult = CourseEditorUtils::getMetadata($courseName);
     if($metadataResult !== null){
       $template->set('metadataResult', $metadataResult);

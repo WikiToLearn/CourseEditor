@@ -71,5 +71,7 @@
   "courseeditor-error-operation-fail" : " error!",
   "courseeditor-collection-book-category": "Llibres",
   "courseeditor-collection-savedbook-template": "llibre_guardat",
-  "courseeditor-newtopics-section-title" : "Nous tèmas"
+  "courseeditor-newtopics-section-title" : "Nous tèmas",
+  "courseeditor-confirmation-dialog-title" : "Canviar títol",
+  "courseeditor-confirmation-dialog-message" : "Esteu segur que voleu canviar el nom del títol del curs?"
 }

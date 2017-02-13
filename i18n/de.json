@@ -71,5 +71,7 @@
   "courseeditor-progressdialog-wait" : "Warten Schöpfung läuft...",
   "courseeditor-collection-book-category": "Bücher",
   "courseeditor-collection-savedbook-template": "Gespeichert_buch",
-  "courseeditor-newtopics-section-title" : "Neue Themen"
+  "courseeditor-newtopics-section-title" : "Neue Themen",
+  "courseeditor-confirmation-dialog-title" : "Umbenennen Titel",
+  "courseeditor-confirmation-dialog-message" : "Sind Sie sicher, dass Sie den Titel des Kurses umbenennen?"
 }

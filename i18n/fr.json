@@ -71,5 +71,7 @@
   "courseeditor-error-operation-fail" : " échec!",
   "courseeditor-collection-book-category": "Livres",
   "courseeditor-collection-savedbook-template": "livre_enregistré",
-  "courseeditor-newtopics-section-title" : "Nouveaux thème"
+  "courseeditor-newtopics-section-title" : "Nouveaux thème",
+  "courseeditor-confirmation-dialog-title" : "Modifier titre",
+  "courseeditor-confirmation-dialog-message" : "Etes-vous sûr de vouloir renommer le titre du cours?"
 }

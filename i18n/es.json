@@ -71,5 +71,7 @@
   "courseeditor-progressdialog-wait" : "Espere creación en curso...",
   "courseeditor-collection-book-category": "Libros",
   "courseeditor-collection-savedbook-template": "Libro_guardado",
-  "courseeditor-newtopics-section-title" : "Nuevos temas"
+  "courseeditor-newtopics-section-title" : "Nuevos temas",
+  "courseeditor-confirmation-dialog-title" : "Modificar título",
+  "courseeditor-confirmation-dialog-message" : "¿Está seguro de que desea cambiar el nombre del título del curso?"
 }

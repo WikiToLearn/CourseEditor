@@ -75,6 +75,7 @@
   "courseeditor-publish-course-pagetitle" : "Publish courses",
   "courseeditor-pending-courses": "Pending courses",
   "courseeditor-alert-message-success-publish" : "The course is now available here:",
-  "courseeditor-alert-message-success-publish-add-to" : "You must add it to a topic and department"
-
+  "courseeditor-alert-message-success-publish-add-to" : "You must add it to a topic and department",
+  "courseeditor-confirmation-dialog-title" : "Rename title",
+  "courseeditor-confirmation-dialog-message" : "Are you sure you want to rename the title of the course?"
 }

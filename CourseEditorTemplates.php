@@ -166,7 +166,9 @@ class CourseCreatorTemplate extends QuickTemplate {
 class ManageMetadataTemplate extends QuickTemplate {
   public function execute(){
     $courseName = $this->data['course'];
-    $user = $this->data['user'];
+    $user = $this->data['userObj'];
+    $username = $this->data['username'];
+    $isPrivate = $this->data['private'];
     if($this->data['metadataResult']){
       $metadataResult = $this->data['metadataResult'];
     }
@@ -174,9 +176,18 @@ class ManageMetadataTemplate extends QuickTemplate {
     <div><p><?php echo wfMessage( 'courseeditor-managemetata-description' ) ?></p></div>
     <br>
     <form>
+      <input type="hidden" id="private" value="<?php echo $isPrivate ?>">
+      <input type="hidden" id="username" value="<?php echo $username ?>">
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
-        <input type="text" class="form-control" id="courseName" disabled="true" value="<?php echo $courseName ?>">
+        <input type="text" class="form-control" id="courseName" value="<?php echo $courseName ?>">
+      </div>
+      <div class="alert alert-warning alert-dismissible" id="alertSame" role="alert"  style="display:none;">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+        <?php echo wfMessage( 'courseeditor-alert-same-title-message' ) ?>
+        <div id="coursesListSame"></div>
       </div>
       <div class="form-group">
         <label for="courseTopic"><?php echo wfMessage( 'courseeditor-input-topic-label' ) ?></label>
