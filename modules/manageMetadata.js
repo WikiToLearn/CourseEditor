@@ -172,7 +172,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
       if (data.action === 'accept') {
         // User confirmed, so we can proceed
         var editStack = [];
-        var levelsTwoList;
+        var courseTree;
         var courseNamespace = mw.config.get( 'wgCourseEditor' ).Course;
         var metadataNamespace = mw.config.get( 'wgCourseEditor' ).CourseMetadata;
         var newMetadataPage = ($('#private').val() == 1) ? (metadataNamespace + ':' + $('#username').val() + '/' + courseName) : (metadataNamespace + ':' + courseName);
@@ -181,6 +181,113 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
         originalCourseNameWithNamespace = ($('#private').val() == 1) ? ('User' + ':' + $('#username').val() + '/' + originalCourseName) : (courseNamespace + ':' + originalCourseName);
         courseNameWithNamespace = ($('#private').val() == 1) ? ('User' + ':' + $('#username').val() + '/' + courseName) : (courseNamespace + ':' + courseName);
 
+        $.getJSON( mw.util.wikiScript(), {
+          action: 'ajax',
+          rs: 'CourseEditorUtils::getCourseTree',
+          rsargs: [originalCourseNameWithNamespace]
+        }).success(function(result){
+          courseTree = result;
+        }).then(function(){
+          $.each(courseTree.levelsThree, function(index, array){
+            $.each(array, function(key, value){
+              editStack.push({
+                action: 'rename-move-task',
+                elementName: courseTree.root + '/' + courseTree.levelsTwo[index] + '/' + value,
+                newElementName: courseNameWithNamespace + '/' + courseTree.levelsTwo[index] + '/' + value
+              });
+            });
+            editStack.push({
+              action: 'rename-move-task',
+              elementName: courseTree.root + '/' + courseTree.levelsTwo[index],
+              newElementName: courseNameWithNamespace + '/' + courseTree.levelsTwo[index]
+            });
+            editStack.push({
+              action: 'rename-update-task',
+              elementName: courseTree.root + '/' + courseTree.levelsTwo[index],
+              newElementName: courseNameWithNamespace + '/' + courseTree.levelsTwo[index]
+            });
+          });
+          editStack.push({
+            action: 'move-root',
+            elementName: courseTree.root,
+            newElementName: courseNameWithNamespace
+          });
+          editStack.push({
+            action: 'move-metadata',
+            elementName: originalMetadataPage,
+            newElementName: newMetadataPage
+          });
+          editStack.push({
+            action: 'purge',
+            elementName: courseNameWithNamespace
+          });
+          editStack.push({
+            action: 'update-collection',
+            elementName: courseNameWithNamespace
+          });
+
+          // Create task for the jQuery queue
+          var createTask = function(operation){
+            return function(next){
+              doTask(operation, next);
+            }
+          };
+
+          // Execute the task of the queue
+          var doTask = function(operation, next){
+            progressDialog.setCurrentOp(operation);
+            $.getJSON( mw.util.wikiScript(), {
+              action: 'ajax',
+              rs: 'CourseEditorOperations::applyPublishCourseOp',
+              rsargs: [JSON.stringify(operation)]
+            }, function ( data ) {
+              // If errors occurs show an alert and clear the queue
+              if (data.success !== true) {
+                $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
+                $('#alert').append(OO.ui.msg('courseeditor-operation-action-' + data.action));
+                if(data.elementName){
+                  var localizedMsg = " " + data.elementName + OO.ui.msg('courseeditor-error-operation-fail');
+                  $('#alert').append(localizedMsg);
+                }else {
+                  $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
+                }
+                $('#alert').show();
+                windowManager.closeWindow(progressDialog);
+                $(document).clearQueue('tasks');
+              }else{
+                // Otherwise update the progress and execute the next task
+                progressDialog.updateProgress(unitaryIncrement);
+                next();
+              }
+            });
+          };
+
+          // Create tasks form editStack
+          $.each(editStack, function(key, value){
+            $(document).queue('tasks', createTask(value));
+          });
+
+          // Append last two tasks
+          $(document).queue('tasks', function(){
+            windowManager.closeWindow(progressDialog);
+            // Last task calls the updateMetadata function
+            updateMetadata(courseName);
+          });
+
+
+          // Create and open the progressDialog
+          var progressDialog = new ProgressDialog( {
+            size: 'medium'
+          } );
+          var unitaryIncrement = 100/editStack.length;
+
+          windowManager.addWindows( [ progressDialog ] );
+          windowManager.openWindow( progressDialog );
+
+          // Start to execute the queue
+          dequeue('tasks');
+        });
+/*
         // Get the levelsTwoList and then build the editStack
         $.getJSON( mw.util.wikiScript(), {
           action: 'ajax',
@@ -215,15 +322,6 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
             action: 'update-collection',
             elementName: courseNameWithNamespace
           });
-
-          // Create and open the progressDialog
-          var progressDialog = new ProgressDialog( {
-            size: 'medium'
-          } );
-          var unitaryIncrement = 100/editStack.length;
-
-          windowManager.addWindows( [ progressDialog ] );
-          windowManager.openWindow( progressDialog );
 
           // Create task for the jQuery queue
           var createTask = function(operation){
@@ -268,7 +366,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
             for (var i = 0; i < microOps.length; i++) {
               $(document).queue('tasks', createTask(microOps[i]));
             }
-          };
+          }
 
           // Append last two tasks
           $(document).queue('tasks', function(){
@@ -277,9 +375,19 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
             updateMetadata(courseName);
           });
 
+
+          // Create and open the progressDialog
+          var progressDialog = new ProgressDialog( {
+            size: 'medium'
+          } );
+          var unitaryIncrement = 100/editStack.length;
+
+          windowManager.addWindows( [ progressDialog ] );
+          windowManager.openWindow( progressDialog );
+
           // Start to execute the queue
           dequeue('tasks');
-        });
+        });*/
       }
     });
   });

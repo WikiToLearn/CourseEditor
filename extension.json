@@ -248,7 +248,8 @@
         "CourseEditorOperations::applyCourseOp",
         "CourseEditorOperations::publishCourseOp",
         "CourseEditorOperations::undoPublishCourseOp",
-        "CourseEditorOperations::applyPublishCourseOp"
+        "CourseEditorOperations::applyPublishCourseOp",
+        "CourseEditorUtils::getCourseTree"
   		]
     },
     "SpecialPages": {

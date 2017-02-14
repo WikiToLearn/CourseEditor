@@ -6,6 +6,35 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  public static function moveElement(&$value){
+    $levelTwoName = $value->elementName;
+    $newLevelTwoName = $value->newElementName;
+    $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, false);
+    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+  }
+
+  public static function updateLevelTwo(&$value){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
+    
+    $levelTwoName = $value->elementName;
+    $newLevelTwoName = $value->newElementName;
+    $levelsThree = CourseEditorUtils::getLevelsThree($newLevelTwoName);
+    $newLevelTwoText = "";
+    foreach ($levelsThree as $levelThree) {
+      $newLevelTwoText .= "* [[" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
+    }
+    $newLevelTwoText .= "\r\n<noinclude>[["
+    . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
+    $apiResult = CourseEditorUtils::editWrapper($newLevelTwoName, $newLevelTwoText, null, null);
+    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+  }
+
+  public static function purgeCache(&$value){
+    $pageToBePurged = $value->elementName;
+    $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
+    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+  }
+
   /**
   * Create/update the collection page of a public course
   * @param String $courseName the name of a course
@@ -246,6 +275,15 @@ class CourseEditorUtils {
   }
 
   /**
+  * Utility to get the levelsThree in JSON
+  * @param Title $courseName the name of a course
+  * @return Array with the levelsTwo
+  */
+  public static function getLevelsThreeJson($courseName){
+    return json_encode(self::getLevelsThree($courseName));
+  }
+
+  /**
   * Utility to get the levelsTwo in JSON
   * @param Title $courseName the name of a course
   * @return Array with the levelsTwo
@@ -253,6 +291,50 @@ class CourseEditorUtils {
   public static function getLevelsTwoJson($courseName){
     return json_encode(self::getLevelsTwo($courseName));
   }
+
+  public static function getCourseTree($courseName){
+    $tree = array(
+      'root' => $courseName,
+      'levelsTwo' => array(),
+      'levelsThree' => array()
+    );
+
+    $levelsTwo = self::getLevelsTwo($courseName);
+    //array_walk($levelsTwo, array('self', 'buildFullPageName'), $courseName);
+    $tree['levelsTwo'] = $levelsTwo;
+
+    foreach ($levelsTwo as $level) {
+      $levelsThree = self::getLevelsThree($courseName . '/' . $level);
+      //array_walk($levelsThree, array('self', 'buildFullPageName'), $level);
+      array_push($tree['levelsThree'], $levelsThree);
+    }
+
+    return json_encode($tree);
+  }
+
+  /*public static function getCourseTree($courseName){
+    $tree = array(
+      'root' => $courseName,
+      'levelsTwo' => array(),
+      'levelsThree' => array()
+    );
+
+    $levelsTwo = self::getLevelsTwo($courseName);
+    array_walk($levelsTwo, array('self', 'buildFullPageName'), $courseName);
+    $tree['levelsTwo'] = $levelsTwo;
+
+    foreach ($tree['levelsTwo'] as $level) {
+      $levelsThree = self::getLevelsThree($level);
+      array_walk($levelsThree, array('self', 'buildFullPageName'), $level);
+      array_push($tree['levelsThree'], $levelsThree);
+    }
+
+    return json_encode($tree);
+  }
+
+  private function buildFullPageName(&$item, $key, $toBePrepended){
+    $item = $toBePrepended . '/' . $item;
+  }*/
 
   /**
   * Get the previous and the next pages of a given page
