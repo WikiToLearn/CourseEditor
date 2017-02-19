@@ -231,19 +231,19 @@ class CourseEditorOperations {
 
   public static function applyPublishCourseOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
-    $value = json_decode($operation);
-    switch ($value->action) {
+    $operationObj = json_decode($operation);
+    switch ($operationObj->action) {
       case 'rename-move-task':
-      CourseEditorUtils::moveElement($value);
+      CourseEditorUtils::moveElement($operationObj);
       break;
       case 'rename-update-task':
-      CourseEditorUtils::updateLevelTwo($value);
+      CourseEditorUtils::updateLevelTwo($operationObj);
       break;
       case 'move-root':
-      CourseEditorUtils::moveElement($value);
+      CourseEditorUtils::moveElement($operationObj);
       break;
       case 'remove-ready-texts':
-      $title = Title::newFromText($value->elementName);
+      $title = Title::newFromText($operationObj->elementName);
       $page = WikiPage::factory($title);
       $pageText = $page->getText();
       $category = "<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['ReadyToBePublished'] ."]]</noinclude>";
@@ -251,138 +251,72 @@ class CourseEditorOperations {
       $replacedText = str_replace($category, "", $pageText);
       $newPageText = str_replace($template, "", $replacedText);
       $result = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
-      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
       break;
       case 'move-metadata':
-      CourseEditorUtils::moveElement($value);
+      CourseEditorUtils::moveElement($operationObj);
       case 'purge':
-      CourseEditorUtils::purgeCache($value);
+      CourseEditorUtils::purgeCache($operationObj);
       break;
       case 'update-collection':
-      $apiResult = CourseEditorUtils::updateCollection($value->elementName);
-      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::updateCollection($operationObj);
       break;
     }
-    return json_encode($value);
+    return json_encode($operationObj);
   }
 
-  public static function applyCourseOp($courseName, $operation){
+  public static function applyCourseOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
-    $value = json_decode($operation);
-    switch ($value->action) {
+    $operationObj = json_decode($operation);
+    switch ($operationObj->action) {
       case 'rename-move-task':
-        $levelTwoName = $value->elementName;
-        $newLevelTwoName = $value->newElementName;
-        $pageTitle = $courseName . "/" . $levelTwoName;
-        $newPageTitle = $courseName . '/' . $newLevelTwoName;
-        $apiResult = CourseEditorUtils::moveWrapper($pageTitle, $newPageTitle);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::moveElement($operationObj);
       break;
       case 'rename-update-task':
-        $levelTwoName = $value->elementName;
-        $newLevelTwoName = $value->newElementName;
-        $levelsThree = CourseEditorUtils::getLevelsThree($courseName . '/' .$newLevelTwoName);
-        $newLevelTwoText = "";
-        foreach ($levelsThree as $levelThree) {
-          $newLevelTwoText .= "* [[" . $courseName . "/" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
-        }
-        $newLevelTwoText .= "\r\n<noinclude>[["
-        . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
-        $newPageTitle = $courseName . '/' . $newLevelTwoName;
-        $apiResult = CourseEditorUtils::editWrapper($newPageTitle, $newLevelTwoText, null, null);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::updateLevelTwo($operationObj);
       break;
       case 'delete-levelsThree-task':
-        $user = CourseEditorUtils::getRequestContext()->getUser();
-        $levelTwoName = $value->elementName;
-        $levelsThree = CourseEditorUtils::getLevelsThree($courseName . '/' . $levelTwoName);
-        $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
-        $pageTitle = $courseName . '/' . $levelTwoName;
-        if(!$title->userCan('delete', $user, 'secure')){
-          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
-          foreach ($levelsThree as $levelThree) {
-            $pageTitle = $courseName . '/' . $levelTwoName . '/' . $levelThree;
-            $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
-            $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
-          }
+        $levelTwoName = $operationObj->elementName;
+        $levelsThree = CourseEditorUtils::getLevelsThree($levelTwoName);
+        if(empty($levelsThree)){
+          $operationObj->success = true;
         }else {
           foreach ($levelsThree as $levelThree) {
-            $pageTitle = $courseName . '/' . $levelTwoName . '/' . $levelThree;
-            $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
-          }
-        }
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
-      break;
-      case 'delete-levelTwo-task':
-        $user = CourseEditorUtils::getRequestContext()->getUser();
-        $levelTwoName = $value->elementName;
-        $title = Title::newFromText( $courseName . '/' . $levelTwoName, $defaultNamespace=NS_MAIN );
-        $pageTitle = $courseName . '/' . $levelTwoName;
-        if(!$title->userCan('delete', $user, 'secure')){
-          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
-          $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
-        }else {
-          $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
-        }
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
-      break;
-      case 'add':
-        $levelTwoName = $value->elementName;
-        $pageTitle = $courseName . '/' . $levelTwoName;
-        $text =  "\r\n<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
-        $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
-      break;
-      case 'update':
-        $newCourseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|\r\n";
-        $newLevelsTwoArray = json_decode($value->elementsList);
-        foreach ($newLevelsTwoArray as $levelTwo) {
-          $newCourseText .= "{{". $wgCourseEditorTemplates['CourseLevelTwo'] ."|" . $levelTwo ."}}\r\n";
-        }
-        $newCourseText .= "}}";
-        /*$categories = CourseEditorUtils::getCategories($courseName);
-        if(sizeof($categories) > 0){
-          foreach ($categories as $category) {
-            //Remode ReadyToBePublished category if user edit the course structure
-            $readyToBePublishedCategory = $wgContLang->getNsText( NS_CATEGORY ) . ":" . $wgCourseEditorCategories['ReadyToBePublished'];
-            if (strcmp($category['title'], $readyToBePublishedCategory) != 0) {
-              $newCourseText .= "\r\n<noinclude>[[" . $category['title'] . "]]</noinclude>";
+            $operationObj->elementName = $levelTwoName . '/' . $levelThree;
+            CourseEditorUtils::deleteElement($operationObj);
+            if ($operationObj->success !== true) {
+              break;
             }
           }
-        }*/
-        $newCourseText .= "\r\n<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":"
-        . $wgCourseEditorCategories['CourseRoot']. "]]</noinclude>";
-        $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+        }
+      break;
+      case 'delete-levelTwo-task':
+        CourseEditorUtils::deleteElement($operationObj);
+      break;
+      case 'add':
+      $text =  "\r\n<noinclude>[["
+      . $wgContLang->getNsText( NS_CATEGORY )
+      . ":". $wgCourseEditorCategories['CourseLevelTwo']
+      ."]]</noinclude>";
+      CourseEditorUtils::addElement($operationObj, $text);
+      break;
+      case 'update':
+        CourseEditorUtils::updateRoot($operationObj);
       break;
       case 'update-collection':
-      $apiResult = CourseEditorUtils::updateCollection($courseName);
-      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::updateCollection($operationObj);
       break;
-      /*case 'fix-link':
-        $targetPage = $value->elementName;
-        $linkToReplace = $value->linkToReplace;
-        list($course, $levelTwo, $levelThree) = explode('/', $linkToReplace);
-        $replacement = $course . '/' . $value->replacement . '/' . $levelThree;
-        $title = Title::newFromText($targetPage);
-        $page = WikiPage::factory( $title );
-        $content = $page->getContent( Revision::RAW );
-        $text = ContentHandler::getContentText( $content );
-        $newText = str_replace(str_replace(' ', '_', $linkToReplace), $replacement, $text);
-        $apiResult = CourseEditorUtils::editWrapper($targetPage, $newText, null, null);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
-        $value->text = $newText;
-      break;*/
     }
-    return json_encode($value);
+    return json_encode($operationObj);
   }
 
-  public static function applyLevelTwoOp($levelTwoName, $operation){
+  public static function applyLevelTwoOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
     $context = CourseEditorUtils::getRequestContext();
-    $value = json_decode($operation);
-    switch ($value->action) {
-      case 'move':
+    $operationObj = json_decode($operation);
+    switch ($operationObj->action) {
+      // Not yet implemented
+      /*case 'move':
         $chapterName = $value->elementName;
         $newSectionName = $value->newElementName;
         $from = $sectionName . '/' . $chapterName;
@@ -392,59 +326,30 @@ class CourseEditorOperations {
         $courseName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
         $textToAppend = "* [[" .$courseName . "/" . $newSectionName. "/" . $chapterName ."|". $chapterName ."]]\r\n";
         CourseEditorUtils::editWrapper($courseName . '/' . $newSectionName, null, null, $textToAppend);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);*/
       case 'rename':
-        $levelThreeName = $value->elementName;
-        $newLevelThreeName = $value->newElementName;
-        $from = $levelTwoName . '/' . $levelThreeName;
-        $to = $levelTwoName . '/' . $newLevelThreeName;
-        $apiResult = CourseEditorUtils::moveWrapper($from, $to);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::moveElement($operationObj);
       break;
       case 'delete':
-        $user = $context->getUser();
-        $levelThreeName = $value->elementName;
-        $title = Title::newFromText($levelTwoName . '/' . $levelThreeName, $defaultNamespace=NS_MAIN);
-        if(!$title->userCan('delete', $user, 'secure')){
-          $pageTitle = $levelTwoName . '/' . $levelThreeName;
-          $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
-          $apiResult = CourseEditorUtils::editWrapper($pageTitle, null, $prependText, null);
-        }else {
-          $pageTitle = $levelTwoName . '/' . $levelThreeName;
-          $apiResult = CourseEditorUtils::deleteWrapper($pageTitle);
-        }
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::deleteElement($operationObj);
       break;
       case 'add':
-        $levelThreeName = $value->elementName;
-        $pageTitle = $levelTwoName . '/' . $levelThreeName;
-        $text =  "";
-        $apiResult = CourseEditorUtils::editWrapper($pageTitle, $text, null, null);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::addElement($operationObj);
       break;
       case 'update':
-        $newLevelTwoText = "";
-        $newLevelsThreeArray = json_decode($value->elementsList);
-        foreach ($newLevelsThreeArray as $levelThree) {
-          $newLevelTwoText .= "* [[" . $levelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
-        }
-        $newLevelTwoText .= "\r\n<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":" . $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
-        $apiResult = CourseEditorUtils::editWrapper($levelTwoName, $newLevelTwoText);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      CourseEditorUtils::updateLevelTwo($operationObj);
       break;
       case 'purge':
-        $explodedString = explode("/", $levelTwoName);
-        $pageToBePurged = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
-        $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
-        CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      $explodedString = explode("/", $operationObj->elementName);
+      $operationObj->elementName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
+      CourseEditorUtils::purgeCache($operationObj);
       break;
       case 'update-collection':
-      $explodedString = explode("/", $levelTwoName);
-      $courseName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
-      $apiResult = CourseEditorUtils::updateCollection($courseName);
-      CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+      $explodedString = explode("/", $operationObj->elementName);
+      $operationObj->elementName = (sizeof($explodedString) > 2 ? $explodedString[0] . "/" . $explodedString[1] : $explodedString[0]);
+      CourseEditorUtils::updateCollection($operationObj);
       break;
     }
-    return json_encode($value);
+    return json_encode($operationObj);
   }
 }

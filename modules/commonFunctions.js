@@ -51,70 +51,6 @@ var createDeleteMicroOperations = function(operation) {
   return microOps;
 };
 
-/*
-var createMicroDefaultOperations = function(operation, callback) {
-  var microOps = [];
-  microOps.push(operation);
-  callback(microOps);
-};
-
-var createMicroRenameOperations =  function(operation, callback) {
-  var title = new mw.Title($('#courseName').text());
-  var microOps = [];
-  getSubpages(title, operation, function(subpages){
-    for (var i = 0; i < subpages.query.allpages.length; i++) {
-      var page = subpages.query.allpages[i];
-      //The better HACK ever: not return the callback until the for dosn't
-      //  completed
-      if(i === subpages.query.allpages.length - 1) {
-        getMicroOpsFromBacklinks(page, operation, microOps, function(microOps) {
-          //Move the page and all its subpages
-          microOps.push(operation);
-          callback(microOps);
-        });
-      } else {
-        getMicroOpsFromBacklinks(page, operation, microOps, function(){});
-      }
-    }
-  });
-};
-
-
-var getMicroOpsFromBacklinks = function(page, operation, microOps, returnMicroOps){
-  var api = new mw.Api();
-  api.get( {
-    action: 'query',
-    list: 'backlinks',
-    bltitle:  page.title,
-  } ).done( function ( data) {
-    if(data.query.backlinks.length > 0){
-      var backlinks = data.query.backlinks;
-      backlinks.shift(); //the course with transcluded pages
-      for (var i = 0; i < backlinks.length; i++) {
-        microOps.push({
-          action: 'fix-link',
-          elementName: backlinks[i].title,
-          linkToReplace: page.title,
-          replacement: operation.newElementName
-        });
-      }
-    }
-    returnMicroOps(microOps);
-  });
-};
-
-var getSubpages = function (title, operation, returnSubpages){
-  var api = new mw.Api();
-  api.get( {
-    action: 'query',
-    list: 'allpages',
-    apprefix:  title.getMain() + "/" + operation.elementName,
-    apnamespace: title.getNamespaceId()
-  } ).done( function ( data) {
-    returnSubpages(data);
-  });
-};*/
-
 /**
  * Init handlers
  * @param {DraggableGroupWidget} [draggableWidget]
@@ -161,7 +97,7 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
  */
 var findIndexOfDeletedElement = function(editStack, elementName) {
   for (var i = 0; i < editStack.length; i++) {
-    if (editStack[i]['action'] === 'delete' && editStack[i]['elementName'] === elementName) {
+    if (editStack[i]['action'] === 'delete' && editStack[i]['elementName'] === $('#parentName').text() + '/' + elementName) {
       return i;
     }
   }
@@ -283,7 +219,7 @@ var deleteElement = function(draggableWidget, elementName, editStack){
   draggableWidget.removeItems([elementToRemove]);
   editStack.push({
     action: 'delete',
-    elementName: elementName
+    elementName: $('#parentName').text() + '/' + elementName
   });
   createRecycleBinItem(draggableWidget, elementName, editStack);
 };
@@ -297,7 +233,7 @@ var deleteElement = function(draggableWidget, elementName, editStack){
  */
 var restoreElement = function(draggableWidget, elementName, editStack){
   createDragItem(draggableWidget, elementName, editStack);
-  editStack.splice(editStack.indexOf({action: 'delete', element: elementName}));
+  editStack.splice(editStack.indexOf({action: 'delete', element: $('#parentName').text() + '/' + elementName}));
   $('li[id="' +  elementName + '"]').remove();
 };
 
@@ -338,7 +274,7 @@ var addElement = function(draggableWidget, elementName, editStack){
               createDragItem(draggableWidget, elementNameTrimmed, editStack);
               editStack.push({
                 action: 'add',
-                elementName: elementNameTrimmed
+                elementName: $('#parentName').text() + '/' + elementNameTrimmed
               });
             }
           } );
@@ -347,7 +283,7 @@ var addElement = function(draggableWidget, elementName, editStack){
         createDragItem(draggableWidget, elementNameTrimmed, editStack);
         editStack.push({
           action: 'add',
-          elementName: elementNameTrimmed
+          elementName: $('#parentName').text() + '/' + elementNameTrimmed
         });
       }
     });
@@ -518,8 +454,8 @@ EditDialog.prototype.getActionProcess = function ( action ) {
                     });
                     dialog.editStack.push({
                       action: 'rename',
-                      elementName: dialog.elementName,
-                      newElementName: newElementName
+                      elementName: $('#parentName').text() + '/' + dialog.elementName,
+                      newElementName: $('#parentName').text() + '/' + newElementName
                     })
                   }
                 });

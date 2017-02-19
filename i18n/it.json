@@ -59,8 +59,8 @@
   "courseeditor-operation-action-rename-move-task" : "Rinomina",
   "courseeditor-operation-action-rename-update-task" : "Aggiorna links",
   "courseeditor-operation-action-delete" : "Elimina",
-  "courseeditor-operation-action-delete-levelsTwo-task" : "Elimina capitoli di",
-  "courseeditor-operation-action-delete-levelThree-task" : "Elimina",
+  "courseeditor-operation-action-delete-levelTwo-task" : "Elimina capitoli di",
+  "courseeditor-operation-action-delete-levelsThree-task" : "Elimina",
   "courseeditor-operation-action-purge" : "Aggiorna indice",
   "courseeditor-operation-action-update" : "Aggiorna",
   "courseeditor-operation-action-update-collection" : "Aggiorna libro",
@@ -77,5 +77,8 @@
   "courseeditor-alert-message-success-publish" : "Il corso è ora disponibile qui:",
   "courseeditor-alert-message-success-publish-add-to" : "Devi aggiungerlo ad un topic e un dipartimento",
   "courseeditor-confirmation-dialog-title" : "Rinomina titolo",
-  "courseeditor-confirmation-dialog-message" : "Sei sicuro di voler rinominare il titolo del corso?"
+  "courseeditor-confirmation-dialog-message" : "Sei sicuro di voler rinominare il titolo del corso?",
+  "courseeditor-alert-dialog-title" : "Nessun titolo",
+  "courseeditor-alert-dialog-message" : "Impossibile continuare senza un titolo.",
+  "courseeditor-alert-dialog-button" : "Ho capito"
 }

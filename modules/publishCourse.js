@@ -54,27 +54,38 @@ $(function(){
 
     var editStack = [];
     var courseName = $('input[name=readyCourses]:checked').val();
-    var levelsTwoList,
+    var courseTree,
     courseNameClean = courseName.split('/')[1],
     user = courseName.split('/')[0].split(':')[1];
 
+    var courseNamespace = mw.config.get( 'wgCourseEditor' ).Course;
+    var metadataNamespace = mw.config.get( 'wgCourseEditor' ).CourseMetadata;
+    var courseNameInPublic = courseNamespace + ':' + courseNameClean;
+    var metadataPagePublic = metadataNamespace + ':' + courseNameClean;
+
     $.getJSON( mw.util.wikiScript(), {
       action: 'ajax',
-      rs: 'CourseEditorUtils::getLevelsTwoJson',
+      rs: 'CourseEditorUtils::getCourseTree',
       rsargs: [courseName]
     }).success(function(result){
-      levelsTwoList = result;
+      courseTree = result;
     }).then(function(){
-      var courseNamespace = mw.config.get( 'wgCourseEditor' ).Course;
-      var metadataNamespace = mw.config.get( 'wgCourseEditor' ).CourseMetadata;
-      var courseNameInPublic = courseNamespace + ':' + courseNameClean;
-      var metadataPagePublic = metadataNamespace + ':' + courseNameClean;
-
-      $.each(levelsTwoList, function(key, value){
+      $.each(courseTree.levelsThree, function(index, array){
+        $.each(array, function(key, value){
+          editStack.push({
+            action: 'rename-move-task',
+            elementName: courseTree.root + '/' + courseTree.levelsTwo[index] + '/' + value,
+            newElementName: courseNameInPublic + '/' + courseTree.levelsTwo[index] + '/' + value
+          });
+        });
         editStack.push({
-          action: 'rename',
-          elementName: courseName + '/' + value,
-          newElementName: courseNameInPublic + '/' + value
+          action: 'rename-move-task',
+          elementName: courseTree.root + '/' + courseTree.levelsTwo[index],
+          newElementName: courseNameInPublic + '/' + courseTree.levelsTwo[index]
+        });
+        editStack.push({
+          action: 'rename-update-task',
+          elementName: courseNameInPublic + '/' + courseTree.levelsTwo[index]
         });
       });
       editStack.push({
@@ -83,7 +94,7 @@ $(function(){
       });
       editStack.push({
         action: 'move-root',
-        elementName: courseName,
+        elementName: courseTree.root,
         newElementName: courseNameInPublic
       });
       editStack.push({
@@ -100,20 +111,14 @@ $(function(){
         elementName: courseNameInPublic
       });
 
-      var progressDialog = new ProgressDialog( {
-        size: 'medium'
-      } );
-      var unitaryIncrement = 100/editStack.length;
-
-      windowManager.addWindows( [ progressDialog ] );
-      windowManager.openWindow( progressDialog );
-
+      // Create task for the jQuery queue
       var createTask = function(operation){
         return function(next){
           doTask(operation, next);
         }
       };
 
+      // Execute the task of the queue
       var doTask = function(operation, next){
         progressDialog.setCurrentOp(operation);
         $.getJSON( mw.util.wikiScript(), {
@@ -121,6 +126,7 @@ $(function(){
           rs: 'CourseEditorOperations::applyPublishCourseOp',
           rsargs: [JSON.stringify(operation)]
         }, function ( data ) {
+          // If errors occurs show an alert and clear the queue
           if (data.success !== true) {
             $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
             $('#alert').append(OO.ui.msg('courseeditor-operation-action-' + data.action));
@@ -131,30 +137,39 @@ $(function(){
               $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
             }
             $('#alert').show();
-            console.log(data.error);
             windowManager.closeWindow(progressDialog);
             $(document).clearQueue('tasks');
           }else{
+            // Otherwise update the progress and execute the next task
             progressDialog.updateProgress(unitaryIncrement);
             next();
           }
         });
       };
 
-      while( editStack.length > 0 ) {
-        var operation =  editStack.shift();
-        var microOps = createMicroOperations(operation);
-        for (var i = 0; i < microOps.length; i++) {
-          $(document).queue('tasks', createTask(microOps[i]));
-        }
-      };
+      // Create tasks form editStack
+      $.each(editStack, function(key, value){
+        $(document).queue('tasks', createTask(value));
+      });
 
       $(document).queue('tasks', function(){
         windowManager.closeWindow(progressDialog);
         $('#publicCourseLink').html('<a href="/' + courseNameInPublic + '">' + courseNameInPublic +'</a>');
         $('#alertSuccess').show();
       });
-      dequeue('tasks')
+
+
+      // Create and open the progressDialog
+      var progressDialog = new ProgressDialog( {
+        size: 'medium'
+      } );
+      var unitaryIncrement = 100/editStack.length;
+
+      windowManager.addWindows( [ progressDialog ] );
+      windowManager.openWindow( progressDialog );
+
+      // Start to execute the queue
+      dequeue('tasks');
     });
   });
 })

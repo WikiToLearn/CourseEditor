@@ -109,7 +109,11 @@
             "courseeditor-operation-action-update-collection",
             "courseeditor-error-operation-fail",
             "courseeditor-confirmation-dialog-title",
-            "courseeditor-confirmation-dialog-message"
+            "courseeditor-confirmation-dialog-message",
+            "courseeditor-alert-dialog-title",
+            "courseeditor-alert-dialog-message",
+            "courseeditor-alert-dialog-button"
+
           ]
         },
         "ext.courseEditor.create": {

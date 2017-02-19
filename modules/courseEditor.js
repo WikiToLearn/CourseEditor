@@ -39,12 +39,15 @@ $(function () {
     $.each(draggableWidget.getItems(), function(key, value){
       newLevelsTwo.push(value.data);
     });
+
     editStack.push({
       action: 'update',
+      elementName : $('#parentName').text(),
       elementsList: JSON.stringify(newLevelsTwo)
     });
     editStack.push({
-      action: 'update-collection'
+      action: 'update-collection',
+      elementName: $('#parentName').text()
     });
 
     var progressDialog = new ProgressDialog( {
@@ -60,7 +63,7 @@ $(function () {
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applyCourseOp',
-        rsargs: [$('#parentName').text(), JSON.stringify(microOp)]
+        rsargs: [JSON.stringify(microOp)]
       }, function ( data ) {
         if (data.success !== true){
           $('#alert').html(OO.ui.deferMsg('courseeditor-error-operation'));
@@ -86,43 +89,6 @@ $(function () {
         doTask(microOp, next);
       }
     };
-
-    /*function prepareCreateMicroOperations(operation) {
-      var dfd=$.Deferred();
-      createMicroOperations(operation, function(microOps){
-        for (var i = 0; i < microOps.length; i++) {
-          console.log(microOps[i]);
-          $(document).queue('tasks', createTask(microOps[i]));
-        }
-        dfd.resolve();
-      });
-      return dfd.promise();
-    }
-
-    var promises = [];
-
-    while (editStack.length > 0) {
-      var operation = editStack.shift();
-      promises.push(prepareCreateMicroOperations(operation));
-    }
-
-    $.when.apply($, promises).done(function(){
-      $(document).queue('tasks', createTask({
-        action: 'update',
-        elementsList: JSON.stringify(newLevelsTwo)
-      }));
-
-      $(document).queue('tasks', createTask({
-          action: 'update-collection'
-      }));
-
-      $(document).queue('tasks', function(){
-        windowManager.closeWindow(progressDialog);
-        //window.location.assign('/' +  $('#courseName').text());
-      });
-
-      dequeue('tasks');
-    });*/
 
     while( editStack.length > 0) {
       var operation =  editStack.shift();

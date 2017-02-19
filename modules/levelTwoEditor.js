@@ -44,13 +44,16 @@ $(function () {
 
     editStack.push({
       action: 'update',
+      elementName: $('#parentName').text(),
       elementsList: JSON.stringify(newLevelsThree)
     });
     editStack.push({
-      action: 'purge'
+      action: 'purge',
+      elementName : $('#parentName').text()
     });
     editStack.push({
-      action: 'update-collection'
+      action: 'update-collection',
+      elementName: $('#parentName').text()
     });
 
     var progressDialog = new ProgressDialog( {
@@ -72,7 +75,7 @@ $(function () {
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorOperations::applyLevelTwoOp',
-        rsargs: [$('#parentName').text(), JSON.stringify(operation)]
+        rsargs: [JSON.stringify(operation)]
       }, function ( data ) {
         if (data.success !== true) {
           $('#alert').html(OO.ui.msg('courseeditor-error-operation'));

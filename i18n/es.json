@@ -59,8 +59,8 @@
   "courseeditor-operation-action-rename-move-task" : "Renombrar",
   "courseeditor-operation-action-rename-update-task" : "Actualiza enlaces",
   "courseeditor-operation-action-delete" : "Eliminar",
-  "courseeditor-operation-action-delete-levelsTwo-task" : "Elimina capítulo de",
-  "courseeditor-operation-action-delete-levelThree-task" : "Eliminar",
+  "courseeditor-operation-action-delete-levelTwo-task" : "Elimina capítulo de",
+  "courseeditor-operation-action-delete-levelsThree-task" : "Eliminar",
   "courseeditor-operation-action-purge" : "Actualiza índice",
   "courseeditor-operation-action-update" : "Actualiza",
   "courseeditor-operation-action-update-collection" : "Actualiza libro",
@@ -73,5 +73,8 @@
   "courseeditor-collection-savedbook-template": "Libro_guardado",
   "courseeditor-newtopics-section-title" : "Nuevos temas",
   "courseeditor-confirmation-dialog-title" : "Modificar título",
-  "courseeditor-confirmation-dialog-message" : "¿Está seguro de que desea cambiar el nombre del título del curso?"
+  "courseeditor-confirmation-dialog-message" : "¿Está seguro de que desea cambiar el nombre del título del curso?",
+  "courseeditor-alert-dialog-title" : "Sin título",
+  "courseeditor-alert-dialog-message" : "No se puede continuar sin un título.",
+  "courseeditor-alert-dialog-button" : "Dntendí"
 }

@@ -6,19 +6,49 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
-  public static function moveElement(&$value){
-    $levelTwoName = $value->elementName;
-    $newLevelTwoName = $value->newElementName;
-    $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, false);
-    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+  public static function addElement(&$operationObj, $text = ""){
+    $elementName = $operationObj->elementName;
+    $apiResult = CourseEditorUtils::editWrapper($elementName, $text, null, null);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
   }
 
-  public static function updateLevelTwo(&$value){
+  public static function moveElement(&$operationObj){
+    $levelTwoName = $operationObj->elementName;
+    $newLevelTwoName = $operationObj->newElementName;
+    $apiResult = CourseEditorUtils::moveWrapper($levelTwoName, $newLevelTwoName, true, false);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+  }
+
+  public static function deleteElement(&$operationObj){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
-    
-    $levelTwoName = $value->elementName;
-    $newLevelTwoName = $value->newElementName;
-    $levelsThree = CourseEditorUtils::getLevelsThree($newLevelTwoName);
+    $context = CourseEditorUtils::getRequestContext();
+    $user = $context->getUser();
+    $elementToRemove = $operationObj->elementName;
+    $title = Title::newFromText($elementToRemove, $defaultNamespace=NS_MAIN);
+    if(!$title->userCan('delete', $user, 'secure')){
+      $prependText = "\r\n{{". $wgCourseEditorTemplates['DeleteMe'] ."}}";
+      $apiResult = CourseEditorUtils::editWrapper($elementToRemove, null, $prependText, null);
+    }else {
+      $apiResult = CourseEditorUtils::deleteWrapper($elementToRemove);
+    }
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+  }
+
+  /**
+  * Update a levelTwoName page.
+  * Case 1: the method was triggered by a levelTwo rename, so either elementName
+  * and newElementName params are set.
+  * Case 2: the the method was triggered by a levelTwo change, for example
+  * a levelThree was added. In this case newElementName is not set.
+  * @param Object $operationObj it could cointain elementName, newElementName and
+  * elementsList
+  */
+  public static function updateLevelTwo(&$operationObj){
+    global $wgCourseEditorCategories, $wgContLang;
+
+    $levelTwoName = $operationObj->elementName;
+    $newLevelTwoName = (isset($operationObj->newElementName)) ? $operationObj->newElementName : $levelTwoName;
+    $levelsThree = (isset($operationObj->elementsList)) ? json_decode($operationObj->elementsList) : CourseEditorUtils::getLevelsThree($newLevelTwoName);
     $newLevelTwoText = "";
     foreach ($levelsThree as $levelThree) {
       $newLevelTwoText .= "* [[" . $newLevelTwoName . "/" . $levelThree ."|". $levelThree ."]]\r\n";
@@ -26,27 +56,42 @@ class CourseEditorUtils {
     $newLevelTwoText .= "\r\n<noinclude>[["
     . $wgContLang->getNsText( NS_CATEGORY ) . ":". $wgCourseEditorCategories['CourseLevelTwo'] ."]]</noinclude>";
     $apiResult = CourseEditorUtils::editWrapper($newLevelTwoName, $newLevelTwoText, null, null);
-    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
   }
 
-  public static function purgeCache(&$value){
-    $pageToBePurged = $value->elementName;
+  public static function updateRoot(&$operationObj){
+    global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
+    $courseName = $operationObj->elementName;
+    $newCourseText = "{{". $wgCourseEditorTemplates['CourseRoot'] ."|\r\n";
+    $newLevelsTwoArray = json_decode($operationObj->elementsList);
+    foreach ($newLevelsTwoArray as $levelTwo) {
+      $newCourseText .= "{{". $wgCourseEditorTemplates['CourseLevelTwo'] ."|" . $levelTwo ."}}\r\n";
+    }
+    $newCourseText .= "}}";
+    $newCourseText .= "\r\n<noinclude>[[" . $wgContLang->getNsText( NS_CATEGORY ) . ":"
+    . $wgCourseEditorCategories['CourseRoot']. "]]</noinclude>";
+    $apiResult = CourseEditorUtils::editWrapper($courseName, $newCourseText, null, null);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+  }
+
+  public static function purgeCache(&$operationObj){
+    $pageToBePurged = $operationObj->elementName;
     $apiResult = CourseEditorUtils::purgeWrapper($pageToBePurged);
-    CourseEditorUtils::setSingleOperationSuccess($value, $apiResult);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
   }
 
   /**
   * Create/update the collection page of a public course
-  * @param String $courseName the name of a course
-  * @return Array $editResult the result of the edit
+  * @param Object $operationObj
   */
-  public static function updateCollection($courseName) {
+  public static function updateCollection(&$operationObj) {
+    $courseName = $operationObj->elementName;
     list($namespace, $name) = explode(':', $courseName, 2);
     $title = Title::newFromText($courseName, $defaultNamespace=NS_COURSE );
     $namespaceIndex = $title->getNamespace();
 
     if(MWNamespace::equals($namespaceIndex, NS_USER)){
-      self::updateUserCollection($courseName);
+      self::updateUserCollection($operationObj);
     }else {
       $pageTitle = "Project:" . wfMessage('courseeditor-collection-book-category') ."/" . $name;
       $collectionText = "{{" . wfMessage('courseeditor-collection-savedbook-template') . "
@@ -72,17 +117,17 @@ class CourseEditorUtils {
         }
       }
 
-      $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
-      return $editResult;
+      $apiResult = self::editWrapper($pageTitle, $collectionText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
     }
   }
 
   /**
   * Create/update the collection page of a private course
-  * @param String $courseName the name of a course
-  * @return Array $editResult the result of the edit
+  * @param $operationObj
   */
-  private function updateUserCollection($courseName){
+  private function updateUserCollection(&$operationObj){
+    $courseName = $operationObj->elementName;
     list($namespaceAndUser, $title) = explode('/', $courseName, 2);
     $pageTitle = $namespaceAndUser . "/" . wfMessage('courseeditor-collection-book-category') . "/" . $title;
     $collectionText = "{{" . wfMessage('courseeditor-collection-savedbook-template') . "
@@ -107,8 +152,8 @@ class CourseEditorUtils {
         $collectionText .= "\n[[" . $catTitle->getPrefixedText() ."|" . $title. "]]";
       }
     }
-    $editResult = self::editWrapper($pageTitle, $collectionText, null, null);
-    return $editResult;
+    $apiResult = self::editWrapper($pageTitle, $collectionText, null, null);
+    CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
   }
 
   /**

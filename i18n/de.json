@@ -59,8 +59,8 @@
   "courseeditor-operation-action-rename-move-task" : "Umbenennen",
   "courseeditor-operation-action-rename-update-task" : "Links aktualisierung",
   "courseeditor-operation-action-delete" : "Löchen",
-  "courseeditor-operation-action-delete-levelsTwo-task" : "Löchen Kapitel von",
-  "courseeditor-operation-action-delete-levelThree-task" : "Löchen",
+  "courseeditor-operation-action-delete-levelTwo-task" : "Löchen Kapitel von",
+  "courseeditor-operation-action-delete-levelsThree-task" : "Löchen",
   "courseeditor-operation-action-purge" : "Aktualisieren des Indexes",
   "courseeditor-operation-action-update" : "Aktualisiere",
   "courseeditor-operation-action-update-collection" : "Buch aktualisiere",
@@ -73,5 +73,8 @@
   "courseeditor-collection-savedbook-template": "Gespeichert_buch",
   "courseeditor-newtopics-section-title" : "Neue Themen",
   "courseeditor-confirmation-dialog-title" : "Umbenennen Titel",
-  "courseeditor-confirmation-dialog-message" : "Sind Sie sicher, dass Sie den Titel des Kurses umbenennen?"
+  "courseeditor-confirmation-dialog-message" : "Sind Sie sicher, dass Sie den Titel des Kurses umbenennen?",
+  "courseeditor-alert-dialog-title" : "Kein Titel",
+  "courseeditor-alert-dialog-message" : "Kann nicht ohne einen Titel weiter.",
+  "courseeditor-alert-dialog-button" : "Ich verstand"
 }

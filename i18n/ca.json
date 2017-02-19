@@ -59,8 +59,8 @@
   "courseeditor-operation-action-rename-move-task" : "Rebatejar",
   "courseeditor-operation-action-rename-update-task" : "Actualització d'enllaç",
   "courseeditor-operation-action-delete" : "Eliminar",
-  "courseeditor-operation-action-delete-levelsTwo-task" : "Eliminar els capítols ",
-  "courseeditor-operation-action-delete-levelThree-task" : "Eliminar",
+  "courseeditor-operation-action-delete-levelTwo-task" : "Eliminar els capítols ",
+  "courseeditor-operation-action-delete-levelsThree-task" : "Eliminar",
   "courseeditor-operation-action-purge" : "Actualització índex",
   "courseeditor-operation-action-update" : "Actualització",
   "courseeditor-operation-action-update-collection" : " Actualització llibre",
@@ -73,5 +73,8 @@
   "courseeditor-collection-savedbook-template": "llibre_guardat",
   "courseeditor-newtopics-section-title" : "Nous tèmas",
   "courseeditor-confirmation-dialog-title" : "Canviar títol",
-  "courseeditor-confirmation-dialog-message" : "Esteu segur que voleu canviar el nom del títol del curs?"
+  "courseeditor-confirmation-dialog-message" : "Esteu segur que voleu canviar el nom del títol del curs?",
+  "courseeditor-alert-dialog-title" : "Sense títol",
+  "courseeditor-alert-dialog-message" : "No es pot continuar sense un títol.",
+  "courseeditor-alert-dialog-button" : "Entès"
 }
