@@ -172,6 +172,7 @@ class ManageMetadataTemplate extends QuickTemplate {
     if($this->data['metadataResult']){
       $metadataResult = $this->data['metadataResult'];
     }
+    $topics = $this->data['topics'];
     ?>
     <div><p><?php echo wfMessage( 'courseeditor-managemetata-description' ) ?></p></div>
     <br>
@@ -191,7 +192,14 @@ class ManageMetadataTemplate extends QuickTemplate {
       </div>
       <div class="form-group">
         <label for="courseTopic"><?php echo wfMessage( 'courseeditor-input-topic-label' ) ?></label>
-        <input type="text" class="form-control" id="courseTopic" value="<?php echo $metadataResult['topic'] ?>" placeholder="<?php echo wfMessage( 'courseeditor-input-topic-placeholder' ) ?>">
+        <!-- <input type="text" class="form-control" id="courseTopic" value="<?php echo $metadataResult['topic'] ?>" placeholder="<?php echo wfMessage( 'courseeditor-input-topic-placeholder' ) ?>"> -->
+        <select class="form-control" id="courseTopic">
+          <?php
+          foreach ($topics as $t) {
+            echo "<option value=\"$t\">$t</option>";
+          }
+           ?>
+        </select>
       </div>
       <div class="form-group">
         <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>

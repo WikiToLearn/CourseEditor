@@ -6,6 +6,34 @@ if ( !defined( 'MEDIAWIKI' ) ){
 class CourseEditorUtils {
   private static $requestContext = null;
 
+  public static function getTopics(){
+    try {
+      $api = new ApiMain(
+        new DerivativeRequest(
+          self::getRequestContext()->getRequest(),
+          array(
+            'action' => 'query',
+            'list' => 'embeddedin',
+            'eititle' => 'Template:Topic',
+            'eilimit' => 500
+          )
+        ),
+        true
+      );
+      $api->execute();
+      $results = $api->getResult()->getResultData(null, array('Strip' => 'all'));
+      $pages = $results['query']['embeddedin'];
+      $topics = array();
+      foreach ($pages as $page) {
+        array_push($topics, $page['title']);
+      }
+      sort($topics);
+      return $topics;
+    } catch(UsageException $e){
+      return $e->getMessage();
+    }
+  }
+
   public static function addElement(&$operationObj, $text = ""){
     $elementName = $operationObj->elementName;
     $apiResult = CourseEditorUtils::editWrapper($elementName, $text, null, null);

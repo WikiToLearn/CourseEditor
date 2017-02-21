@@ -188,6 +188,8 @@ class SpecialCourseEditor extends SpecialPage {
     $template->set('private', $isPrivate);
     $template->set('username', $username);
     $template->set('userObj', $this->getUser());
+    $topics = CourseEditorUtils::getTopics();
+    $template->set('topics', $topics);
     $metadataResult = CourseEditorUtils::getMetadata($courseName);
     if($metadataResult !== null){
       $template->set('metadataResult', $metadataResult);
