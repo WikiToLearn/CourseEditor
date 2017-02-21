@@ -194,6 +194,7 @@ class ManageMetadataTemplate extends QuickTemplate {
         <label for="courseTopic"><?php echo wfMessage( 'courseeditor-input-topic-label' ) ?></label>
         <!-- <input type="text" class="form-control" id="courseTopic" value="<?php echo $metadataResult['topic'] ?>" placeholder="<?php echo wfMessage( 'courseeditor-input-topic-placeholder' ) ?>"> -->
         <select class="form-control" id="courseTopic">
+          <option value="New">Crea nuovo...</option>
           <?php
           foreach ($topics as $t) {
             echo "<option value=\"$t\">$t</option>";

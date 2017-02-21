@@ -154,7 +154,7 @@ class CourseEditorUtils {
   * Create/update the collection page of a private course
   * @param $operationObj
   */
-  private function updateUserCollection(&$operationObj){
+  private static function updateUserCollection(&$operationObj){
     $courseName = $operationObj->elementName;
     list($namespaceAndUser, $title) = explode('/', $courseName, 2);
     $pageTitle = $namespaceAndUser . "/" . wfMessage('courseeditor-collection-book-category') . "/" . $title;
@@ -428,7 +428,7 @@ class CourseEditorUtils {
   * @param Title $pageTitle the name of page
   * @return Array $subElements the levelTwo or levelThree pages
   */
-  private function getSubCourseElements($pageTitle) {
+  private static function getSubCourseElements($pageTitle) {
     $namespace = $pageTitle->getNamespace();
     //Count subpage levels to define what type of subElements should be gotten
     $levels = substr_count($pageTitle->getText(), "/");
@@ -464,7 +464,7 @@ class CourseEditorUtils {
   * @return Array $previousAndNext the associative array with the next and the
   * previous page
   */
-  private function buildPreviousAndNext($pageTitle, $subElements){
+  private static function buildPreviousAndNext($pageTitle, $subElements){
     $namespace = $pageTitle->getNamespace();
     $basePage = MWNamespace::getCanonicalName($namespace) . ":" . $pageTitle->getBaseText();
     $lastPage = $pageTitle->getSubpageText();
