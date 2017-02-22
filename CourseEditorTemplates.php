@@ -181,7 +181,7 @@ class ManageMetadataTemplate extends QuickTemplate {
       <input type="hidden" id="username" value="<?php echo $username ?>">
       <div class="form-group">
         <label for="courseName"><?php echo wfMessage( 'courseeditor-input-course-label' ) ?></label>
-        <input type="text" class="form-control" id="courseName" value="<?php echo $courseName ?>">
+        <input type="text" class="form-control" id="courseName" value="<?php echo str_replace('_', ' ', $courseName) ?>">
       </div>
       <div class="alert alert-warning alert-dismissible" id="alertSame" role="alert"  style="display:none;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
@@ -197,7 +197,11 @@ class ManageMetadataTemplate extends QuickTemplate {
           <option value="New">Crea nuovo...</option>
           <?php
           foreach ($topics as $t) {
-            echo "<option value=\"$t\">$t</option>";
+            echo "<option value='". str_replace('_', ' ', $t) . "'";
+            if ($t === $metadataResult['topic']) {
+              echo " selected ";
+            }
+            echo ">$t</option>";
           }
            ?>
         </select>

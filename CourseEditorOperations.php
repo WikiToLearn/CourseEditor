@@ -250,7 +250,7 @@ class CourseEditorOperations {
       $template = "{{". $wgCourseEditorTemplates['ReadyToBePublished'] ."}}";
       $replacedText = str_replace($category, "", $pageText);
       $newPageText = str_replace($template, "", $replacedText);
-      $result = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
+      $apiResult = CourseEditorUtils::editWrapper($title, $newPageText, null, null);
       CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
       break;
       case 'move-metadata':
@@ -260,6 +260,29 @@ class CourseEditorOperations {
       break;
       case 'update-collection':
       CourseEditorUtils::updateCollection($operationObj);
+      break;
+      case 'remove-from-topic-page':
+      $title = Title::newFromText($operationObj->elementName);
+      $page = WikiPage::factory($title);
+      $pageText = $page->getText();
+      $replacedText = str_replace("{{". $wgCourseEditorTemplates['Course'] ."|" . $operationObj->courseName . "}}", '', $pageText);
+      $apiResult = CourseEditorUtils::editWrapper($title, $replacedText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+      break;
+      case 'append-to-topic-page':
+      $title = Title::newFromText($operationObj->newElementName);
+      $topicCourses = CourseEditorUtils::getTopicCourses($operationObj->newElementName);
+      $pageText = $topicCourses . "{{". $wgCourseEditorTemplates['Course'] ."|" . $operationObj->courseName . "}}}}";
+      $apiResult = CourseEditorUtils::editWrapper($title, $pageText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+      break;
+      case 'update-topic-page':
+      $title = Title::newFromText($operationObj->topicName);
+      $page = WikiPage::factory($title);
+      $pageText = $page->getText();
+      $replacedText = str_replace($operationObj->elementName, $operationObj->newElementName, $pageText);
+      $apiResult = CourseEditorUtils::editWrapper($title, $replacedText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
       break;
     }
     return json_encode($operationObj);

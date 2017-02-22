@@ -1,61 +1,11 @@
 $(function () {
 
+  // Store the courseName and topic before changes
+  var originalCourseName = $('#courseName').val();
+  var originalTopic = $('#courseTopic').val();
+
   $('#courseTopic').change(function(){
     if($(this).val() === 'New'){
-      // Make a subclass of ProcessDialog
-      function PromptDialog( config ) {
-        PromptDialog.super.call( this, config );
-      }
-      OO.inheritClass( PromptDialog, OO.ui.ProcessDialog );
-
-      PromptDialog.static.name = 'promptDialog';
-      // Specify the static configurations: title and action set
-      PromptDialog.static.title = 'Crea un nuovo topic';
-      PromptDialog.static.actions = [
-        { flags: 'primary', label: 'Aggiungi', action: 'add' },
-        { flags: 'safe', label: 'Annulla' }
-      ];
-
-      // Customize the initialize() function to add content and layouts
-      PromptDialog.prototype.initialize = function () {
-        PromptDialog.super.prototype.initialize.call( this );
-        this.panel = new OO.ui.PanelLayout( { padded: true, expanded: false } );
-        this.content = new OO.ui.FieldsetLayout();
-
-        this.topicInput = new OO.ui.TextInputWidget();
-
-        this.field = new OO.ui.FieldLayout( this.topicInput, { label: 'Inserisci il nome di un nuovo topic', align: 'top' } );
-
-        this.content.addItems([ this.field ]);
-        this.panel.$element.append( this.content.$element );
-        this.$body.append( this.panel.$element );
-
-        this.topicInput.connect( this, { 'change': 'onTopicInputChange' } );
-      };
-
-      // Specify any additional functionality required by the window (disable opening an empty topic, in this case)
-      PromptDialog.prototype.onTopicInputChange = function ( value ) {
-        this.actions.setAbilities( {
-          add: !!value.length
-        } );
-      };
-
-      // Specify processes to handle the actions.
-      PromptDialog.prototype.getActionProcess = function ( action ) {
-        if ( action === 'add' ) {
-          // Create a new process to handle the action
-          return new OO.ui.Process( function () {
-            var newTopic = this.topicInput.getValue().trim();
-            if (newTopic.length !== 0) {
-              $('#courseTopic').append(new Option(newTopic, newTopic, true, true));
-              this.close();
-            }
-          }, this );
-        }
-        // Fallback to parent handler
-        return PromptDialog.super.prototype.getActionProcess.call( this, action );
-      };
-
       // Create a new process dialog window
       var promptDialog = new PromptDialog();
 
@@ -64,9 +14,6 @@ $(function () {
       windowManager.openWindow( promptDialog);
     }
   });
-
-  // Store the courseName before changes
-  var originalCourseName = $('#courseName').val().trim();
 
   if($('#isImported:checked').length > 0){
     $('#courseOriginalAuthorsDiv').show();
@@ -88,25 +35,12 @@ $(function () {
     $('#alert').hide();
     var courseName = $('#courseName').val().trim();
     if(courseName.length !== 0 && courseName !== originalCourseName){
-      renameAndUpdateMetadata(courseName, originalCourseName);
+      renameAndUpdateMetadata(courseName, originalCourseName, originalTopic);
     }else if(courseName.length !== 0){
       updateMetadata(courseName);
     }else {
       // Create and open an alert dialog
       OO.ui.alert(OO.ui.msg('courseeditor-alert-dialog-message'));
-      /*var alertDialog = new OO.ui.MessageDialog();
-      windowManager.addWindows( [ alertDialog ] );
-      windowManager.openWindow( alertDialog, {
-        title: OO.ui.msg('courseeditor-alert-dialog-title'),
-        message: OO.ui.msg('courseeditor-alert-dialog-message'),
-        actions: [
-          {
-            action: 'accept',
-            label: OO.ui.msg('courseeditor-alert-dialog-button'),
-            flags: 'primary'
-          }
-        ]
-      });*/
     }
   });
 
@@ -241,7 +175,7 @@ var updateMetadata = function(courseName){
   });
 };
 
-var renameAndUpdateMetadata = function(courseName, originalCourseName){
+var renameAndUpdateMetadata = function(courseName, originalCourseName, originalTopic){
   // Create and open a confirmation dialog window
   OO.ui.confirm( OO.ui.msg('courseeditor-confirmation-dialog-message') ).done( function ( confirmed ) {
     if ( confirmed ) {
@@ -260,7 +194,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
 
       }else {
         newMetadataPage = metadataNamespace + ':' + courseName;
-        originalMetadataPage = courseNamespace + ':' + originalCourseName;
+        originalMetadataPage = metadataNamespace + ':' + originalCourseName;
         originalCourseNameWithNamespace = courseNamespace + ':' + originalCourseName;
         courseNameWithNamespace = courseNamespace + ':' + courseName;
       }
@@ -301,11 +235,33 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
           newElementName: newMetadataPage
         });
         editStack.push({
-          action: 'purge',
+          action: 'update-collection',
           elementName: courseNameWithNamespace
         });
+
+        if (originalTopic !== $('#courseTopic').val()) {
+          editStack.push({
+            action: 'remove-from-topic-page',
+            courseName: originalCourseName,
+            elementName: originalTopic,
+            newElementName: $('#courseTopic').val()
+          });
+          editStack.push({
+            action: 'append-to-topic-page',
+            courseName: courseName,
+            elementName: originalTopic,
+            newElementName: $('#courseTopic').val()
+          });
+        }else {
+          editStack.push({
+            action: 'update-topic-page',
+            topicName: $('#courseTopic').val(),
+            elementName: originalCourseName,
+            newElementName: courseName
+          });
+        }
         editStack.push({
-          action: 'update-collection',
+          action: 'purge',
           elementName: courseNameWithNamespace
         });
 
@@ -372,4 +328,58 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName){
       });
     }
   } );
+};
+
+// Make a subclass of ProcessDialog
+function PromptDialog( config ) {
+  PromptDialog.super.call( this, config );
+}
+OO.inheritClass( PromptDialog, OO.ui.ProcessDialog );
+
+PromptDialog.static.name = 'promptDialog';
+// Specify the static configurations: title and action set
+PromptDialog.static.title = 'Crea un nuovo topic';
+PromptDialog.static.actions = [
+  { flags: 'primary', label: 'Aggiungi', action: 'add' },
+  { flags: 'safe', label: 'Annulla' }
+];
+
+// Customize the initialize() function to add content and layouts
+PromptDialog.prototype.initialize = function () {
+  PromptDialog.super.prototype.initialize.call( this );
+  this.panel = new OO.ui.PanelLayout( { padded: true, expanded: false } );
+  this.content = new OO.ui.FieldsetLayout();
+
+  this.topicInput = new OO.ui.TextInputWidget();
+
+  this.field = new OO.ui.FieldLayout( this.topicInput, { label: 'Inserisci il nome di un nuovo topic', align: 'top' } );
+
+  this.content.addItems([ this.field ]);
+  this.panel.$element.append( this.content.$element );
+  this.$body.append( this.panel.$element );
+
+  this.topicInput.connect( this, { 'change': 'onTopicInputChange' } );
+};
+
+// Specify any additional functionality required by the window (disable opening an empty topic, in this case)
+PromptDialog.prototype.onTopicInputChange = function ( value ) {
+  this.actions.setAbilities( {
+    add: !!value.length
+  } );
+};
+
+// Specify processes to handle the actions.
+PromptDialog.prototype.getActionProcess = function ( action ) {
+  if ( action === 'add' ) {
+    // Create a new process to handle the action
+    return new OO.ui.Process( function () {
+      var newTopic = this.topicInput.getValue().trim();
+      if (newTopic.length !== 0) {
+        $('#courseTopic').append(new Option(newTopic, newTopic, true, true));
+        this.close();
+      }
+    }, this );
+  }
+  // Fallback to parent handler
+  return PromptDialog.super.prototype.getActionProcess.call( this, action );
 };
