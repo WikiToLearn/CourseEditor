@@ -34,11 +34,14 @@ $(function () {
     e.preventDefault();
     $('#alert').hide();
     var courseName = $('#courseName').val().trim();
+    var courseTopic = $('#courseTopic').val().trim();
     if(courseName.length !== 0 && courseName !== originalCourseName){
       renameAndUpdateMetadata(courseName, originalCourseName, originalTopic);
-    }else if(courseName.length !== 0){
-      updateMetadata(courseName);
-    }else {
+    }else if(courseName.length !== 0 && courseTopic !== originalTopic){
+      updateMetadataAndFixTopic(courseName, originalTopic);
+    }else if (courseName.length !== 0) {
+        updateMetadata(courseName);
+    }else{
       // Create and open an alert dialog
       OO.ui.alert(OO.ui.msg('courseeditor-alert-dialog-message'));
     }
@@ -102,6 +105,85 @@ $(function () {
   });
 });
 
+
+var updateMetadataAndFixTopic = function(courseName, originalTopic){
+  var editStack = [];
+  // Move the course from the old to the new one
+  editStack.push({
+    action: 'remove-from-topic-page',
+    courseName: courseName,
+    elementName: originalTopic,
+    newElementName: $('#courseTopic').val()
+  });
+  editStack.push({
+    action: 'append-to-topic-page',
+    courseName: courseName,
+    elementName: originalTopic,
+    newElementName: $('#courseTopic').val()
+  });
+
+  // Create task for the jQuery queue
+  var createTask = function(operation){
+    return function(next){
+      doTask(operation, next);
+    }
+  };
+
+  // Execute the task of the queue
+  var doTask = function(operation, next){
+    progressDialog.setCurrentOp(operation);
+    $.getJSON( mw.util.wikiScript(), {
+      action: 'ajax',
+      rs: 'CourseEditorOperations::applyPublishCourseOp',
+      rsargs: [JSON.stringify(operation)]
+    }, function ( data ) {
+      // If errors occurs show an alert and clear the queue
+      if (data.success !== true) {
+        $('#alert').html(OO.ui.msg('courseeditor-error-operation'));
+        $('#alert').append(OO.ui.msg('courseeditor-operation-action-' + data.action));
+        if(data.elementName){
+          var localizedMsg = " " + data.elementName + OO.ui.msg('courseeditor-error-operation-fail');
+          $('#alert').append(localizedMsg);
+        }else {
+          $('#alert').append(OO.ui.msg('courseeditor-error-operation-fail'));
+        }
+        $('#alert').show();
+        windowManager.closeWindow(progressDialog);
+        $(document).clearQueue('tasks');
+      }else{
+        // Otherwise update the progress and execute the next task
+        progressDialog.updateProgress(unitaryIncrement);
+        next();
+      }
+    });
+  };
+
+  // Create tasks from editStack
+  $.each(editStack, function(key, value){
+    $(document).queue('tasks', createTask(value));
+  });
+
+  // Append last two tasks
+  $(document).queue('tasks', function(){
+    windowManager.closeWindow(progressDialog);
+    // Last task calls the updateMetadata function
+    updateMetadata(courseName);
+  });
+
+
+  // Create and open the progressDialog
+  var progressDialog = new ProgressDialog( {
+    size: 'medium'
+  } );
+  var unitaryIncrement = 100/editStack.length;
+
+  windowManager.addWindows( [ progressDialog ] );
+  windowManager.openWindow( progressDialog );
+
+  // Start to execute the queue
+  dequeue('tasks');
+};
+
 var updateMetadata = function(courseName){
   var courseTopic, courseDescription, courseBibliography, courseExercises, courseBooks, courseExternalReferences,
     isImported = false, originalAuthors = "", isReviewed = false, reviewedOn = "";
@@ -135,6 +217,7 @@ var updateMetadata = function(courseName){
     isReviewed = true;
     reviewedOn =  $('#courseReviewedOn').val().trim();
   }
+
   operationRequested = {
     type : 'saveMetadata',
     params : [
