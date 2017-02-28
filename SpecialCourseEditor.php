@@ -176,7 +176,7 @@ class SpecialCourseEditor extends SpecialPage {
     $out->addModules('ext.courseEditor.manageMetadata');
     $out->setPageTitle(wfMessage('courseeditor-managemetata-pagetitle'));
     $out->addJsConfigVars('wgCourseEditor', $wgCourseEditorNamespaces);
-    // Remove username from courseName (in present)
+    // Remove username from courseName (if there is)
     $explodedString = explode('/', $courseName, 2);
     $courseNameNoUser = (sizeof($explodedString) === 1) ? $explodedString[0] : $explodedString[1];
     $username = (sizeof($explodedString) === 1) ? 'null' : $explodedString[0];

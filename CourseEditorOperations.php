@@ -71,8 +71,16 @@ class CourseEditorOperations {
     return json_encode($operation);
   }
 
+  /**
+  * Update the metadata page with new data submitted by the user.
+  * Moreover the course root page cache is purged.
+  * @param string $operationRequested JSON object with new new data
+  * @return string $operation JSON object with the operation requested plus
+  * a success field
+  */
   public static function manageCourseMetadataOp($operationRequested){
     $operation = json_decode($operationRequested);
+    // Get all the params
     $params = $operation->params;;
     $title = $params[0];
     $topic = $params[1];
@@ -86,7 +94,9 @@ class CourseEditorOperations {
     $isReviewed = $params[9];
     $reviewedOn =  $params[10];
 
+    // Create the page title prepending the namespace
     $pageTitle = MWNamespace::getCanonicalName(NS_COURSEMETADATA) . ':' . $title;
+    // Add the new metadata submitted
     $metadata = "<section begin=topic />" . $topic . "<section end=topic />\r\n";
     if($description !== '' && $description !== null){
       $metadata .= "<section begin=description />" . $description . "<section end=description />\r\n";
@@ -120,6 +130,13 @@ class CourseEditorOperations {
     return json_encode($operation);
   }
 
+  /**
+  * Create the basic metadata page when a new course is created.
+  * @param string $title the title of the course
+  * @param string $topic the topic of the course
+  * @param string $description the description of the course
+  * @return $apiResult the result of the edit
+  */
   private function createBasicCourseMetadata($topic, $title, $description){
     //Remove username from title (if present) to be used as topic if $topic is null
     $explodedString = explode('/', $title, 2);
@@ -229,6 +246,15 @@ class CourseEditorOperations {
     return array($resultCreateCourse, $resultCreateMetadataPage, $resultAppendToTopic, $resultAppendToDepartment, $resultPurgeCourse);
   }
 
+  /**
+  * All the possible small tasks to publish a course from a userpage.
+  * This function is used also for course renaming because "techinally" the
+  * tasks are the same.
+  * @param string $operation JSON object with the action requested and the
+  * params needed
+  * @return string $operationObj JSON object with the request and the a success
+  * field
+  */
   public static function applyPublishCourseOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
     $operationObj = json_decode($operation);
@@ -284,10 +310,29 @@ class CourseEditorOperations {
       $apiResult = CourseEditorUtils::editWrapper($title, $replacedText, null, null);
       CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
       break;
+      case 'update-user-page':
+      $title = Title::newFromText($wgContLang->getNsText( NS_USER ) . ":" . $operationObj->username);
+      $page = WikiPage::factory($title);
+      $pageText = $page->getText();
+      $replacedText = str_replace(
+        "{{". $wgCourseEditorTemplates['Course'] ."|" . $operationObj->elementName . "|" . $operationObj->username . "}}",
+        "{{". $wgCourseEditorTemplates['Course'] ."|" . $operationObj->newElementName . "|". $operationObj->username . "}}",
+        $pageText
+      );
+      $apiResult = CourseEditorUtils::editWrapper($title, $replacedText, null, null);
+      CourseEditorUtils::setSingleOperationSuccess($operationObj, $apiResult);
+      break;
     }
     return json_encode($operationObj);
   }
 
+  /**
+  * All the possible small tasks that can be performed on a levelTwo.
+  * @param string $operation JSON object with the action requested and the
+  * params needed
+  * @return string $operationObj JSON object with the request and the a success
+  * field
+  */
   public static function applyCourseOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
     $operationObj = json_decode($operation);
@@ -333,6 +378,13 @@ class CourseEditorOperations {
     return json_encode($operationObj);
   }
 
+  /**
+  * All the possible small tasks that can be performed on a course.
+  * @param string $operation JSON object with the action requested and the
+  * params needed
+  * @return string $operationObj JSON object with the request and the a success
+  * field
+  */
   public static function applyLevelTwoOp($operation){
     global $wgCourseEditorTemplates, $wgCourseEditorCategories, $wgContLang;
     $context = CourseEditorUtils::getRequestContext();

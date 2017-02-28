@@ -199,6 +199,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName, originalT
         courseNameWithNamespace = courseNamespace + ':' + courseName;
       }
 
+      // Get the courseTree and then build the editStack
       $.getJSON( mw.util.wikiScript(), {
         action: 'ajax',
         rs: 'CourseEditorUtils::getCourseTree',
@@ -206,6 +207,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName, originalT
       }).success(function(result){
         courseTree = result;
       }).then(function(){
+        // Move the levelsThree, move and update the parent levelTwo
         $.each(courseTree.levelsThree, function(index, array){
           $.each(array, function(key, value){
             editStack.push({
@@ -224,21 +226,24 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName, originalT
             elementName: courseNameWithNamespace + '/' + courseTree.levelsTwo[index]
           });
         });
+        // Move the course root
         editStack.push({
           action: 'move-root',
           elementName: courseTree.root,
           newElementName: courseNameWithNamespace
         });
+        // Move the metadata page
         editStack.push({
           action: 'move-metadata',
           elementName: originalMetadataPage,
           newElementName: newMetadataPage
         });
+        // Update the collection
         editStack.push({
           action: 'update-collection',
           elementName: courseNameWithNamespace
         });
-
+        // If the topic is changed move the course from the old to the new one
         if (originalTopic !== $('#courseTopic').val()) {
           editStack.push({
             action: 'remove-from-topic-page',
@@ -253,13 +258,24 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName, originalT
             newElementName: $('#courseTopic').val()
           });
         }else {
-          editStack.push({
-            action: 'update-topic-page',
-            topicName: $('#courseTopic').val(),
-            elementName: originalCourseName,
-            newElementName: courseName
-          });
+          // Otherwise updated the topic page or the userpage for private courses
+          if ($('#private').val() != 1) {
+            editStack.push({
+              action: 'update-topic-page',
+              topicName: $('#courseTopic').val(),
+              elementName: originalCourseName,
+              newElementName: courseName
+            });
+          }else {
+            editStack.push({
+              action: 'update-user-page',
+              username: $('#username').val(),
+              elementName: originalCourseName,
+              newElementName: courseName
+            });
+          }
         }
+        // Purge cache of the course root page
         editStack.push({
           action: 'purge',
           elementName: courseNameWithNamespace
@@ -301,7 +317,7 @@ var renameAndUpdateMetadata = function(courseName, originalCourseName, originalT
           });
         };
 
-        // Create tasks form editStack
+        // Create tasks from editStack
         $.each(editStack, function(key, value){
           $(document).queue('tasks', createTask(value));
         });
