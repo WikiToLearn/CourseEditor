@@ -10,7 +10,11 @@
     "descriptionmsg":"",
     "license-name":"GPLv3",
     "type":"special",
+    "APIModules": {
+        "coursetree": "CourseEditorApi"
+    },
     "AutoloadClasses":{
+        "CourseEditorApi" : "CourseEditorApi.php",
         "CourseEditor":"CourseEditor.php",
         "CourseEditorOperations":"CourseEditorOperations.php",
         "CourseEditorUtils":"CourseEditorUtils.php",
