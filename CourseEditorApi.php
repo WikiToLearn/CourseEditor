@@ -19,16 +19,11 @@ class CourseEditorApi extends ApiBase {
     $courseTree = CourseEditorUtils::getCourseTree($courseTitle);
     $result->addValue(null, $this->getModuleName(),
       array (
-        'success' => "true",
+        'success' => 'true',
         'response' => json_decode($courseTree)
       )
     );
 		return true;
-	}
-
-	// Description
-	public function getDescription() {
-		return 'Get the course tree.';
 	}
 
 	// coursetitle parameter.
@@ -36,15 +31,16 @@ class CourseEditorApi extends ApiBase {
 		return array_merge( parent::getAllowedParams(), array(
 			'coursetitle' => array (
 				ApiBase::PARAM_TYPE => 'string',
-				ApiBase::PARAM_REQUIRED => true
-			),
+				ApiBase::PARAM_REQUIRED => 'true',
+        ApiBase::PARAM_HELP_MSG => 'api-help-param-coursetitle'
+			)
 		) );
 	}
 
-	// Describe the parameter
-	public function getParamDescription() {
-		return array_merge( parent::getParamDescription(), array(
-			'coursetitle' => 'The title of the course.'
-		) );
+  protected function getExamplesMessages() {
+		return [
+			'action=coursetree&coursetitle=Course:Modern%20Physics&format=json' =>
+				'api-help-course-tree-example'
+		];
 	}
 }
