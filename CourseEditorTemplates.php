@@ -96,6 +96,19 @@ class CourseCreatorTemplate extends QuickTemplate {
   public function execute(){
     ?>
     <form>
+      <label for="courseNamespace"><?php echo wfMessage('courseeditor-radiobutton-namespace') ?></label>
+      <div class="radio">
+        <label>
+          <input type="radio" name="courseNamespace" value="NS_USER" checked>
+          <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
+        </label>
+      </div>
+      <div class="radio" id="radioButtons">
+        <label>
+          <input type="radio" name="courseNamespace" value="NS_COURSE">
+          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
+        </label>
+      </div>
       <?php
     if($this->data['topic']){
         $topic = $this->data['topic'];
@@ -133,23 +146,10 @@ class CourseCreatorTemplate extends QuickTemplate {
       <?php echo wfMessage( 'courseeditor-alert-similar-title-message' ) ?>
       <div id="coursesListSimilar"></div>
     </div>
-      <div class="form-group">
-        <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
-        <input type="text" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>">
-      </div>
-      <label for="courseNamespace"><?php echo wfMessage('courseeditor-radiobutton-namespace') ?></label>
-      <div class="radio">
-        <label>
-          <input type="radio" name="courseNamespace" value="NS_USER" checked>
-          <?php echo wfMessage('courseeditor-radiobutton-namespace-private') ?>
-        </label>
-      </div>
-      <div class="radio" id="radioButtons">
-        <label>
-          <input type="radio" name="courseNamespace" value="NS_COURSE">
-          <?php echo wfMessage('courseeditor-radiobutton-namespace-public') ?>
-        </label>
-      </div>
+    <div class="form-group">
+      <label for="courseDescription"><?php echo wfMessage( 'courseeditor-input-description-label' ) ?></label>
+      <input type="text" class="form-control" id="courseDescription" placeholder="<?php echo wfMessage( 'courseeditor-input-description-placeholder' ) ?>">
+    </div>
       <div class="alert alert-danger alert-dismissible" id="alertError" role="alert"  style="display:none;">
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>

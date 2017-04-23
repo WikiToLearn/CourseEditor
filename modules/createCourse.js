@@ -33,8 +33,42 @@ $(function(){
 
       if($.trim($('#courseName').val()).length !== 0){
         var api = new mw.Api();
+        var courseNamespace = $('input[name="courseNamespace"]:checked').val();
+        // In the course is private, check for similar titles in the user NS
+        if(courseNamespace === 'NS_USER'){
+          api.get({
+            action : 'query',
+            list : 'prefixsearch',
+            pssearch : mw.user.getName() + '/' + $('#courseName').val().trim(),
+            psnamespace: '2'
+          }).done( function ( data ) {
+            $('#coursesListSimilar').html('');
+            var resultsArray = data.query.prefixsearch;
+            if (resultsArray.length > 0) {
+              for (var i = 0; i < resultsArray.length; i++){
+                var resultTitle = resultsArray[i].title;
+                //Exit when the result is a subpage of the private course
+                if(resultTitle.split("/").length - 1 > 1) break;
+                //Generate similar courses list
+                $('#coursesListSimilar').append(
+                  '<a class="alert-link" href="/'
+                  + resultTitle
+                  + '">'
+                  +  resultTitle
+                  + '</a><br>'
+                );
+                //Check if the name of the course is the same and disable button
+                var courseNameNoNamespace = resultTitle.substring(resultTitle.indexOf(':') + 1, resultTitle.length);
+                if($('#courseName').val().trim().toUpperCase() === courseNameNoNamespace.toUpperCase()){
+                  $('#createCourseButton').attr('disabled', true);
+                }
+              }
+              $('#alertSimilar').show();
+            }
+          });
+        }
         //Check if there's the topic or the department
-        if($('#courseTopic').length !== 0){
+        else if($('#courseTopic').length !== 0){
           api.get({
             action : 'query',
             titles : 'Course:' + $('#courseName').val().trim()
@@ -70,7 +104,7 @@ $(function(){
               for (var i = 0; i < resultsArray.length; i++){
                 //Exit when the result is a subpage
                 var resultTitle = resultsArray[i].title;
-                if(resultTitle.indexOf('/') >= 0) break;
+                if(resultTitle.split("/").length - 1 > 0) break;
                 //Generate similar courses list
                 $('#coursesListSimilar').append(
                   '<a class="alert-link" href="/'
