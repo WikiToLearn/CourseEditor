@@ -94,10 +94,15 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   });
 };
 
+/**
+* Check if the elementName contains a forbidden character
+* @param {String} [elementName]
+* @return true if the elementName contains one of the forbidden characters, false otherwise
+*/
 var isBadElementName =  function(elementName){
   var forbiddenChars = /[\#\<\>\[\]\|\{\}\/]/g;
   if(forbiddenChars.test(elementName)){
-    OO.ui.alert( 'The title is invalid! It contains one of the forbidden characters.', { size: 'large' } );
+    OO.ui.alert( OO.ui.deferMsg('courseeditor-alert-dialog-badtitle'), { size: 'large' } );
     return true;
   }
   return false;
@@ -107,6 +112,7 @@ var isBadElementName =  function(elementName){
  * Find the index of a deleted element in the editStack
  * @param {String} [elementName]
  * @param {Array} [editStack]
+ * @return the index of the deleted element in the editStack or null
  */
 var findIndexOfDeletedElement = function(editStack, elementName) {
   for (var i = 0; i < editStack.length; i++) {
@@ -474,7 +480,7 @@ EditDialog.prototype.getActionProcess = function ( action ) {
                   });
                 }
               });
-              dialog.close( { action: action } );  
+              dialog.close( { action: action } );
             }
         } );
     }

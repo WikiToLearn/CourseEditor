@@ -34,6 +34,10 @@ $(function () {
     e.preventDefault();
     $('#alert').hide();
     var courseName = $('#courseName').val().trim();
+    if(isBadElementName(courseName)){
+      $('#manageMetadataButton').attr('disabled', true);
+      return;
+    }
     var courseTopic = $('#courseTopic').val().trim();
     if(courseName.length !== 0 && courseName !== originalCourseName){
       renameAndUpdateMetadata(courseName, originalCourseName, originalTopic);
@@ -72,7 +76,12 @@ $(function () {
       $('#alertSame').hide();
       $('#manageMetadataButton').removeAttr('disabled');
 
-      if($.trim($('#courseName').val()).length !== 0){
+      var courseNameTrimmed = $('#courseName').val().trim();
+      if(isBadElementName(courseNameTrimmed)){
+        $('#manageMetadataButton').attr('disabled', true);
+        return;
+      }
+      if(courseNameTrimmed.length !== 0){
         var api = new mw.Api();
         //Check if there's the topic or the department
         if($('#courseTopic').length !== 0){

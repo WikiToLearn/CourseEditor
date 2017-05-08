@@ -84,5 +84,6 @@
     "courseeditor-save-button": "Desa",
     "courseeditor-save-course": "Desa el curs",
     "courseeditor-save-levelTwo": "Desa el capítol",
-    "courseeditor-validate-form": "Si us plau, inseriu un tema i un nom"
+    "courseeditor-validate-form": "Si us plau, inseriu un tema i un nom",
+    "courseeditor-alert-dialog-badtitle":"Títol invàlid! Conté un dels següents caràcters prohibits: #<>[]|{}/"
 }

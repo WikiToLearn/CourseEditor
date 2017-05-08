@@ -120,7 +120,8 @@
             "courseeditor-confirmation-dialog-message",
             "courseeditor-alert-dialog-title",
             "courseeditor-alert-dialog-message",
-            "courseeditor-alert-dialog-button"
+            "courseeditor-alert-dialog-button",
+            "courseeditor-alert-dialog-badtitle"
 
           ]
         },
@@ -134,7 +135,8 @@
              "mediawiki.util"
           ],
           "messages": [
-              "courseeditor-progressdialog-wait"
+              "courseeditor-progressdialog-wait",
+              "courseeditor-alert-dialog-badtitle"
           ]
         },
         "ext.courseEditor.levelTwo": {
@@ -172,7 +174,8 @@
                 "courseeditor-operation-action-purge",
                 "courseeditor-operation-action-update",
                 "courseeditor-operation-action-update-collection",
-                "courseeditor-error-operation-fail"
+                "courseeditor-error-operation-fail",
+                "courseeditor-alert-dialog-badtitle"
             ]
         },
         "ext.courseEditor.course": {
@@ -210,7 +213,8 @@
                 "courseeditor-operation-action-purge",
                 "courseeditor-operation-action-update",
                 "courseeditor-operation-action-update-collection",
-                "courseeditor-error-operation-fail"
+                "courseeditor-error-operation-fail",
+                "courseeditor-alert-dialog-badtitle"
             ]
         }
     },

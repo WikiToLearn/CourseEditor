@@ -84,5 +84,6 @@
     "courseeditor-save-button": "Salva",
     "courseeditor-save-course": "Salva il corso",
     "courseeditor-save-levelTwo": "Salva il capitolo",
-    "courseeditor-validate-form": "Inserisci un argomento ed un nome"
+    "courseeditor-validate-form": "Inserisci un argomento ed un nome",
+    "courseeditor-alert-dialog-badtitle" : "Titolo non valido! Contiene uno dei seguenti caratteri proibiti: #<>[]|{}/"
 }

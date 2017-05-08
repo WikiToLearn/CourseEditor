@@ -85,6 +85,7 @@
   "courseeditor-alert-dialog-title" : "Empty title",
   "courseeditor-alert-dialog-message" : "Cannot continue without a title.",
   "courseeditor-alert-dialog-button" : "I get it",
+  "courseeditor-alert-dialog-badtitle" : "Invalid title! It contains one of the following forbidden characters:  #<>[]|{}/",
   "api-help-param-coursetitle" : "The course title with Course: namespace string prepended",
   "api-help-course-tree-example" : "Get the course tree of the Course:Modern Physics."
 }
