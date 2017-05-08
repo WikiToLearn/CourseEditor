@@ -30,8 +30,12 @@ $(function(){
       $('#alertSame').hide();
       $('#alertSimilar').hide();
       $('#createCourseButton').removeAttr('disabled');
-
-      if($.trim($('#courseName').val()).length !== 0){
+      var courseNameTrimmed = $.trim($('#courseName').val());
+      if(isBadElementName(courseNameTrimmed)){
+        $('#createCourseButton').attr('disabled', true);
+        return;
+      }
+      if(courseNameTrimmed.length !== 0){
         var api = new mw.Api();
         var courseNamespace = $('input[name="courseNamespace"]:checked').val();
         // In the course is private, check for similar titles in the user NS
@@ -135,6 +139,11 @@ $(function(){
   $('#createCourseButton').click(function(e){
     e.preventDefault();
     var courseName = $('#courseName').val().trim();
+    if(isBadElementName(courseName)){
+      $('#createCourseButton').attr('disabled', true);
+      return;
+    }
+
     var courseDescription = $('#courseDescription').val().trim();
     var courseNamespace = $('input[name="courseNamespace"]:checked').val();
     var courseTopic, courseDepartment, operationRequested;

@@ -71,8 +71,11 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   $('#addElementButton').click(function(){
     $('#alert').hide();
     $('#alertInputNotEmpty').hide();
-    addElement(draggableWidget, textInputWidget.getValue(), editStack);
-    textInputWidget.setValue('');
+    var elementNameTrimmed = $.trim(textInputWidget.getValue());
+    if(!isBadElementName(elementNameTrimmed)) {
+      addElement(draggableWidget, elementNameTrimmed, editStack);
+      textInputWidget.setValue('');
+    }
   });
   $('.oo-ui-inputWidget-input').attr('id', 'addElementInput');
   /*$('#addElementInput').blur(function(){
@@ -83,12 +86,22 @@ var initHandlers = function(draggableWidget, textInputWidget, editStack){
   $('#addElementInput').keypress(function(keypressed) {
     $('#alert').hide();
     $('#alertInputNotEmpty').hide();
-    if(keypressed.which === 13) {
-      addElement(draggableWidget, textInputWidget.getValue(), editStack);
+    var elementNameTrimmed = $.trim(textInputWidget.getValue());
+    if(keypressed.which === 13 && !isBadElementName(elementNameTrimmed)) {
+      addElement(draggableWidget, elementNameTrimmed, editStack);
       textInputWidget.setValue('');
     }
   });
 };
+
+var isBadElementName =  function(elementName){
+  var forbiddenChars = /[\#\<\>\[\]\|\{\}\/]/g;
+  if(forbiddenChars.test(elementName)){
+    OO.ui.alert( 'The title is invalid! It contains one of the forbidden characters.', { size: 'large' } );
+    return true;
+  }
+  return false;
+}
 
 /**
  * Find the index of a deleted element in the editStack
@@ -245,8 +258,7 @@ var restoreElement = function(draggableWidget, elementName, editStack){
  * @param {String} [elementName]
  * @param {Array} [editStack]
  */
-var addElement = function(draggableWidget, elementName, editStack){
-  var elementNameTrimmed = $.trim(elementName);
+var addElement = function(draggableWidget, elementNameTrimmed, editStack){
   if(elementNameTrimmed.length !== 0){
     elementExist(draggableWidget, elementNameTrimmed, function(result){
       if(result ===  true){
@@ -434,34 +446,36 @@ EditDialog.prototype.getActionProcess = function ( action ) {
     if ( action === 'save' ) {
         return new OO.ui.Process( function () {
             var newElementName = $.trim(dialog.textInputWidget.getValue());
-            var items = dialog.draggableWidget.getItems();
-            elementExist(dialog.draggableWidget, newElementName, function(result){
-              if(result === true){
-                $('#alert').show();
-              }else {
-                items.filter(function(element) {
-                  if(element.data === dialog.elementName){
-                    element.setData(newElementName);
-                    element.setLabel(newElementName);
-                    var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
-                    var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
-                    element.$label.append(iconDelete, iconEdit);
-                    $(iconDelete).click(function(){
-                      deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                    });
-                    $(iconEdit).click(function(){
-                      editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
-                    });
-                    dialog.editStack.push({
-                      action: 'rename',
-                      elementName: $('#parentName').text() + '/' + dialog.elementName,
-                      newElementName: $('#parentName').text() + '/' + newElementName
-                    })
-                  }
-                });
-              }
-            });
-            dialog.close( { action: action } );
+            if(!isBadElementName(newElementName)){
+              var items = dialog.draggableWidget.getItems();
+              elementExist(dialog.draggableWidget, newElementName, function(result){
+                if(result === true){
+                  $('#alert').show();
+                }else {
+                  items.filter(function(element) {
+                    if(element.data === dialog.elementName){
+                      element.setData(newElementName);
+                      element.setLabel(newElementName);
+                      var iconDelete = $("<i class='fa fa-trash fa-lg deleteElementIcon pull-right'></i>");
+                      var iconEdit = $("<i class='fa fa-pencil fa-lg editElementIcon pull-right'></i>");
+                      element.$label.append(iconDelete, iconEdit);
+                      $(iconDelete).click(function(){
+                        deleteElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                      });
+                      $(iconEdit).click(function(){
+                        editElement(dialog.draggableWidget, $(this).parent().text(), dialog.editStack);
+                      });
+                      dialog.editStack.push({
+                        action: 'rename',
+                        elementName: $('#parentName').text() + '/' + dialog.elementName,
+                        newElementName: $('#parentName').text() + '/' + newElementName
+                      })
+                    }
+                  });
+                }
+              });
+              dialog.close( { action: action } );  
+            }
         } );
     }
     return EditDialog.parent.prototype.getActionProcess.call( this, action );
