@@ -478,8 +478,12 @@ class CourseEditorUtils {
     }else {
       //$key = array_search($lastPage, $subElements);
       for ($i=0; $i < sizeof($subElements); $i++) {
-        $safeTitle = Title::newFromText($subElements[$i]);
-        $result = strcmp($lastPage, $safeTitle->getText());
+        $safeTitle = Title::makeTitleSafe($subElements[$i]);
+        if (is_null($safeTitle)) {
+          $result = strcmp($lastPage, rawurldecode($subElements[$i]));
+        } else {
+          $result = strcmp($lastPage, $safeTitle->getText());
+        }
         if($result === 0){
           $key = $i;
           break;
