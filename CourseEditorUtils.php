@@ -478,7 +478,7 @@ class CourseEditorUtils {
     }else {
       //$key = array_search($lastPage, $subElements);
       for ($i=0; $i < sizeof($subElements); $i++) {
-        $safeTitle = Title::makeTitleSafe($subElements[$i]);
+        $safeTitle = Title::makeTitleSafe($namespace, $subElements[$i]);
         if (is_null($safeTitle)) {
           $result = strcmp($lastPage, rawurldecode($subElements[$i]));
         } else {
